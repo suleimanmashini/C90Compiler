@@ -20,6 +20,9 @@ ID   [a-zA-Z_]
 [(]                      {return T_LBRACKET;}
 [)]                      {return T_RBRACKET;}
 
+"int"					 {yylval.string = new std::string(yytext);return T_int;}
+"return"					 {yylval.string = new std::string(yytext);return T_return;}
+
 %%
 
  void yyerror (char const *s) {
