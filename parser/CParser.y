@@ -19,11 +19,24 @@
   int integer
 }
 
-%token  T_IDENTIFIER T_INTEGER T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET
-%token  T_int T_return
-%type <string> T_IDENTIFIER
-%type <integer> T_INTEGER
-%type <function> FUNCTION
+%token  T_IDENTIFIER 
+%token  T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LINDEX T_RINDEX
+%token	TK_auto TK_break TK_case TK_char TK_const TK_continue TK_default
+%token	TK_do TK_double TK_else TK_enum TK_extern TK_float TK_for TK_goto 
+%token  TK_if TK_int TK_long TK_register TK_return TK_short TK_signed
+%token	TK_sizeof TK_static TK_struct TK_switch TK_typedef TK_union TK_unsigned
+%token  TK_void TK_volatile TK_while
+%token	T_StringLiteral T_LStringLiteral
+%token  T_dot TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
+%token  TO_asterix TO_mod TO_bitwiseLeft TO_bitwiseRight
+%token  TO_lessThan TO_moreThan TO_lessThanOrEqual TO_moreThanOrEqual TO_equalTo TO_notEqualTo
+%token	TO_plus TO_mins TO_increment TO_decrement 
+%token	TP_comma TP_colon
+%token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
+%token  TC_true TC_false TC_NULL TC_nullptr
+%type <string> 
+%type <integer> 
+%type <function> 
 
 %start PROGRAM
 
@@ -31,29 +44,7 @@
 
 PROGRAM: STRUCTURE
 
-STRUCTURE: FUNCTION			{ ASTRoot->add( $1 ); }
-		   STATEMENT		{ASTRoot->add( $1 ); }
-		 ;
 
-FUNCTION: DATATYPE T_IDENTIFIER PARAMETERS COMPOUND_STATEMENT		{$$ = new Function(*$2, $3, $4); }
-		;
-
-COMPOUND_STATEMENT: T_LBRACE T_RBRACE								{$$ = new Block();}
-				  |	T_LBRACE BLOCK T_RBRACE							{$$ = $2;}
-				  ;
-
-BLOCK: STATEMENT													{$$ = ;}
-	 ;
-
-STATEMENT: RETURN_STATEMENT											{$$ = $1;}
-
-RETURN_STATEMENT: T_return BLOCK								{$$ = NULL; /*BLOCK IS WRONG BUT I DONT HAVE EXPRESSIONS YET */}
-
-PARAMETERS: T_LBRACKET T_RBRACKET									{$$ = new ParameterList();}
-		  ;
-
-DATATYPE: T_int 
-		;
 
 
 

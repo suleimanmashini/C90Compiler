@@ -13,15 +13,42 @@ ID   [a-zA-Z_]
 
 %%
 [ \n\t]                  {;}
-{ID}+({ID}|{DIGIT})*     {yylval.string = new std::string(yytext);return T_IDENTIFIER; }
-{DIGIT}+                 {yylval.number = strtod(yytext, 0); return T_INTEGER; }
-[{]                      {return T_LBRACE;}
-[}]                      {return T_RBRACE;}
-[(]                      {return T_LBRACKET;}
-[)]                      {return T_RBRACKET;}
 
-"int"					 {yylval.string = new std::string(yytext);return T_int;}
-"return"					 {yylval.string = new std::string(yytext);return T_return;}
+"auto"					 {;}
+"break"					 {;}
+"case"					 {;}
+"char"					 {;}
+"const"					 {;}
+"continue"				 {;}
+"default"				 {;}
+"do"					 {;}
+"double"				 {;}
+"else"					 {;}
+"enum"					 {;}
+"extern"				 {;}
+"float"					 {;}
+"for"					 {;}
+"goto"					 {;}
+"if"					 {;}
+"int"					 {;}
+"long"					 {;}
+"register"				 {;}
+"return"				 {;}
+"short"					 {;}
+"signed"				 {;}
+"sizeof"				 {;}
+"static"				 {;}
+"struct"				 {;}
+"switch"				 {;}
+"typedef"				 {;}
+"union"					 {;}
+"unsigned"				 {;}
+"void"					 {;}
+"volatile"				 {;}
+"while"					 {;}
+
+
+
 
 %%
 

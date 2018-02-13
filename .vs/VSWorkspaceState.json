@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Lexer",
+    "\\parser",
+    "\\parser\\ast"
+  ],
+  "SelectedNode": "\\parser\\CParser.y",
+  "PreviewInSolutionExplorer": false
+}
