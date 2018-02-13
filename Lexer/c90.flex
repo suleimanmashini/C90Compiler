@@ -107,3 +107,13 @@ LGS						 [Ll]
  void yyerror (char const *s) {
    fprintf (stderr, "Parse Error: %s\n", s);
  }
+
+ void correctFloat(char const *s) {
+	if(const[yyleng] == 'F' || 'f') {
+
+	} else if (const[yyleng] == "l"|"L"){
+
+	} else {
+	
+	}
+ }
