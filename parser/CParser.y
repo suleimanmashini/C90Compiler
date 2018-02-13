@@ -30,8 +30,8 @@
 %token  T_dot TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
 %token  TO_asterix TO_mod TO_bitwiseLeft TO_bitwiseRight
 %token  TO_lessThan TO_moreThan TO_lessThanOrEqual TO_moreThanOrEqual TO_equalTo TO_notEqualTo
-%token	TO_plus TO_mins TO_increment TO_decrement 
-%token	TP_comma TP_colon
+%token	TO_plus TO_minus TO_increment TO_decrement 
+%token	TP_comma TP_colon TP_semiColon
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
 %type <string> 
