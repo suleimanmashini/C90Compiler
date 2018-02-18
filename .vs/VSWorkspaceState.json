@@ -5,6 +5,6 @@
     "\\parser",
     "\\parser\\ast"
   ],
-  "SelectedNode": "\\Lexer\\c90.flex",
+  "SelectedNode": "\\parser\\CParser.y",
   "PreviewInSolutionExplorer": false
 }
