@@ -1,11 +1,17 @@
-#ifndef AST_hpp
-#define AST_hpp
+#pragma once
 
-#include "ast/ASTExpression.hpp"
-#include "ast/ASTProgram.hpp"
-#include "ast/ASTFunction.hpp"
-#include "ast/ASTReturn.hpp"
+#include "ASTExpression.hpp"
+#include "ASTStatement.hpp"
+
+struct ASTNode{
+public:
+	ASTNode(ASTNode* child) { left = child; };
+	virtual ~ASTNode() = 0;
+	virtual void codeGen() = 0;
+private:
+	ASTNode* left = nullptr;;
+
+};
 
 
-extern Expression *parseAST();
-#endif
+extern ASTNode *ASTRoot;

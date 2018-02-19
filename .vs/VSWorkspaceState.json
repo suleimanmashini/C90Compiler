@@ -5,6 +5,6 @@
     "\\parser",
     "\\parser\\ast"
   ],
-  "SelectedNode": "\\parser\\CParser.y",
+  "SelectedNode": "\\parser\\ast\\ASTStatement.hpp",
   "PreviewInSolutionExplorer": false
 }

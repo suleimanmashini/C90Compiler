@@ -12,13 +12,6 @@
 
 }
 
-%union{
-  Function *func
-  Statement *statement
-  Expression *expression
-  int integer
-}
-
 %token  T_IDENTIFIER 
 %token  T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LINDEX T_RINDEX
 %token	TK_auto TK_break TK_case TK_char TK_const TK_continue TK_default
@@ -42,29 +35,42 @@
 
 %%
 
-PROGRAM: STRUCTURE
+%union {
+ASTNode* Node;
+int Integer;
+string Identifier;
+}
 
-STRUCTURE: STRUCTURE FUNCTION
-		 | STRUCTURE STATEMENT_DECLARATION
-		 | FUNCTION
+PROGRAM: STRUCTURE			{$$ = $1;}
+	   ;
+
+STRUCTURE: STRUCTURE FUNCTION {$$ = new ASTNode($2);}
+		 | STRUCTURE STATEMENT_DECLARATION {;}
+		 | FUNCTION {$$ = $1;}
 		 | STATEMENT_DECLARATIONS
 		 ;
 
-FUNCTION: RETURNTYPE IDENTIFIER PARAMETERS SCOPE
+FUNCTION: RETURNTYPE IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE {$$ = new ASTFunction($1, $2, nullptr, $7);}
 		;
 
-SCOPE: BLOCK
-	 : SCOPE BLOCK
+SCOPE: BLOCK	{$$ = $1;}
+	 | SCOPE BLOCK {;}
 	 ;
 
-BLOCK: DECLARATION_LIST
-	 : STATEMENT_LIST
-	 : EXPRESSION_LIST
+BLOCK: DECLARATION_LIST	{;}
+	 | STATEMENT_LIST {$$ = $1;}
+	 | EXPRESSION_LIST {;}
 	 ;
 
-PARAMETERS: NOTHING
-		  : PARAMETERS PARAMETER
+STATEMENT_LIST: TK_return EXPRESSION {$$ = new ASTReturnStatement($2);}
+		      ;
+
+EXPRESSION_LIST: EXPRESSION {$$ = $1;}
+			   ;
+
+EXPRESSION: TC_INTEGER {$$ = new ASTInteger($1); }
 		  ;
+
 
 
 
