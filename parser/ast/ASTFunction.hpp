@@ -14,7 +14,7 @@ public:
   void print() const override {
     std::cout << "FUNCTION" << std::endl;
   };
-private:
+protected:
   ASTprimitive* returnType
   string functionName;
   ASTNode* parameters;
