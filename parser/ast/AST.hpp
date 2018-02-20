@@ -2,7 +2,7 @@
 
 #include "ASTexpression.hpp"
 #include "ASTFunction.hpp"
-#include "ASTprimitive.hpp"
+#include "ASTPrimitive.hpp"
 #include "ASTStatement.hpp"
 
 #include <iostream>
@@ -19,4 +19,3 @@ private:
 };
 
 extern const ASTNode *parseAST();
-

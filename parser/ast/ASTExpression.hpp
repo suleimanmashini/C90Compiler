@@ -3,5 +3,6 @@
 
 struct ASTExpression : public ASTNode{
 public:
+  ASTExpression(ASTPrimitive* returnType) : left(returnType)
 private:
 };

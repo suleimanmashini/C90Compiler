@@ -50,7 +50,6 @@ ASTFunction Function;
 
 %%
 
-
 PROGRAM: STRUCTURE			{$$ = $1;}
 
 

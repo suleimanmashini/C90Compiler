@@ -3,11 +3,6 @@
 
 struct ASTreturnStatement : public ASTNode{
 public:
-	ASTreturnStatement() {};
-	ASTreturnStatement(ASTExpression* expressionIn) {
-		returnExp = expressionIn;
-	};
+	ASTreturnStatement(ASTExpression* expressionIn): left(expressionIn);
 private:
-	ASTExpression* returnExp = nullptr;
 };
-
