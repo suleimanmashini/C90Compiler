@@ -5,7 +5,7 @@
 
   #include "AST.hpp"
 
-  extern Program *ASTRoot;
+  extern ASTNode *ASTRoot;
 
   int yylex(void)
   void yyerror(const char*);
@@ -72,8 +72,14 @@ EXPRESSION: TC_INTEGER {$$ = new ASTInteger($1); }
 		  ;
 
 
+%%
 
+const ASTNode *ASTRoot; // Definition of variable (to match declaration earlier)
 
-
-
+const ASTNode *parseAST()
+{
+  ASTRoot=0;
+  yyparse();
+  return ASTRoot;
+}
 

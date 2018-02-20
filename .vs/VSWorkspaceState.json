@@ -5,6 +5,6 @@
     "\\parser",
     "\\parser\\ast"
   ],
-  "SelectedNode": "\\parser\\ast\\ASTStatement.hpp",
+  "SelectedNode": "\\Lexer\\c90.flex",
   "PreviewInSolutionExplorer": false
 }
