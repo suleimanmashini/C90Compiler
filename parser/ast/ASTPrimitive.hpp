@@ -1,5 +1,5 @@
 #pragma once
-#include "AST.hpp"
+#include "ASTNode.hpp"
 
 enum types {integer = 0, character = 1}
 struct ASTInteger : public ASTPrimitive {

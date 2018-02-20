@@ -1,5 +1,6 @@
 #pragma once
-#include "AST.hpp"
+#include "ASTNode.hpp"
+#include "ASTPrimitive.hpp"
 
 struct ASTfunction : public ASTNode {
 public:

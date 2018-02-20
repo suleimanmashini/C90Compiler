@@ -1,0 +1,355 @@
+Terminals unused in grammar
+
+   T_LINDEX
+   T_RINDEX
+   TK_auto
+   TK_break
+   TK_case
+   TK_char
+   TK_const
+   TK_continue
+   TK_default
+   TK_do
+   TK_double
+   TK_else
+   TK_enum
+   TK_extern
+   TK_float
+   TK_for
+   TK_goto
+   TK_if
+   TK_long
+   TK_register
+   TK_short
+   TK_signed
+   TK_sizeof
+   TK_static
+   TK_struct
+   TK_switch
+   TK_typedef
+   TK_union
+   TK_unsigned
+   TK_volatile
+   TK_while
+   T_StringLiteral
+   T_LStringLiteral
+   T_dot
+   TO_memberAccess
+   TO_not
+   TO_bitwiseNot
+   TO_ampersand
+   TO_logicAnd
+   TO_asterix
+   TO_mod
+   TO_bitwiseLeft
+   TO_bitwiseRight
+   TO_lessThan
+   TO_moreThan
+   TO_lessThanOrEqual
+   TO_moreThanOrEqual
+   TO_equalTo
+   TO_notEqualTo
+   TO_plus
+   TO_minus
+   TO_increment
+   TO_decrement
+   TP_comma
+   TP_colon
+   TP_semiColon
+   TC_integer
+   TC_unsigned
+   TC_long
+   TC_longLong
+   TC_float
+   TC_longDouble
+   TC_true
+   TC_false
+   TC_NULL
+   TC_nullptr
+
+
+Grammar
+
+    0 $accept: PROGRAM $end
+
+    1 PROGRAM: STRUCTURE
+
+    2 STRUCTURE: STRUCTURE FUNCTION
+    3          | FUNCTION
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE
+
+    5 SCOPE: BLOCK
+    6      | SCOPE BLOCK
+
+    7 BLOCK: STATEMENT
+
+    8 STATEMENT: TK_return EXPRESSION
+
+    9 RETURNTYPE: TK_void
+
+   10 EXPRESSION: TK_int
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_IDENTIFIER (258) 4
+T_LBRACE (259) 4
+T_RBRACE (260) 4
+T_LBRACKET (261) 4
+T_RBRACKET (262) 4
+T_LINDEX (263)
+T_RINDEX (264)
+TK_auto (265)
+TK_break (266)
+TK_case (267)
+TK_char (268)
+TK_const (269)
+TK_continue (270)
+TK_default (271)
+TK_do (272)
+TK_double (273)
+TK_else (274)
+TK_enum (275)
+TK_extern (276)
+TK_float (277)
+TK_for (278)
+TK_goto (279)
+TK_if (280)
+TK_int (281) 10
+TK_long (282)
+TK_register (283)
+TK_return (284) 8
+TK_short (285)
+TK_signed (286)
+TK_sizeof (287)
+TK_static (288)
+TK_struct (289)
+TK_switch (290)
+TK_typedef (291)
+TK_union (292)
+TK_unsigned (293)
+TK_void (294) 9
+TK_volatile (295)
+TK_while (296)
+T_StringLiteral (297)
+T_LStringLiteral (298)
+T_dot (299)
+TO_memberAccess (300)
+TO_not (301)
+TO_bitwiseNot (302)
+TO_ampersand (303)
+TO_logicAnd (304)
+TO_asterix (305)
+TO_mod (306)
+TO_bitwiseLeft (307)
+TO_bitwiseRight (308)
+TO_lessThan (309)
+TO_moreThan (310)
+TO_lessThanOrEqual (311)
+TO_moreThanOrEqual (312)
+TO_equalTo (313)
+TO_notEqualTo (314)
+TO_plus (315)
+TO_minus (316)
+TO_increment (317)
+TO_decrement (318)
+TP_comma (319)
+TP_colon (320)
+TP_semiColon (321)
+TC_integer (322)
+TC_unsigned (323)
+TC_long (324)
+TC_longLong (325)
+TC_float (326)
+TC_longDouble (327)
+TC_true (328)
+TC_false (329)
+TC_NULL (330)
+TC_nullptr (331)
+
+
+Nonterminals, with rules where they appear
+
+$accept (77)
+    on left: 0
+PROGRAM (78)
+    on left: 1, on right: 0
+STRUCTURE (79)
+    on left: 2 3, on right: 1 2
+FUNCTION (80)
+    on left: 4, on right: 2 3
+SCOPE (81)
+    on left: 5 6, on right: 4 6
+BLOCK (82)
+    on left: 7, on right: 5 6
+STATEMENT (83)
+    on left: 8, on right: 7
+RETURNTYPE (84)
+    on left: 9, on right: 4
+EXPRESSION (85)
+    on left: 10, on right: 8
+
+
+State 0
+
+    0 $accept: . PROGRAM $end
+
+    TK_void  shift, and go to state 1
+
+    PROGRAM     go to state 2
+    STRUCTURE   go to state 3
+    FUNCTION    go to state 4
+    RETURNTYPE  go to state 5
+
+
+State 1
+
+    9 RETURNTYPE: TK_void .
+
+    $default  reduce using rule 9 (RETURNTYPE)
+
+
+State 2
+
+    0 $accept: PROGRAM . $end
+
+    $end  shift, and go to state 6
+
+
+State 3
+
+    1 PROGRAM: STRUCTURE .
+    2 STRUCTURE: STRUCTURE . FUNCTION
+
+    TK_void  shift, and go to state 1
+
+    $default  reduce using rule 1 (PROGRAM)
+
+    FUNCTION    go to state 7
+    RETURNTYPE  go to state 5
+
+
+State 4
+
+    3 STRUCTURE: FUNCTION .
+
+    $default  reduce using rule 3 (STRUCTURE)
+
+
+State 5
+
+    4 FUNCTION: RETURNTYPE . T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE
+
+    T_IDENTIFIER  shift, and go to state 8
+
+
+State 6
+
+    0 $accept: PROGRAM $end .
+
+    $default  accept
+
+
+State 7
+
+    2 STRUCTURE: STRUCTURE FUNCTION .
+
+    $default  reduce using rule 2 (STRUCTURE)
+
+
+State 8
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER . T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE
+
+    T_LBRACKET  shift, and go to state 9
+
+
+State 9
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET . T_RBRACKET T_LBRACE SCOPE T_RBRACE
+
+    T_RBRACKET  shift, and go to state 10
+
+
+State 10
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET . T_LBRACE SCOPE T_RBRACE
+
+    T_LBRACE  shift, and go to state 11
+
+
+State 11
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE . SCOPE T_RBRACE
+
+    TK_return  shift, and go to state 12
+
+    SCOPE      go to state 13
+    BLOCK      go to state 14
+    STATEMENT  go to state 15
+
+
+State 12
+
+    8 STATEMENT: TK_return . EXPRESSION
+
+    TK_int  shift, and go to state 16
+
+    EXPRESSION  go to state 17
+
+
+State 13
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE . T_RBRACE
+    6 SCOPE: SCOPE . BLOCK
+
+    T_RBRACE   shift, and go to state 18
+    TK_return  shift, and go to state 12
+
+    BLOCK      go to state 19
+    STATEMENT  go to state 15
+
+
+State 14
+
+    5 SCOPE: BLOCK .
+
+    $default  reduce using rule 5 (SCOPE)
+
+
+State 15
+
+    7 BLOCK: STATEMENT .
+
+    $default  reduce using rule 7 (BLOCK)
+
+
+State 16
+
+   10 EXPRESSION: TK_int .
+
+    $default  reduce using rule 10 (EXPRESSION)
+
+
+State 17
+
+    8 STATEMENT: TK_return EXPRESSION .
+
+    $default  reduce using rule 8 (STATEMENT)
+
+
+State 18
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE .
+
+    $default  reduce using rule 4 (FUNCTION)
+
+
+State 19
+
+    6 SCOPE: SCOPE BLOCK .
+
+    $default  reduce using rule 6 (SCOPE)

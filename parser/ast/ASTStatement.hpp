@@ -1,5 +1,5 @@
 #pragma once
-#include "AST.hpp"
+#include "ASTNode.hpp"
 
 struct ASTreturnStatement : public ASTNode{
 public:
