@@ -12,10 +12,10 @@
 
 }
 
-%token  T_IDENTIFIER 
+%token  T_IDENTIFIER
 %token  T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LINDEX T_RINDEX
 %token	TK_auto TK_break TK_case TK_char TK_const TK_continue TK_default
-%token	TK_do TK_double TK_else TK_enum TK_extern TK_float TK_for TK_goto 
+%token	TK_do TK_double TK_else TK_enum TK_extern TK_float TK_for TK_goto
 %token  TK_if TK_int TK_long TK_register TK_return TK_short TK_signed
 %token	TK_sizeof TK_static TK_struct TK_switch TK_typedef TK_union TK_unsigned
 %token  TK_void TK_volatile TK_while
@@ -23,26 +23,28 @@
 %token  T_dot TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
 %token  TO_asterix TO_mod TO_bitwiseLeft TO_bitwiseRight
 %token  TO_lessThan TO_moreThan TO_lessThanOrEqual TO_moreThanOrEqual TO_equalTo TO_notEqualTo
-%token	TO_plus TO_minus TO_increment TO_decrement 
+%token	TO_plus TO_minus TO_increment TO_decrement
 %token	TP_comma TP_colon TP_semiColon
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
-%type <string> 
-%type <integer> 
-%type <function> 
+%type <string> T_StringLiteral T_IDENTIFIER
+%type <Integer> TC_INTEGER
+%type <Expression> EXPRESSION
+
+%union {
+ASTNode* Expression;
+ASTInteger* Integer;
+string Identifier;
+ASTFunction Function;
+}
 
 %start PROGRAM
 
 %%
 
-%union {
-ASTNode* Node;
-int Integer;
-string Identifier;
-}
 
 PROGRAM: STRUCTURE			{$$ = $1;}
-	   ;
+       ;
 
 STRUCTURE: STRUCTURE FUNCTION {$$ = new ASTNode($2);}
 		 | STRUCTURE STATEMENT_DECLARATION {;}
@@ -82,4 +84,3 @@ const ASTNode *parseAST()
   yyparse();
   return ASTRoot;
 }
-

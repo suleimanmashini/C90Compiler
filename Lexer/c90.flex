@@ -68,7 +68,6 @@ LGS						 [Ll]
 "!"						 {return TO_not;}
 "~"						 {return TO_bitwiseNot;}
 "&"						 {return TO_ampersand;}
-"!"						 {return TO_not;}
 "&&"					 {return TO_logicAnd;}
 "*"						 {return TO_asterix;}
 "%"						 {return TO_mod;}
@@ -91,7 +90,7 @@ LGS						 [Ll]
 ";"						 {return TP_semicolon;}
 
 [1-9]DIGIT*((USS?LGS?)|(LGS?USS?))				   {return TC_integer;}
-[0]|([0]OCT+((USS?LGS?)|(LGS?USS?)))			   {return TC_integer;}		 
+[0]|([0]OCT+((USS?LGS?)|(LGS?USS?)))			   {return TC_integer;}
 [0][xX]HEX+((USS?LGS?)|(LGS?USS?))				   {return TC_integer;}
 (DIGIT)*"."(DIGIT)+([eE]("+"|"-")?DIGIT+)?[flFL]?  {return TC_float;}
 
@@ -114,6 +113,6 @@ LGS						 [Ll]
 	} else if (const[yyleng] == "l"|"L"){
 
 	} else {
-	
+
 	}
  }
