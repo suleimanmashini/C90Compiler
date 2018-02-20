@@ -7,3 +7,10 @@ public:
 private:
 	int Value;
 };
+
+
+struct ASTPrimitive : public ASTExpression {
+public:
+private:
+	int Value;
+};

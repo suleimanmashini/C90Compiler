@@ -28,11 +28,19 @@
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
 %type <string> T_StringLiteral T_IDENTIFIER
-%type <Integer> TC_INTEGER
+%type <Integer> TK_int
 %type <Expression> EXPRESSION
+%type <Node> PROGRAM STRUCTURE BLOCK SCOPE
+%type <Function> FUNCTION
+%type <Statement> STATEMENT
+%type <Primitive> RETURNTYPE TK_void
 
 %union {
-ASTNode* Expression;
+ASTNode* Node;
+ASTStatement Statement;
+ASTPrimitive Primitive;
+ASTExpression* Expression;
+ASTFunction* Function;
 ASTInteger* Integer;
 string Identifier;
 ASTFunction Function;
@@ -44,34 +52,25 @@ ASTFunction Function;
 
 
 PROGRAM: STRUCTURE			{$$ = $1;}
-       ;
+
 
 STRUCTURE: STRUCTURE FUNCTION {$$ = new ASTNode($2);}
-		 | STRUCTURE STATEMENT_DECLARATION {;}
-		 | FUNCTION {$$ = $1;}
-		 | STATEMENT_DECLARATIONS
-		 ;
+	    	 | FUNCTION {$$ = $1;}
 
-FUNCTION: RETURNTYPE IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE {$$ = new ASTFunction($1, $2, nullptr, $7);}
-		;
+FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE {$$ = new ASTFunction($1, $2, nullptr, $6);}
+
 
 SCOPE: BLOCK	{$$ = $1;}
-	 | SCOPE BLOCK {;}
-	 ;
+	   | SCOPE BLOCK {;}
 
-BLOCK: DECLARATION_LIST	{;}
-	 | STATEMENT_LIST {$$ = $1;}
-	 | EXPRESSION_LIST {;}
-	 ;
+BLOCK: STATEMENT {$$ = $1;}
 
-STATEMENT_LIST: TK_return EXPRESSION {$$ = new ASTReturnStatement($2);}
-		      ;
+STATEMENT: TK_return EXPRESSION {$$ = new ASTReturnStatement($2);}
 
-EXPRESSION_LIST: EXPRESSION {$$ = $1;}
-			   ;
+RETURNTYPE: TK_void {$$ = $1;}
 
-EXPRESSION: TC_INTEGER {$$ = new ASTInteger($1); }
-		  ;
+EXPRESSION: TK_int {$$ = new ASTInteger($1); }
+
 
 
 %%
