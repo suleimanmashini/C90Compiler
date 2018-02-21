@@ -2,12 +2,13 @@
   #include <string>
   #include <stdio.h>
   #include <iostream>
+  #include <cassert>
 
   #include "AST.hpp"
 
-  extern ASTNode *ASTRoot;
+  extern const ASTNode *ASTRoot;
 
-  int yylex(void)
+  int yylex(void);
   void yyerror(const char*);
 
 }
@@ -27,48 +28,48 @@
 %token	TP_comma TP_colon TP_semiColon
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
-%type <string> T_StringLiteral T_IDENTIFIER
-%type <Integer> TK_int
+%type <word> T_StringLiteral T_IDENTIFIER TK_int
+%type <Integer> TC_integer
 %type <Expression> EXPRESSION
-%type <Node> PROGRAM STRUCTURE BLOCK SCOPE
+%type <Node> PROGRAM STRUCTURE
 %type <Function> FUNCTION
-%type <Statement> STATEMENT
+%type <RStatement> STATEMENT BLOCK SCOPE
 %type <Primitive> RETURNTYPE TK_void
 
 %union {
-ASTNode* Node;
-ASTStatement Statement;
-ASTPrimitive Primitive;
-ASTExpression* Expression;
-ASTFunction* Function;
-ASTInteger* Integer;
-string Identifier;
-ASTFunction Function;
+const ASTNode* Node;
+const ASTExpression* Expression;
+const ASTReturnStatement* RStatement;
+const ASTPrimitive* Primitive;
+const ASTFunction* Function;
+std::string* word;
+int Integer;
+float FNumber;
 }
 
 %start PROGRAM
 
 %%
 
-PROGRAM: STRUCTURE			{$$ = $1;}
+PROGRAM: STRUCTURE		{ASTRoot = $1;}
 
 
-STRUCTURE: STRUCTURE FUNCTION {$$ = new ASTNode($2);}
+STRUCTURE: STRUCTURE FUNCTION {$$ = $1;}
 	    	 | FUNCTION {$$ = $1;}
 
-FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE {$$ = new ASTFunction($1, $2, nullptr, $6);}
+FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE {std::cout << "im here!" << std::endl; $$ = new ASTFunction($1, *$2, nullptr, $6);}
 
 
-SCOPE: BLOCK	{$$ = $1;}
-	   | SCOPE BLOCK {;}
+SCOPE:  BLOCK 	{$$ = $1;}
 
 BLOCK: STATEMENT {$$ = $1;}
 
-STATEMENT: TK_return EXPRESSION {$$ = new ASTReturnStatement($2);}
+STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
 
-RETURNTYPE: TK_void {$$ = $1;}
+RETURNTYPE: TK_void {$$ = new ASTVoid();}
+          | TK_int {;}
 
-EXPRESSION: TK_int {$$ = new ASTInteger($1); }
+EXPRESSION: TC_integer {$$ = new ASTInteger($1); }
 
 
 

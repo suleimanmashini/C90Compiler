@@ -1,11 +1,14 @@
 %option noyywrap
 
 %{
-  #include "CLexer.hpp"
+  #include "../parser/CParser.tab.hpp"
   #include <stdio.h>
+  #include <iostream>
 
-extern "C" int fileno(File *stream)
+extern "C" int fileno(FILE *stream);
 #define SAVE_TOKEN yylval.string = new
+
+void yyerror (char const *s);
 %}
 
 DIGIT					 [0-9]
@@ -17,10 +20,9 @@ LGS						 [Ll]
 
 %%
 [ \n\t]                  {;}
-"//"(.)*\n				 {;}
-"/*"(.)*"*/"			 {;}
 
-(ID)(DIGIT|ID)*			 {yylval.word = yytext; return T_IDENTIFIER;}
+
+(ID)(DIGIT|ID)*			 {yylval.word = new std::string(yytext); return T_IDENTIFIER;}
 "("						 {return T_LBRACKET;}
 ")"						 {return T_RBRACKET;}
 "{"						 {return T_LBRACE;}
@@ -61,8 +63,8 @@ LGS						 [Ll]
 "volatile"				 {return TK_volatile;}
 "while"					 {return TK_while;}
 
-\"(\\.|[^\\"])*\"		 {return T_StringLiteral}
-[L]\"(\\.|[^\\"])*\"	 {return T_LStringLiteral}
+\"(\\.|[^\\"])*\"		 {return T_StringLiteral;}
+[L]\"(\\.|[^\\"])*\"	 {return T_LStringLiteral;}
 
 "->"					 {return TO_memberAccess;}
 "!"						 {return TO_not;}
@@ -77,7 +79,7 @@ LGS						 [Ll]
 "<="					 {return TO_lessThanOrEqual;}
 ">"						 {return TO_moreThan;}
 ">="					 {return TO_moreThanOrEqual;}
-"=="					 {return TO_equalTot;}
+"=="					 {return TO_equalTo;}
 "!="					 {return TO_notEqualTo;}
 "+"						 {return TO_plus;}
 "-"						 {return TO_minus;}
@@ -87,9 +89,9 @@ LGS						 [Ll]
 ","						 {return TP_comma;}
 "."						 {return T_dot;}
 ":"						 {return TP_colon;}
-";"						 {return TP_semicolon;}
+";"						 {return TP_semiColon;}
 
-[1-9]DIGIT*((USS?LGS?)|(LGS?USS?))				   {return TC_integer;}
+[1-9]DIGIT*((USS?LGS?)|(LGS?USS?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer;}
 [0]|([0]OCT+((USS?LGS?)|(LGS?USS?)))			   {return TC_integer;}
 [0][xX]HEX+((USS?LGS?)|(LGS?USS?))				   {return TC_integer;}
 (DIGIT)*"."(DIGIT)+([eE]("+"|"-")?DIGIT+)?[flFL]?  {return TC_float;}
@@ -99,20 +101,10 @@ LGS						 [Ll]
 "NULL"					 {return TC_NULL;}
 "nullptr"				 {return TC_nullptr;}
 
-
+.                 {;}
 
 %%
 
  void yyerror (char const *s) {
    fprintf (stderr, "Parse Error: %s\n", s);
- }
-
- void correctFloat(char const *s) {
-	if(const[yyleng] == 'F' || 'f') {
-
-	} else if (const[yyleng] == "l"|"L"){
-
-	} else {
-
-	}
  }

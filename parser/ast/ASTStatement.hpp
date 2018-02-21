@@ -1,8 +1,21 @@
 #pragma once
 #include "ASTNode.hpp"
 
-struct ASTreturnStatement : public ASTNode{
+struct ASTStatement: public ASTNode {
+};
+
+struct ASTReturnStatement : public ASTStatement{
 public:
-	ASTreturnStatement(ASTExpression* expressionIn): left(expressionIn);
+	~ASTReturnStatement(){}
+	void print() const override {
+		std::cout<< "RETURN!" << std::endl;
+	}
+	ASTReturnStatement(const ASTExpression* expressionIn) {
+		child = expressionIn;
+	}
+	ASTReturnStatement(){
+		child = NULL;
+	}
 private:
+	const ASTExpression* child;
 };

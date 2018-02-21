@@ -55,8 +55,6 @@ Terminals unused in grammar
    TO_decrement
    TP_comma
    TP_colon
-   TP_semiColon
-   TC_integer
    TC_unsigned
    TC_long
    TC_longLong
@@ -80,15 +78,15 @@ Grammar
     4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE
 
     5 SCOPE: BLOCK
-    6      | SCOPE BLOCK
 
-    7 BLOCK: STATEMENT
+    6 BLOCK: STATEMENT
 
-    8 STATEMENT: TK_return EXPRESSION
+    7 STATEMENT: TK_return EXPRESSION TP_semiColon
 
-    9 RETURNTYPE: TK_void
+    8 RETURNTYPE: TK_void
+    9           | TK_int
 
-   10 EXPRESSION: TK_int
+   10 EXPRESSION: TC_integer
 
 
 Terminals, with rules where they appear
@@ -118,10 +116,10 @@ TK_float (277)
 TK_for (278)
 TK_goto (279)
 TK_if (280)
-TK_int (281) 10
+TK_int (281) 9
 TK_long (282)
 TK_register (283)
-TK_return (284) 8
+TK_return (284) 7
 TK_short (285)
 TK_signed (286)
 TK_sizeof (287)
@@ -131,7 +129,7 @@ TK_switch (290)
 TK_typedef (291)
 TK_union (292)
 TK_unsigned (293)
-TK_void (294) 9
+TK_void (294) 8
 TK_volatile (295)
 TK_while (296)
 T_StringLiteral (297)
@@ -158,8 +156,8 @@ TO_increment (317)
 TO_decrement (318)
 TP_comma (319)
 TP_colon (320)
-TP_semiColon (321)
-TC_integer (322)
+TP_semiColon (321) 7
+TC_integer (322) 10
 TC_unsigned (323)
 TC_long (324)
 TC_longLong (325)
@@ -182,174 +180,178 @@ STRUCTURE (79)
 FUNCTION (80)
     on left: 4, on right: 2 3
 SCOPE (81)
-    on left: 5 6, on right: 4 6
+    on left: 5, on right: 4
 BLOCK (82)
-    on left: 7, on right: 5 6
+    on left: 6, on right: 5
 STATEMENT (83)
-    on left: 8, on right: 7
+    on left: 7, on right: 6
 RETURNTYPE (84)
-    on left: 9, on right: 4
+    on left: 8 9, on right: 4
 EXPRESSION (85)
-    on left: 10, on right: 8
+    on left: 10, on right: 7
 
 
 State 0
 
     0 $accept: . PROGRAM $end
 
-    TK_void  shift, and go to state 1
+    TK_int   shift, and go to state 1
+    TK_void  shift, and go to state 2
 
-    PROGRAM     go to state 2
-    STRUCTURE   go to state 3
-    FUNCTION    go to state 4
-    RETURNTYPE  go to state 5
+    PROGRAM     go to state 3
+    STRUCTURE   go to state 4
+    FUNCTION    go to state 5
+    RETURNTYPE  go to state 6
 
 
 State 1
 
-    9 RETURNTYPE: TK_void .
+    9 RETURNTYPE: TK_int .
 
     $default  reduce using rule 9 (RETURNTYPE)
 
 
 State 2
 
-    0 $accept: PROGRAM . $end
+    8 RETURNTYPE: TK_void .
 
-    $end  shift, and go to state 6
+    $default  reduce using rule 8 (RETURNTYPE)
 
 
 State 3
 
-    1 PROGRAM: STRUCTURE .
-    2 STRUCTURE: STRUCTURE . FUNCTION
+    0 $accept: PROGRAM . $end
 
-    TK_void  shift, and go to state 1
-
-    $default  reduce using rule 1 (PROGRAM)
-
-    FUNCTION    go to state 7
-    RETURNTYPE  go to state 5
+    $end  shift, and go to state 7
 
 
 State 4
+
+    1 PROGRAM: STRUCTURE .
+    2 STRUCTURE: STRUCTURE . FUNCTION
+
+    TK_int   shift, and go to state 1
+    TK_void  shift, and go to state 2
+
+    $default  reduce using rule 1 (PROGRAM)
+
+    FUNCTION    go to state 8
+    RETURNTYPE  go to state 6
+
+
+State 5
 
     3 STRUCTURE: FUNCTION .
 
     $default  reduce using rule 3 (STRUCTURE)
 
 
-State 5
+State 6
 
     4 FUNCTION: RETURNTYPE . T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE
 
-    T_IDENTIFIER  shift, and go to state 8
+    T_IDENTIFIER  shift, and go to state 9
 
 
-State 6
+State 7
 
     0 $accept: PROGRAM $end .
 
     $default  accept
 
 
-State 7
+State 8
 
     2 STRUCTURE: STRUCTURE FUNCTION .
 
     $default  reduce using rule 2 (STRUCTURE)
 
 
-State 8
+State 9
 
     4 FUNCTION: RETURNTYPE T_IDENTIFIER . T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE
 
-    T_LBRACKET  shift, and go to state 9
-
-
-State 9
-
-    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET . T_RBRACKET T_LBRACE SCOPE T_RBRACE
-
-    T_RBRACKET  shift, and go to state 10
+    T_LBRACKET  shift, and go to state 10
 
 
 State 10
 
-    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET . T_LBRACE SCOPE T_RBRACE
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET . T_RBRACKET T_LBRACE SCOPE T_RBRACE
 
-    T_LBRACE  shift, and go to state 11
+    T_RBRACKET  shift, and go to state 11
 
 
 State 11
 
-    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE . SCOPE T_RBRACE
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET . T_LBRACE SCOPE T_RBRACE
 
-    TK_return  shift, and go to state 12
-
-    SCOPE      go to state 13
-    BLOCK      go to state 14
-    STATEMENT  go to state 15
+    T_LBRACE  shift, and go to state 12
 
 
 State 12
 
-    8 STATEMENT: TK_return . EXPRESSION
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE . SCOPE T_RBRACE
 
-    TK_int  shift, and go to state 16
+    TK_return  shift, and go to state 13
 
-    EXPRESSION  go to state 17
+    SCOPE      go to state 14
+    BLOCK      go to state 15
+    STATEMENT  go to state 16
 
 
 State 13
 
-    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE . T_RBRACE
-    6 SCOPE: SCOPE . BLOCK
+    7 STATEMENT: TK_return . EXPRESSION TP_semiColon
 
-    T_RBRACE   shift, and go to state 18
-    TK_return  shift, and go to state 12
+    TC_integer  shift, and go to state 17
 
-    BLOCK      go to state 19
-    STATEMENT  go to state 15
+    EXPRESSION  go to state 18
 
 
 State 14
+
+    4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE . T_RBRACE
+
+    T_RBRACE  shift, and go to state 19
+
+
+State 15
 
     5 SCOPE: BLOCK .
 
     $default  reduce using rule 5 (SCOPE)
 
 
-State 15
-
-    7 BLOCK: STATEMENT .
-
-    $default  reduce using rule 7 (BLOCK)
-
-
 State 16
 
-   10 EXPRESSION: TK_int .
+    6 BLOCK: STATEMENT .
 
-    $default  reduce using rule 10 (EXPRESSION)
+    $default  reduce using rule 6 (BLOCK)
 
 
 State 17
 
-    8 STATEMENT: TK_return EXPRESSION .
+   10 EXPRESSION: TC_integer .
 
-    $default  reduce using rule 8 (STATEMENT)
+    $default  reduce using rule 10 (EXPRESSION)
 
 
 State 18
+
+    7 STATEMENT: TK_return EXPRESSION . TP_semiColon
+
+    TP_semiColon  shift, and go to state 20
+
+
+State 19
 
     4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE .
 
     $default  reduce using rule 4 (FUNCTION)
 
 
-State 19
+State 20
 
-    6 SCOPE: SCOPE BLOCK .
+    7 STATEMENT: TK_return EXPRESSION TP_semiColon .
 
-    $default  reduce using rule 6 (SCOPE)
+    $default  reduce using rule 7 (STATEMENT)

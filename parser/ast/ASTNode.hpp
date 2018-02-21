@@ -1,12 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 
 struct ASTNode {
 public:
-	virtual ~ASTNode() = 0;
-	virtual void codeGen() = 0;
+	virtual ~ASTNode() {};
+	//virtual void codeGen() = 0;
 	virtual void print() const = 0;
-
 
 };

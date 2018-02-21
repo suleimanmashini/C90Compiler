@@ -1,22 +1,24 @@
 #pragma once
 #include "ASTNode.hpp"
 #include "ASTPrimitive.hpp"
+#include "ASTStatement.hpp"
 
-struct ASTfunction : public ASTNode {
+struct ASTFunction : public ASTNode {
 public:
-  ASTfunction(ASTPrimitive* returnType, string functionName, ASTNode* parameters, ASTReturnStatement* returnNumber ) {
+  ~ASTFunction() {}
+  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTNode* parametersIn, const ASTReturnStatement* returnNumberIn ) {
     //TO BE CLEANED UP LATER THIS IS TO JUST GET THE FUNCTIONALITY GOING!!!!
-    this->returnType = returnType;
-    this->functionName = functionName;
-    this->parameters = parameters;
-    this->returnNumber = returnNumber;
+    returnType = returnTypeIn;
+    functionName = functionNameIn;
+    parameters = parametersIn;
+    returnNumber = returnNumberIn;
   }
   void print() const override {
     std::cout << "FUNCTION" << std::endl;
-  };
+  }
 protected:
-  ASTprimitive* returnType
-  string functionName;
-  ASTNode* parameters;
-  ASTReturnStatement returnNumber;
+  const ASTPrimitive* returnType;
+  std::string functionName;
+  const ASTNode* parameters;
+  const ASTReturnStatement* returnNumber;
 };
