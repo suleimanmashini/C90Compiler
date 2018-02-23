@@ -11,11 +11,15 @@ Lexer/lex.yy.cpp : Lexer/c90.flex parser/CParser.tab.hpp
 
 bin/parser_test : parser/PrintStructure.o parser/CParser.tab.o Lexer/lex.yy.o
 	mkdir -p bin
-	g++ $(CPPFLAGS) -o bin/print_canonical $^
+	g++ $(CPPFLAGS) -o bin/testParser $^
 
 clean :
-	rm parser/*.o
-	rm Lexer/*.o
-	rm parser/*.tab.cpp
-	rm parser/*.tab.hpp
-	rm Lexer/*.yy.cpp
+	-rm parser/*.o
+	-rm bin/*
+	-rm Lexer/*.o
+	-rm parser/*.tab.cpp
+	-rm parser/*.tab.hpp
+	-rm Lexer/*.yy.cpp
+
+run:
+	./bin/testParser

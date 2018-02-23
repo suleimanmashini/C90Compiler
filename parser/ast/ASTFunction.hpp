@@ -15,6 +15,9 @@ public:
   }
   void print() const override {
     std::cout << "FUNCTION" << std::endl;
+    //returnType->print();
+    std::cout << functionName << std::endl;
+    returnNumber->print();
   }
 protected:
   const ASTPrimitive* returnType;

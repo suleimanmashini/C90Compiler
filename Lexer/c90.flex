@@ -13,7 +13,7 @@ void yyerror (char const *s);
 
 DIGIT					 [0-9]
 OCT						 [0-7]
-HEX					     [a-fA-F0-9]
+HEX					   [a-fA-F0-9]
 ID						 [a-zA-Z_]
 USS						 [uU]
 LGS						 [Ll]
@@ -22,7 +22,6 @@ LGS						 [Ll]
 [ \n\t]                  {;}
 
 
-(ID)(DIGIT|ID)*			 {yylval.word = new std::string(yytext); return T_IDENTIFIER;}
 "("						 {return T_LBRACKET;}
 ")"						 {return T_RBRACKET;}
 "{"						 {return T_LBRACE;}
@@ -91,15 +90,17 @@ LGS						 [Ll]
 ":"						 {return TP_colon;}
 ";"						 {return TP_semiColon;}
 
-[1-9]DIGIT*((USS?LGS?)|(LGS?USS?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer;}
-[0]|([0]OCT+((USS?LGS?)|(LGS?USS?)))			   {return TC_integer;}
-[0][xX]HEX+((USS?LGS?)|(LGS?USS?))				   {return TC_integer;}
+[1-9]{DIGIT}*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer;}
+[0]|([0]{OCT}+(({USS}?{LGS}?)|({LGS}?{USS}?)))			   {return TC_integer;}
+[0][xX]{HEX}+(({USS}?{LGS}?)|({LGS}?{USS}?))				   {return TC_integer;}
 (DIGIT)*"."(DIGIT)+([eE]("+"|"-")?DIGIT+)?[flFL]?  {return TC_float;}
 
 "true"					 {return TC_true;}
 "false"					 {return TC_false;}
 "NULL"					 {return TC_NULL;}
 "nullptr"				 {return TC_nullptr;}
+
+{ID}({DIGIT}|{ID})*			 {yylval.word = new std::string(yytext); return T_IDENTIFIER;}
 
 .                 {;}
 

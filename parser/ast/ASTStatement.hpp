@@ -9,6 +9,7 @@ public:
 	~ASTReturnStatement(){}
 	void print() const override {
 		std::cout<< "RETURN!" << std::endl;
+		child->print();
 	}
 	ASTReturnStatement(const ASTExpression* expressionIn) {
 		child = expressionIn;

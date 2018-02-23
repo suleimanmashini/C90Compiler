@@ -57,7 +57,7 @@ PROGRAM: STRUCTURE		{ASTRoot = $1;}
 STRUCTURE: STRUCTURE FUNCTION {$$ = $1;}
 	    	 | FUNCTION {$$ = $1;}
 
-FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE {std::cout << "im here!" << std::endl; $$ = new ASTFunction($1, *$2, nullptr, $6);}
+FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE { $$ = new ASTFunction($1, *$2, nullptr, $6);}
 
 
 SCOPE:  BLOCK 	{$$ = $1;}
