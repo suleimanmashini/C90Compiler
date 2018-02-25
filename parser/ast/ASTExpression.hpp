@@ -2,7 +2,7 @@
 
 #include "ASTNode.hpp"
 
-struct ASTExpression : public ASTNode {
+struct ASTExpression : public ASTStatement {
 public:
   ~ASTExpression(){}
   void print() const override {
@@ -14,5 +14,5 @@ public:
     left = returnType;
   }
 private:
-  ASTNode* left = nullptr;
+  ASTExpression* left = nullptr;
 };

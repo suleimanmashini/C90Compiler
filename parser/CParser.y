@@ -24,7 +24,7 @@
 %token  T_dot TO_divide TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
 %token  TO_asterix TO_mod TO_bitwiseLeft TO_bitwiseRight
 %token  TO_lessThan TO_moreThan TO_lessThanOrEqual TO_moreThanOrEqual TO_equalTo TO_notEqualTo
-%token	TO_plus TO_minus TO_increment TO_decrement
+%token	TO_plus TO_minus TO_increment TO_decrement TO_equal
 %token	TP_comma TP_colon TP_semiColon
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
@@ -33,14 +33,16 @@
 %type <Expression> EXPRESSION TERM FACTOR
 %type <Node> PROGRAM STRUCTURE
 %type <Function> FUNCTION
-%type <Statement> STATEMENT BLOCK
-%type <Primitive> RETURNTYPE TK_void
+%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION
+%type <Primitive> TK_void
+%type <Keyword> RETURNTYPE
 
 
 %union {
 const ASTNode* Node;
 const ASTMultiply* Mult;
 const ASTDivide* Divide;
+const ASTKeyword* Keyword;
 const ASTPlus* Plus;
 const ASTMinus* Minus;
 const ASTExpression* Expression;
@@ -66,15 +68,18 @@ STRUCTURE: STRUCTURE FUNCTION {$$ = $1;}
 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, nullptr, $6);}
 
 
-
-BLOCK: STATEMENT {$$ = $1;}
-     | BLOCK STATEMENT {$$ = $1;}
+BLOCK: STATEMENT {$$ = new ASTStatement($1);}
+     | BLOCK STATEMENT {$$ = new ASTStatement($1, $2);}
 
 STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
          | EXPRESSION {$$ = new ASTStatement($1);}
+         | VARIABLE_DECLARATION {$$ = $1;}
 
-RETURNTYPE: TK_void {$$ = new ASTVoid();}
-          | TK_int {;}
+VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon {$$ = new ASTDeclarationStatement($1, *$2);}
+                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new ASTDeclarationStatement($4, $1, *$2);}
+
+RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
+          | TK_int {$$ = new ASTKeyword("int");}
 
 EXPRESSION: TERM {$$ = $1;}
           | EXPRESSION TO_plus EXPRESSION {$$ = new ASTPlus($1, $3);}

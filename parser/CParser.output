@@ -63,8 +63,8 @@ Terminals unused in grammar
    TC_nullptr
 
 
-State 28 conflicts: 2 shift/reduce
-State 29 conflicts: 2 shift/reduce
+State 33 conflicts: 2 shift/reduce
+State 34 conflicts: 2 shift/reduce
 
 
 Grammar
@@ -83,26 +83,30 @@ Grammar
 
     7 STATEMENT: TK_return EXPRESSION TP_semiColon
     8          | EXPRESSION
+    9          | VARIABLE_DECLARATION
 
-    9 RETURNTYPE: TK_void
-   10           | TK_int
+   10 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon
+   11                     | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon
 
-   11 EXPRESSION: TERM
-   12           | EXPRESSION TO_plus EXPRESSION
-   13           | EXPRESSION TO_minus EXPRESSION
+   12 RETURNTYPE: TK_void
+   13           | TK_int
 
-   14 TERM: FACTOR
-   15     | TERM TO_asterix FACTOR
-   16     | TERM TO_divide FACTOR
+   14 EXPRESSION: TERM
+   15           | EXPRESSION TO_plus EXPRESSION
+   16           | EXPRESSION TO_minus EXPRESSION
 
-   17 FACTOR: TC_integer
+   17 TERM: FACTOR
+   18     | TERM TO_asterix FACTOR
+   19     | TERM TO_divide FACTOR
+
+   20 FACTOR: TC_integer
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-T_IDENTIFIER (258) 4
+T_IDENTIFIER (258) 4 10 11
 T_LBRACE (259) 4
 T_RBRACE (260) 4
 T_LBRACKET (261) 4
@@ -125,7 +129,7 @@ TK_float (277)
 TK_for (278)
 TK_goto (279)
 TK_if (280)
-TK_int (281) 10
+TK_int (281) 13
 TK_long (282)
 TK_register (283)
 TK_return (284) 7
@@ -138,19 +142,19 @@ TK_switch (290)
 TK_typedef (291)
 TK_union (292)
 TK_unsigned (293)
-TK_void (294) 9
+TK_void (294) 12
 TK_volatile (295)
 TK_while (296)
 T_StringLiteral (297)
 T_LStringLiteral (298)
 T_dot (299)
-TO_divide (300) 16
+TO_divide (300) 19
 TO_memberAccess (301)
 TO_not (302)
 TO_bitwiseNot (303)
 TO_ampersand (304)
 TO_logicAnd (305)
-TO_asterix (306) 15
+TO_asterix (306) 18
 TO_mod (307)
 TO_bitwiseLeft (308)
 TO_bitwiseRight (309)
@@ -160,47 +164,50 @@ TO_lessThanOrEqual (312)
 TO_moreThanOrEqual (313)
 TO_equalTo (314)
 TO_notEqualTo (315)
-TO_plus (316) 12
-TO_minus (317) 13
+TO_plus (316) 15
+TO_minus (317) 16
 TO_increment (318)
 TO_decrement (319)
-TP_comma (320)
-TP_colon (321)
-TP_semiColon (322) 7
-TC_integer (323) 17
-TC_unsigned (324)
-TC_long (325)
-TC_longLong (326)
-TC_float (327)
-TC_longDouble (328)
-TC_true (329)
-TC_false (330)
-TC_NULL (331)
-TC_nullptr (332)
+TO_equal (320) 11
+TP_comma (321)
+TP_colon (322)
+TP_semiColon (323) 7 10 11
+TC_integer (324) 20
+TC_unsigned (325)
+TC_long (326)
+TC_longLong (327)
+TC_float (328)
+TC_longDouble (329)
+TC_true (330)
+TC_false (331)
+TC_NULL (332)
+TC_nullptr (333)
 
 
 Nonterminals, with rules where they appear
 
-$accept (78)
+$accept (79)
     on left: 0
-PROGRAM (79)
+PROGRAM (80)
     on left: 1, on right: 0
-STRUCTURE (80)
+STRUCTURE (81)
     on left: 2 3, on right: 1 2
-FUNCTION (81)
+FUNCTION (82)
     on left: 4, on right: 2 3
-BLOCK (82)
+BLOCK (83)
     on left: 5 6, on right: 4 6
-STATEMENT (83)
-    on left: 7 8, on right: 5 6
-RETURNTYPE (84)
-    on left: 9 10, on right: 4
-EXPRESSION (85)
-    on left: 11 12 13, on right: 7 8 12 13
-TERM (86)
-    on left: 14 15 16, on right: 11 15 16
-FACTOR (87)
-    on left: 17, on right: 14 15 16
+STATEMENT (84)
+    on left: 7 8 9, on right: 5 6
+VARIABLE_DECLARATION (85)
+    on left: 10 11, on right: 9
+RETURNTYPE (86)
+    on left: 12 13, on right: 4 10 11
+EXPRESSION (87)
+    on left: 14 15 16, on right: 7 8 11 15 16
+TERM (88)
+    on left: 17 18 19, on right: 14 18 19
+FACTOR (89)
+    on left: 20, on right: 17 18 19
 
 
 State 0
@@ -218,16 +225,16 @@ State 0
 
 State 1
 
-   10 RETURNTYPE: TK_int .
+   13 RETURNTYPE: TK_int .
 
-    $default  reduce using rule 10 (RETURNTYPE)
+    $default  reduce using rule 13 (RETURNTYPE)
 
 
 State 2
 
-    9 RETURNTYPE: TK_void .
+   12 RETURNTYPE: TK_void .
 
-    $default  reduce using rule 9 (RETURNTYPE)
+    $default  reduce using rule 12 (RETURNTYPE)
 
 
 State 3
@@ -304,14 +311,18 @@ State 12
 
     4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE . BLOCK T_RBRACE
 
+    TK_int      shift, and go to state 1
     TK_return   shift, and go to state 13
+    TK_void     shift, and go to state 2
     TC_integer  shift, and go to state 14
 
-    BLOCK       go to state 15
-    STATEMENT   go to state 16
-    EXPRESSION  go to state 17
-    TERM        go to state 18
-    FACTOR      go to state 19
+    BLOCK                 go to state 15
+    STATEMENT             go to state 16
+    VARIABLE_DECLARATION  go to state 17
+    RETURNTYPE            go to state 18
+    EXPRESSION            go to state 19
+    TERM                  go to state 20
+    FACTOR                go to state 21
 
 
 State 13
@@ -320,16 +331,16 @@ State 13
 
     TC_integer  shift, and go to state 14
 
-    EXPRESSION  go to state 20
-    TERM        go to state 18
-    FACTOR      go to state 19
+    EXPRESSION  go to state 22
+    TERM        go to state 20
+    FACTOR      go to state 21
 
 
 State 14
 
-   17 FACTOR: TC_integer .
+   20 FACTOR: TC_integer .
 
-    $default  reduce using rule 17 (FACTOR)
+    $default  reduce using rule 20 (FACTOR)
 
 
 State 15
@@ -337,14 +348,18 @@ State 15
     4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK . T_RBRACE
     6 BLOCK: BLOCK . STATEMENT
 
-    T_RBRACE    shift, and go to state 21
+    T_RBRACE    shift, and go to state 23
+    TK_int      shift, and go to state 1
     TK_return   shift, and go to state 13
+    TK_void     shift, and go to state 2
     TC_integer  shift, and go to state 14
 
-    STATEMENT   go to state 22
-    EXPRESSION  go to state 17
-    TERM        go to state 18
-    FACTOR      go to state 19
+    STATEMENT             go to state 24
+    VARIABLE_DECLARATION  go to state 17
+    RETURNTYPE            go to state 18
+    EXPRESSION            go to state 19
+    TERM                  go to state 20
+    FACTOR                go to state 21
 
 
 State 16
@@ -356,144 +371,204 @@ State 16
 
 State 17
 
-    8 STATEMENT: EXPRESSION .
-   12 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
-   13           | EXPRESSION . TO_minus EXPRESSION
+    9 STATEMENT: VARIABLE_DECLARATION .
 
-    TO_plus   shift, and go to state 23
-    TO_minus  shift, and go to state 24
-
-    $default  reduce using rule 8 (STATEMENT)
+    $default  reduce using rule 9 (STATEMENT)
 
 
 State 18
 
-   11 EXPRESSION: TERM .
-   15 TERM: TERM . TO_asterix FACTOR
-   16     | TERM . TO_divide FACTOR
+   10 VARIABLE_DECLARATION: RETURNTYPE . T_IDENTIFIER TP_semiColon
+   11                     | RETURNTYPE . T_IDENTIFIER TO_equal EXPRESSION TP_semiColon
 
-    TO_divide   shift, and go to state 25
-    TO_asterix  shift, and go to state 26
-
-    $default  reduce using rule 11 (EXPRESSION)
+    T_IDENTIFIER  shift, and go to state 25
 
 
 State 19
 
-   14 TERM: FACTOR .
+    8 STATEMENT: EXPRESSION .
+   15 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
+   16           | EXPRESSION . TO_minus EXPRESSION
 
-    $default  reduce using rule 14 (TERM)
+    TO_plus   shift, and go to state 26
+    TO_minus  shift, and go to state 27
+
+    $default  reduce using rule 8 (STATEMENT)
 
 
 State 20
 
-    7 STATEMENT: TK_return EXPRESSION . TP_semiColon
-   12 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
-   13           | EXPRESSION . TO_minus EXPRESSION
+   14 EXPRESSION: TERM .
+   18 TERM: TERM . TO_asterix FACTOR
+   19     | TERM . TO_divide FACTOR
 
-    TO_plus       shift, and go to state 23
-    TO_minus      shift, and go to state 24
-    TP_semiColon  shift, and go to state 27
+    TO_divide   shift, and go to state 28
+    TO_asterix  shift, and go to state 29
+
+    $default  reduce using rule 14 (EXPRESSION)
 
 
 State 21
+
+   17 TERM: FACTOR .
+
+    $default  reduce using rule 17 (TERM)
+
+
+State 22
+
+    7 STATEMENT: TK_return EXPRESSION . TP_semiColon
+   15 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
+   16           | EXPRESSION . TO_minus EXPRESSION
+
+    TO_plus       shift, and go to state 26
+    TO_minus      shift, and go to state 27
+    TP_semiColon  shift, and go to state 30
+
+
+State 23
 
     4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE .
 
     $default  reduce using rule 4 (FUNCTION)
 
 
-State 22
+State 24
 
     6 BLOCK: BLOCK STATEMENT .
 
     $default  reduce using rule 6 (BLOCK)
 
 
-State 23
-
-   12 EXPRESSION: EXPRESSION TO_plus . EXPRESSION
-
-    TC_integer  shift, and go to state 14
-
-    EXPRESSION  go to state 28
-    TERM        go to state 18
-    FACTOR      go to state 19
-
-
-State 24
-
-   13 EXPRESSION: EXPRESSION TO_minus . EXPRESSION
-
-    TC_integer  shift, and go to state 14
-
-    EXPRESSION  go to state 29
-    TERM        go to state 18
-    FACTOR      go to state 19
-
-
 State 25
 
-   16 TERM: TERM TO_divide . FACTOR
+   10 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER . TP_semiColon
+   11                     | RETURNTYPE T_IDENTIFIER . TO_equal EXPRESSION TP_semiColon
 
-    TC_integer  shift, and go to state 14
-
-    FACTOR  go to state 30
+    TO_equal      shift, and go to state 31
+    TP_semiColon  shift, and go to state 32
 
 
 State 26
 
-   15 TERM: TERM TO_asterix . FACTOR
+   15 EXPRESSION: EXPRESSION TO_plus . EXPRESSION
 
     TC_integer  shift, and go to state 14
 
-    FACTOR  go to state 31
+    EXPRESSION  go to state 33
+    TERM        go to state 20
+    FACTOR      go to state 21
 
 
 State 27
+
+   16 EXPRESSION: EXPRESSION TO_minus . EXPRESSION
+
+    TC_integer  shift, and go to state 14
+
+    EXPRESSION  go to state 34
+    TERM        go to state 20
+    FACTOR      go to state 21
+
+
+State 28
+
+   19 TERM: TERM TO_divide . FACTOR
+
+    TC_integer  shift, and go to state 14
+
+    FACTOR  go to state 35
+
+
+State 29
+
+   18 TERM: TERM TO_asterix . FACTOR
+
+    TC_integer  shift, and go to state 14
+
+    FACTOR  go to state 36
+
+
+State 30
 
     7 STATEMENT: TK_return EXPRESSION TP_semiColon .
 
     $default  reduce using rule 7 (STATEMENT)
 
 
-State 28
-
-   12 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
-   12           | EXPRESSION TO_plus EXPRESSION .
-   13           | EXPRESSION . TO_minus EXPRESSION
-
-    TO_plus   shift, and go to state 23
-    TO_minus  shift, and go to state 24
-
-    TO_plus   [reduce using rule 12 (EXPRESSION)]
-    TO_minus  [reduce using rule 12 (EXPRESSION)]
-    $default  reduce using rule 12 (EXPRESSION)
-
-
-State 29
-
-   12 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
-   13           | EXPRESSION . TO_minus EXPRESSION
-   13           | EXPRESSION TO_minus EXPRESSION .
-
-    TO_plus   shift, and go to state 23
-    TO_minus  shift, and go to state 24
-
-    TO_plus   [reduce using rule 13 (EXPRESSION)]
-    TO_minus  [reduce using rule 13 (EXPRESSION)]
-    $default  reduce using rule 13 (EXPRESSION)
-
-
-State 30
-
-   16 TERM: TERM TO_divide FACTOR .
-
-    $default  reduce using rule 16 (TERM)
-
-
 State 31
 
-   15 TERM: TERM TO_asterix FACTOR .
+   11 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TO_equal . EXPRESSION TP_semiColon
 
-    $default  reduce using rule 15 (TERM)
+    TC_integer  shift, and go to state 14
+
+    EXPRESSION  go to state 37
+    TERM        go to state 20
+    FACTOR      go to state 21
+
+
+State 32
+
+   10 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon .
+
+    $default  reduce using rule 10 (VARIABLE_DECLARATION)
+
+
+State 33
+
+   15 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
+   15           | EXPRESSION TO_plus EXPRESSION .
+   16           | EXPRESSION . TO_minus EXPRESSION
+
+    TO_plus   shift, and go to state 26
+    TO_minus  shift, and go to state 27
+
+    TO_plus   [reduce using rule 15 (EXPRESSION)]
+    TO_minus  [reduce using rule 15 (EXPRESSION)]
+    $default  reduce using rule 15 (EXPRESSION)
+
+
+State 34
+
+   15 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
+   16           | EXPRESSION . TO_minus EXPRESSION
+   16           | EXPRESSION TO_minus EXPRESSION .
+
+    TO_plus   shift, and go to state 26
+    TO_minus  shift, and go to state 27
+
+    TO_plus   [reduce using rule 16 (EXPRESSION)]
+    TO_minus  [reduce using rule 16 (EXPRESSION)]
+    $default  reduce using rule 16 (EXPRESSION)
+
+
+State 35
+
+   19 TERM: TERM TO_divide FACTOR .
+
+    $default  reduce using rule 19 (TERM)
+
+
+State 36
+
+   18 TERM: TERM TO_asterix FACTOR .
+
+    $default  reduce using rule 18 (TERM)
+
+
+State 37
+
+   11 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION . TP_semiColon
+   15 EXPRESSION: EXPRESSION . TO_plus EXPRESSION
+   16           | EXPRESSION . TO_minus EXPRESSION
+
+    TO_plus       shift, and go to state 26
+    TO_minus      shift, and go to state 27
+    TP_semiColon  shift, and go to state 38
+
+
+State 38
+
+   11 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon .
+
+    $default  reduce using rule 11 (VARIABLE_DECLARATION)

@@ -67,6 +67,7 @@ LGS						 [Ll]
 
 "->"					 {return TO_memberAccess;}
 "!"						 {return TO_not;}
+"="            {return TO_equal;}
 "~"						 {return TO_bitwiseNot;}
 "&"						 {return TO_ampersand;}
 "&&"					 {return TO_logicAnd;}

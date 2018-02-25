@@ -2,7 +2,7 @@
 
 #include "ASTExpression.hpp"
 
-enum types {integer = 0, character = 1, vOID = 2};
+enum types {integer = 0, character = 1, vOID = 2, key = 3};
 
 
 struct ASTPrimitive : public ASTExpression {
@@ -16,7 +16,7 @@ struct ASTInteger : public ASTPrimitive {
 public:
 	~ASTInteger(){}
 	void print() const override {
-		std::cout<< Value << std::endl;
+		std::cout<< Value;
 	}
 	 ASTInteger(int IntegerIn){
 		Value = IntegerIn;
@@ -33,6 +33,18 @@ public:
 		std::cout<< "Void!" << std::endl;
 	}
 	 ASTVoid(){
-		typeValue = 2;
+		typeValue = vOID;
 	}
+};
+
+struct ASTKeyword : public ASTPrimitive {
+public:
+	~ASTKeyword(){}
+	ASTKeyword() {}
+	ASTKeyword(std::string Name): keyword(Name) {}
+	void print() const override {
+		std::cout<< keyword;
+	}
+private:
+	const std::string keyword;
 };

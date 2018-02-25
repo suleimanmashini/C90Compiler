@@ -2,8 +2,8 @@ struct ASTPlus : public ASTExpression {
 public:
   ~ASTPlus(){}
   void print() const override {
-    std::cout<< "PLUS" << std::endl;
     left->print();
+    std::cout<< "+";
     right->print();
   }
   ASTPlus(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
@@ -16,8 +16,8 @@ struct ASTMinus : public ASTExpression {
 public:
   ~ASTMinus(){}
   void print() const override {
-    std::cout<< "PLUS" << std::endl;
     left->print();
+    std::cout<< "-";
     right->print();
   }
   ASTMinus(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
@@ -30,8 +30,8 @@ struct ASTDivide : public ASTExpression {
 public:
   ~ASTDivide(){}
   void print() const override {
-    std::cout<< "PLUS" << std::endl;
     left->print();
+    std::cout<< "/";
     right->print();
   }
   ASTDivide(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
@@ -44,8 +44,8 @@ struct ASTMultiply : public ASTExpression {
 public:
   ~ASTMultiply(){}
   void print() const override {
-    std::cout<< "PLUS" << std::endl;
     left->print();
+    std::cout<< "*";
     right->print();
   }
   ASTMultiply(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
