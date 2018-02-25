@@ -82,6 +82,7 @@ LGS						 [Ll]
 "!="					 {return TO_notEqualTo;}
 "+"						 {return TO_plus;}
 "-"						 {return TO_minus;}
+"/"            {return TO_divide;}
 "++"					 {return TO_increment;}
 "--"					 {return TO_decrement;}
 
@@ -90,7 +91,7 @@ LGS						 [Ll]
 ":"						 {return TP_colon;}
 ";"						 {return TP_semiColon;}
 
-[1-9]{DIGIT}*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer;}
+[1-9][0-9]*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer;}
 [0]|([0]{OCT}+(({USS}?{LGS}?)|({LGS}?{USS}?)))			   {return TC_integer;}
 [0][xX]{HEX}+(({USS}?{LGS}?)|({LGS}?{USS}?))				   {return TC_integer;}
 (DIGIT)*"."(DIGIT)+([eE]("+"|"-")?DIGIT+)?[flFL]?  {return TC_float;}

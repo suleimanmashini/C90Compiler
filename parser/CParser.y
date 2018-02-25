@@ -21,7 +21,7 @@
 %token	TK_sizeof TK_static TK_struct TK_switch TK_typedef TK_union TK_unsigned
 %token  TK_void TK_volatile TK_while
 %token	T_StringLiteral T_LStringLiteral
-%token  T_dot TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
+%token  T_dot TO_divide TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
 %token  TO_asterix TO_mod TO_bitwiseLeft TO_bitwiseRight
 %token  TO_lessThan TO_moreThan TO_lessThanOrEqual TO_moreThanOrEqual TO_equalTo TO_notEqualTo
 %token	TO_plus TO_minus TO_increment TO_decrement
@@ -30,16 +30,22 @@
 %token  TC_true TC_false TC_NULL TC_nullptr
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
 %type <Integer> TC_integer
-%type <Expression> EXPRESSION
+%type <Expression> EXPRESSION TERM FACTOR
 %type <Node> PROGRAM STRUCTURE
 %type <Function> FUNCTION
-%type <RStatement> STATEMENT BLOCK SCOPE
+%type <Statement> STATEMENT BLOCK
 %type <Primitive> RETURNTYPE TK_void
+
 
 %union {
 const ASTNode* Node;
+const ASTMultiply* Mult;
+const ASTDivide* Divide;
+const ASTPlus* Plus;
+const ASTMinus* Minus;
 const ASTExpression* Expression;
 const ASTReturnStatement* RStatement;
+const ASTStatement* Statement;
 const ASTPrimitive* Primitive;
 const ASTFunction* Function;
 std::string* word;
@@ -57,20 +63,28 @@ PROGRAM: STRUCTURE		{ASTRoot = $1;}
 STRUCTURE: STRUCTURE FUNCTION {$$ = $1;}
 	    	 | FUNCTION {$$ = $1;}
 
-FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE SCOPE T_RBRACE { $$ = new ASTFunction($1, *$2, nullptr, $6);}
+FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, nullptr, $6);}
 
 
-SCOPE:  BLOCK 	{$$ = $1;}
 
 BLOCK: STATEMENT {$$ = $1;}
+     | BLOCK STATEMENT {$$ = $1;}
 
 STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
+         | EXPRESSION {$$ = new ASTStatement($1);}
 
 RETURNTYPE: TK_void {$$ = new ASTVoid();}
           | TK_int {;}
 
-EXPRESSION: TC_integer {$$ = new ASTInteger($1); }
+EXPRESSION: TERM {$$ = $1;}
+          | EXPRESSION TO_plus EXPRESSION {$$ = new ASTPlus($1, $3);}
+          | EXPRESSION TO_minus EXPRESSION {$$ = new ASTMinus($1, $3);}
 
+TERM: FACTOR {$$ = $1;}
+    | TERM TO_asterix FACTOR {$$ = new ASTMultiply($1, $3);}
+    | TERM TO_divide FACTOR {$$ = new ASTDivide($1, $3);}
+
+FACTOR: TC_integer {$$ = new ASTInteger($1); }
 
 
 %%

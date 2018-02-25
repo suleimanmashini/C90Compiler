@@ -6,22 +6,22 @@
 struct ASTFunction : public ASTNode {
 public:
   ~ASTFunction() {}
-  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTNode* parametersIn, const ASTReturnStatement* returnNumberIn ) {
+  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTNode* parametersIn, const ASTStatement* BlockIn ) {
     //TO BE CLEANED UP LATER THIS IS TO JUST GET THE FUNCTIONALITY GOING!!!!
     returnType = returnTypeIn;
     functionName = functionNameIn;
     parameters = parametersIn;
-    returnNumber = returnNumberIn;
+    Block = BlockIn;
   }
   void print() const override {
-    std::cout << "FUNCTION" << std::endl;
+    std::cout << "def " << functionName << " (): "<< std::endl;
     //returnType->print();
-    std::cout << functionName << std::endl;
-    returnNumber->print();
+    std::cout << '\t';
+    Block->print();
   }
 protected:
   const ASTPrimitive* returnType;
   std::string functionName;
   const ASTNode* parameters;
-  const ASTReturnStatement* returnNumber;
+  const ASTStatement* Block;
 };
