@@ -24,7 +24,7 @@ public:
 	void print() const override {
 		type->print();
 		std::cout<<" "<<Name<<"=";
-		child->print();
+		if (child != NULL) child->print();
 		std::cout<<'\n';
 	}
 	ASTDeclarationStatement(const ASTExpression* expressionIn, const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(expressionIn), type(typeIn) {}

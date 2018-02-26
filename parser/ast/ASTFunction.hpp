@@ -6,7 +6,7 @@
 struct ASTFunction : public ASTNode {
 public:
   ~ASTFunction() {}
-  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTNode* parametersIn, const ASTStatement* BlockIn ) {
+  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTStatement* parametersIn, const ASTStatement* BlockIn ) {
     //TO BE CLEANED UP LATER THIS IS TO JUST GET THE FUNCTIONALITY GOING!!!!
     returnType = returnTypeIn;
     functionName = functionNameIn;
@@ -14,14 +14,16 @@ public:
     Block = BlockIn;
   }
   void print() const override {
+    tabspace++;
     std::cout << "def " << functionName << " (): "<< std::endl;
     //returnType->print();
-    std::cout << '\t';
+    this->tabify();
+    parameters->print();
     Block->print();
   }
 protected:
   const ASTPrimitive* returnType;
   std::string functionName;
-  const ASTNode* parameters;
+  const ASTStatement* parameters;
   const ASTStatement* Block;
 };

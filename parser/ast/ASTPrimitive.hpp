@@ -48,3 +48,16 @@ public:
 private:
 	const std::string keyword;
 };
+
+
+struct ASTVariable : public ASTPrimitive {
+public:
+	~ASTVariable(){}
+	ASTVariable() {}
+	ASTVariable(std::string Name): keyword(Name) {}
+	void print() const override {
+		std::cout<< keyword;
+	}
+private:
+	const std::string keyword;
+};

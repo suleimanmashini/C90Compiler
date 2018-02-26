@@ -33,7 +33,7 @@
 %type <Expression> EXPRESSION TERM FACTOR
 %type <Node> PROGRAM STRUCTURE
 %type <Function> FUNCTION
-%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION
+%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION VARIABLES
 %type <Primitive> TK_void
 %type <Keyword> RETURNTYPE
 
@@ -66,7 +66,7 @@ STRUCTURE: STRUCTURE FUNCTION {$$ = $1;}
 	    	 | FUNCTION {$$ = $1;}
 
 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, nullptr, $6);}
-
+        | RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTFunction($1, *$2, $4, $7);}
 
 BLOCK: STATEMENT {$$ = new ASTStatement($1);}
      | BLOCK STATEMENT {$$ = new ASTStatement($1, $2);}
@@ -75,8 +75,13 @@ STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
          | EXPRESSION {$$ = new ASTStatement($1);}
          | VARIABLE_DECLARATION {$$ = $1;}
 
+VARIABLES: VARIABLE_DECLARATION {$$ = $1;}
+         | VARIABLES TP_comma VARIABLE_DECLARATION {$$ = new ASTStatement($3, $1);}
+
 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon {$$ = new ASTDeclarationStatement($1, *$2);}
                     | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new ASTDeclarationStatement($4, $1, *$2);}
+                    | RETURNTYPE T_IDENTIFIER {$$ = new ASTDeclarationStatement($1, *$2);}
+                    | RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTDeclarationStatement($1, *$3);}
 
 RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
           | TK_int {$$ = new ASTKeyword("int");}

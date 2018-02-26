@@ -16,3 +16,4 @@ There are many things to do:
 - [ ] Arrays
 - [ ] Pointers
 - [ ] Types of Constants
+- [ ] Argc Argv
