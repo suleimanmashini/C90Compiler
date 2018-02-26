@@ -31,9 +31,9 @@
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
 %type <Integer> TC_integer
 %type <Expression> EXPRESSION TERM FACTOR
-%type <Node> PROGRAM STRUCTURE
+%type <Node> PROGRAM
 %type <Function> FUNCTION
-%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION VARIABLES
+%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION VARIABLES STRUCTURE
 %type <Primitive> TK_void
 %type <Keyword> RETURNTYPE
 
@@ -45,6 +45,7 @@ const ASTDivide* Divide;
 const ASTKeyword* Keyword;
 const ASTPlus* Plus;
 const ASTMinus* Minus;
+const ASTArgumentStatement* Argument;
 const ASTExpression* Expression;
 const ASTReturnStatement* RStatement;
 const ASTStatement* Statement;
@@ -62,10 +63,10 @@ float FNumber;
 PROGRAM: STRUCTURE		{ASTRoot = $1;}
 
 
-STRUCTURE: STRUCTURE FUNCTION {$$ = $1;}
-	    	 | FUNCTION {$$ = $1;}
+STRUCTURE: FUNCTION STRUCTURE {$$ = new ASTStatement($1, $2);}
+	    	 | FUNCTION {$$ = new ASTStatement($1);}
 
-FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, nullptr, $6);}
+FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, NULL, $6);}
         | RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTFunction($1, *$2, $4, $7);}
 
 BLOCK: STATEMENT {$$ = new ASTStatement($1);}
@@ -76,7 +77,7 @@ STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
          | VARIABLE_DECLARATION {$$ = $1;}
 
 VARIABLES: VARIABLE_DECLARATION {$$ = $1;}
-         | VARIABLES TP_comma VARIABLE_DECLARATION {$$ = new ASTStatement($3, $1);}
+         | VARIABLE_DECLARATION TP_comma VARIABLES {$$ = new ASTArgumentStatement($1, $3);}
 
 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon {$$ = new ASTDeclarationStatement($1, *$2);}
                     | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new ASTDeclarationStatement($4, $1, *$2);}

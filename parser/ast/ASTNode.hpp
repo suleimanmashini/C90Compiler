@@ -11,7 +11,7 @@ public:
 	//virtual void codeGen() = 0;
 	virtual void print() const = 0;
 	void tabify () const{
-		for (int i = 0; i < tabspace; tabspace++){
+		for (int i = 0; i < tabspace; i++){
 			std::cout<<'\t';
 		}
 	}

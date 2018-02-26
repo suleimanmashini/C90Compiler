@@ -71,7 +71,7 @@ Grammar
 
     1 PROGRAM: STRUCTURE
 
-    2 STRUCTURE: STRUCTURE FUNCTION
+    2 STRUCTURE: FUNCTION STRUCTURE
     3          | FUNCTION
 
     4 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE
@@ -85,7 +85,7 @@ Grammar
    10          | VARIABLE_DECLARATION
 
    11 VARIABLES: VARIABLE_DECLARATION
-   12          | VARIABLES TP_comma VARIABLE_DECLARATION
+   12          | VARIABLE_DECLARATION TP_comma VARIABLES
 
    13 VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon
    14                     | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon
@@ -253,22 +253,23 @@ State 3
 State 4
 
     1 PROGRAM: STRUCTURE .
-    2 STRUCTURE: STRUCTURE . FUNCTION
-
-    TK_int   shift, and go to state 1
-    TK_void  shift, and go to state 2
 
     $default  reduce using rule 1 (PROGRAM)
-
-    FUNCTION    go to state 8
-    RETURNTYPE  go to state 6
 
 
 State 5
 
-    3 STRUCTURE: FUNCTION .
+    2 STRUCTURE: FUNCTION . STRUCTURE
+    3          | FUNCTION .
+
+    TK_int   shift, and go to state 1
+    TK_void  shift, and go to state 2
 
     $default  reduce using rule 3 (STRUCTURE)
+
+    STRUCTURE   go to state 8
+    FUNCTION    go to state 5
+    RETURNTYPE  go to state 6
 
 
 State 6
@@ -288,7 +289,7 @@ State 7
 
 State 8
 
-    2 STRUCTURE: STRUCTURE FUNCTION .
+    2 STRUCTURE: FUNCTION STRUCTURE .
 
     $default  reduce using rule 2 (STRUCTURE)
 
@@ -325,15 +326,16 @@ State 11
 State 12
 
     5 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES . T_RBRACKET T_LBRACE BLOCK T_RBRACE
-   12 VARIABLES: VARIABLES . TP_comma VARIABLE_DECLARATION
 
     T_RBRACKET  shift, and go to state 16
-    TP_comma    shift, and go to state 17
 
 
 State 13
 
    11 VARIABLES: VARIABLE_DECLARATION .
+   12          | VARIABLE_DECLARATION . TP_comma VARIABLES
+
+    TP_comma  shift, and go to state 17
 
     $default  reduce using rule 11 (VARIABLES)
 
@@ -376,12 +378,13 @@ State 16
 
 State 17
 
-   12 VARIABLES: VARIABLES TP_comma . VARIABLE_DECLARATION
+   12 VARIABLES: VARIABLE_DECLARATION TP_comma . VARIABLES
 
     TK_int   shift, and go to state 1
     TK_void  shift, and go to state 2
 
-    VARIABLE_DECLARATION  go to state 29
+    VARIABLES             go to state 29
+    VARIABLE_DECLARATION  go to state 13
     RETURNTYPE            go to state 14
 
 
@@ -506,7 +509,7 @@ State 28
 
 State 29
 
-   12 VARIABLES: VARIABLES TP_comma VARIABLE_DECLARATION .
+   12 VARIABLES: VARIABLE_DECLARATION TP_comma VARIABLES .
 
     $default  reduce using rule 12 (VARIABLES)
 

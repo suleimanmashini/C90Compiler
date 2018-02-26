@@ -3,27 +3,23 @@
 #include "ASTPrimitive.hpp"
 #include "ASTStatement.hpp"
 
-struct ASTFunction : public ASTNode {
+struct ASTFunction : public ASTStatement {
 public:
   ~ASTFunction() {}
-  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTStatement* parametersIn, const ASTStatement* BlockIn ) {
-    //TO BE CLEANED UP LATER THIS IS TO JUST GET THE FUNCTIONALITY GOING!!!!
-    returnType = returnTypeIn;
-    functionName = functionNameIn;
-    parameters = parametersIn;
-    Block = BlockIn;
-  }
+  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTStatement* parametersIn, const ASTStatement* BlockIn )
+  : returnType(returnTypeIn), functionName(functionNameIn), parameters(parametersIn), Block(BlockIn){}
   void print() const override {
     tabspace++;
-    std::cout << "def " << functionName << " (): "<< std::endl;
-    //returnType->print();
-    this->tabify();
-    parameters->print();
+    std::cout << "def " << functionName << "(";
+    if(parameters != NULL) parameters->print();
+    std::cout << "):" << std::endl;
     Block->print();
+    std::cout<< std::endl;
+    tabspace--;
   }
 protected:
   const ASTPrimitive* returnType;
-  std::string functionName;
+  const std::string functionName;
   const ASTStatement* parameters;
   const ASTStatement* Block;
 };
