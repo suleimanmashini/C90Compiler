@@ -67,3 +67,31 @@ private:
   const ASTExpression* left;
   const ASTExpression* right;
 };
+
+struct ASTLessThan : public ASTExpression {
+public:
+  ~ASTLessThan(){}
+  void print() const override {
+    left->print();
+    std::cout<< " < ";
+    right->print();
+  }
+  ASTLessThan(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const ASTExpression* left;
+  const ASTExpression* right;
+};
+
+struct ASTMoreThan : public ASTExpression {
+public:
+  ~ASTMoreThan(){}
+  void print() const override {
+    left->print();
+    std::cout<< " > ";
+    right->print();
+  }
+  ASTMoreThan(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const ASTExpression* left;
+  const ASTExpression* right;
+};

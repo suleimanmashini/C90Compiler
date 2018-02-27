@@ -64,3 +64,16 @@ private:
 	const ASTKeyword* keyword;
 	const std::string ID;
 };
+
+struct ASTVariableName : public ASTPrimitive {
+public:
+	~ASTVariableName(){}
+	ASTVariableName() {}
+	ASTVariableName(std::string IDIn): ID(IDIn) {}
+	void print() const override {
+		std::cout<< ID ;
+
+	}
+private:
+	const std::string ID;
+};

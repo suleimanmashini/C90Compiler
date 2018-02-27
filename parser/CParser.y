@@ -37,8 +37,10 @@
 %type <Primitive> TK_void
 %type <Keyword> RETURNTYPE
 %type <Argument> VARIABLES
-%type <Variable> ARGUMENT_DECLARATION
+%type <VName> VARIABLE_DECLARATION_FUNCTION
 %type <Selection> SELECTION_STATEMENT
+%type <Call> FUNCTION_CALL
+%type <EStatement> EXPRESSION_STATEMENTS
 
 
 %union {
@@ -46,10 +48,13 @@ const ASTNode* Node;
 const ASTMultiply* Mult;
 const ASTDivide* Divide;
 const ASTVariable* Variable;
+const ASTVariableName* VName;
 const ASTKeyword* Keyword;
 const ASTSelectionStatement* Selection;
+const ASTExpressionStatement* EStatement;
 const ASTPlus* Plus;
 const ASTMinus* Minus;
+const ASTFunctionCall* Call;
 const ASTArgumentStatement* Argument;
 const ASTExpression* Expression;
 const ASTReturnStatement* RStatement;
@@ -70,6 +75,8 @@ PROGRAM: STRUCTURE		{ASTRoot = $1;}
 
 STRUCTURE: FUNCTION STRUCTURE {$$ = new ASTStatement($1, $2);}
 	    	 | FUNCTION {$$ = new ASTStatement($1);}
+         | STATEMENT {$$ = $1; globalFlag = 1;}
+         | STATEMENT STRUCTURE {$$ = new ASTStatement($1, $2); globalFlag = 1;}
 
 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, NULL, $6);}
         | RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTFunction($1, *$2, $4, $7);}
@@ -81,6 +88,7 @@ STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
          | EXPRESSION TP_semiColon {$$ = new ASTStatement($1);}
          | VARIABLE_DECLARATION TP_semiColon {$$ = $1;}
          | SELECTION_STATEMENT {$$ = $1;}
+         | EXPRESSION TO_equal EXPRESSION TP_semiColon {$$ = new ASTAssignmentStatement($1, $3);}
 
 SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new ASTSelectionStatement($3, $5);}
                    | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6);}
@@ -90,15 +98,18 @@ SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new A
                    | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6, $10);}
 
 CONDITION: EXPRESSION TO_equalTo EXPRESSION {$$ = new ASTEquality($1, $3); }
+         | EXPRESSION TO_lessThan EXPRESSION {$$ = new ASTLessThan($1, $3); }
+         | EXPRESSION TO_moreThan EXPRESSION {$$ = new ASTMoreThan($1, $3); }
 
-VARIABLES: ARGUMENT_DECLARATION {$$ = new ASTArgumentStatement($1);}
-         | ARGUMENT_DECLARATION TP_comma VARIABLES {$$ = new ASTArgumentStatement($1, $3);}
 
-ARGUMENT_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTVariable($1, *$2);}
-| RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTVariable($1, *$3);}
+VARIABLES: VARIABLE_DECLARATION_FUNCTION {$$ = new ASTArgumentStatement($1);}
+         | VARIABLE_DECLARATION_FUNCTION TP_comma VARIABLES {$$ = new ASTArgumentStatement($1, $3);}
 
-VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTDeclarationStatement($1, *$2);}
-                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new ASTDeclarationStatement($4, $1, *$2);}
+VARIABLE_DECLARATION_FUNCTION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTVariableName(*$2);}
+| RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTVariableName(*$3);}
+
+VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTDeclarationStatement($1, *$2); globalVariables.push_back(*$2); globalFlag = 0;}
+                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new ASTDeclarationStatement($4, $1, *$2); globalVariables.push_back(*$2); globalFlag = 0;}
 
 RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
           | TK_int {$$ = new ASTKeyword("int");}
@@ -106,12 +117,21 @@ RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
 EXPRESSION: TERM {$$ = $1;}
           | EXPRESSION TO_plus EXPRESSION {$$ = new ASTPlus($1, $3);}
           | EXPRESSION TO_minus EXPRESSION {$$ = new ASTMinus($1, $3);}
+          | FUNCTION_CALL {$$ = $1;}
 
 TERM: FACTOR {$$ = $1;}
     | TERM TO_asterix FACTOR {$$ = new ASTMultiply($1, $3);}
     | TERM TO_divide FACTOR {$$ = new ASTDivide($1, $3);}
 
 FACTOR: TC_integer {$$ = new ASTInteger($1); }
+      | T_IDENTIFIER {$$ = new ASTVariableName(*$1);}
+      | FUNCTION_CALL {$$ = $1;}
+
+FUNCTION_CALL: T_IDENTIFIER T_LBRACKET T_RBRACKET {$$ = new ASTFunctionCall(*$1);}
+             | T_IDENTIFIER T_LBRACKET EXPRESSION_STATEMENTS T_RBRACKET {$$ = new ASTFunctionCall(*$1, $3);}
+
+EXPRESSION_STATEMENTS: EXPRESSION {$$ = new ASTExpressionStatement($1);}
+                     | EXPRESSION TP_comma EXPRESSION_STATEMENTS {$$ = new ASTExpressionStatement($1, $3);}
 
 
 %%

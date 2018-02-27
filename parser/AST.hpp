@@ -10,3 +10,5 @@
 
 
 extern const ASTNode *parseAST();
+extern std::vector <std::string> globalVariables;
+extern int globalFlag;

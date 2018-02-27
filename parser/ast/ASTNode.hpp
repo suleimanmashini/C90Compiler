@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
 
 extern int tabspace;
 
@@ -12,7 +14,7 @@ public:
 	virtual void print() const = 0;
 	void tabify () const{
 		for (int i = 0; i < tabspace; i++){
-			std::cout<<'\t';
+			std::cout<<" ";
 		}
 	}
 };

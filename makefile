@@ -20,6 +20,7 @@ clean :
 	-rm parser/*.tab.cpp
 	-rm parser/*.tab.hpp
 	-rm Lexer/*.yy.cpp
+	-rm tmp//formative/*
 
 run:
 	./bin/c_compiler
