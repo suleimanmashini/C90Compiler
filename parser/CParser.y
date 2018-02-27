@@ -30,19 +30,24 @@
 %token  TC_true TC_false TC_NULL TC_nullptr
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
 %type <Integer> TC_integer
-%type <Expression> EXPRESSION TERM FACTOR
+%type <Expression> EXPRESSION TERM FACTOR CONDITION
 %type <Node> PROGRAM
 %type <Function> FUNCTION
-%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION VARIABLES STRUCTURE
+%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION  STRUCTURE
 %type <Primitive> TK_void
 %type <Keyword> RETURNTYPE
+%type <Argument> VARIABLES
+%type <Variable> ARGUMENT_DECLARATION
+%type <Selection> SELECTION_STATEMENT
 
 
 %union {
 const ASTNode* Node;
 const ASTMultiply* Mult;
 const ASTDivide* Divide;
+const ASTVariable* Variable;
 const ASTKeyword* Keyword;
+const ASTSelectionStatement* Selection;
 const ASTPlus* Plus;
 const ASTMinus* Minus;
 const ASTArgumentStatement* Argument;
@@ -73,16 +78,27 @@ BLOCK: STATEMENT {$$ = new ASTStatement($1);}
      | BLOCK STATEMENT {$$ = new ASTStatement($1, $2);}
 
 STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
-         | EXPRESSION {$$ = new ASTStatement($1);}
-         | VARIABLE_DECLARATION {$$ = $1;}
+         | EXPRESSION TP_semiColon {$$ = new ASTStatement($1);}
+         | VARIABLE_DECLARATION TP_semiColon {$$ = $1;}
+         | SELECTION_STATEMENT {$$ = $1;}
 
-VARIABLES: VARIABLE_DECLARATION {$$ = $1;}
-         | VARIABLE_DECLARATION TP_comma VARIABLES {$$ = new ASTArgumentStatement($1, $3);}
+SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new ASTSelectionStatement($3, $5);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT TK_else STATEMENT {$$ = new ASTSelectionStatement($3, $5, $7);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else STATEMENT {$$ = new ASTSelectionStatement($3, $6, $9);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT TK_else T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $5, $8);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6, $10);}
 
-VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER TP_semiColon {$$ = new ASTDeclarationStatement($1, *$2);}
-                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new ASTDeclarationStatement($4, $1, *$2);}
-                    | RETURNTYPE T_IDENTIFIER {$$ = new ASTDeclarationStatement($1, *$2);}
-                    | RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTDeclarationStatement($1, *$3);}
+CONDITION: EXPRESSION TO_equalTo EXPRESSION {$$ = new ASTEquality($1, $3); }
+
+VARIABLES: ARGUMENT_DECLARATION {$$ = new ASTArgumentStatement($1);}
+         | ARGUMENT_DECLARATION TP_comma VARIABLES {$$ = new ASTArgumentStatement($1, $3);}
+
+ARGUMENT_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTVariable($1, *$2);}
+| RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTVariable($1, *$3);}
+
+VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTDeclarationStatement($1, *$2);}
+                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new ASTDeclarationStatement($4, $1, *$2);}
 
 RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
           | TK_int {$$ = new ASTKeyword("int");}

@@ -53,3 +53,17 @@ private:
   const ASTExpression* left;
   const ASTExpression* right;
 };
+
+struct ASTEquality : public ASTExpression {
+public:
+  ~ASTEquality(){}
+  void print() const override {
+    left->print();
+    std::cout<< " == ";
+    right->print();
+  }
+  ASTEquality(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const ASTExpression* left;
+  const ASTExpression* right;
+};

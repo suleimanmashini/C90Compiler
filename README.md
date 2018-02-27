@@ -17,3 +17,5 @@ There are many things to do:
 - [ ] Pointers
 - [ ] Types of Constants
 - [ ] Argc Argv
+- [ ] if-Else
+- [ ] Switch

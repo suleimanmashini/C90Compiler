@@ -54,10 +54,13 @@ struct ASTVariable : public ASTPrimitive {
 public:
 	~ASTVariable(){}
 	ASTVariable() {}
-	ASTVariable(std::string Name): keyword(Name) {}
+	ASTVariable(const ASTKeyword* Name, std::string IDIn): keyword(Name), ID(IDIn) {}
 	void print() const override {
-		std::cout<< keyword;
+		keyword->print();
+		std::cout<< " " << ID ;
+
 	}
 private:
-	const std::string keyword;
+	const ASTKeyword* keyword;
+	const std::string ID;
 };

@@ -51,10 +51,37 @@ public:
 
 		if (right !=NULL) {std::cout<< " , "; right->print();}
 	}
-	ASTArgumentStatement(const ASTStatement* statementIn) : left(statementIn), right(nullptr){}
-	ASTArgumentStatement(const ASTStatement* statementInA, const ASTStatement* statementInB) : left(statementInA), right(statementInB){}
+	ASTArgumentStatement(const ASTVariable* statementIn) : left(statementIn), right(nullptr){}
+	ASTArgumentStatement(const ASTVariable* statementInA, const ASTArgumentStatement* statementInB) : left(statementInA), right(statementInB){}
 	ASTArgumentStatement(): left(nullptr), right(nullptr) {}
 private:
-	const ASTStatement* left;
-	const ASTStatement* right;
+	const ASTVariable* left;
+	const ASTArgumentStatement* right;
+};
+
+
+struct ASTSelectionStatement: public ASTStatement {
+public:
+	~ASTSelectionStatement(){}
+	void print() const override{
+		tabify();
+		std::cout << "if ";
+		if(Condition != NULL) Condition->print();
+		std::cout<< ":" <<std::endl;
+		tabspace++;
+		if (ifTrue !=NULL) ifTrue->print();
+		tabspace--;
+		tabify();
+		if (ifFalse !=NULL) std::cout<<"else: "<<std::endl;
+		tabspace++;
+		if (ifFalse !=NULL) ifFalse->print();
+		tabspace--;
+	}
+	ASTSelectionStatement(const ASTExpression* CondIn, const ASTStatement* statementIn) : Condition(CondIn), ifTrue(statementIn) {}
+	ASTSelectionStatement(const ASTExpression* CondIn, const ASTStatement* statementInA, const ASTStatement* statementInB): Condition(CondIn), ifTrue(statementInA), ifFalse(statementInB){}
+	ASTSelectionStatement(): Condition(nullptr), ifTrue(nullptr), ifFalse(nullptr) {}
+private:
+	const ASTExpression* Condition;
+	const ASTStatement* ifTrue;
+	const ASTStatement* ifFalse;
 };

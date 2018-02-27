@@ -17,7 +17,6 @@ public:
 	}
 };
 
-
 struct ASTStatement: public ASTNode {
 public:
 	~ASTStatement(){}
