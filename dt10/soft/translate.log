@@ -1,0 +1,36 @@
+f00, translate, Pass
+f00, compile,   Fail,   no assembly produced
+f01, translate, Pass
+f01, compile,   Fail,   no assembly produced
+f02, translate, Pass
+f02, compile,   Fail,   no assembly produced
+f03, translate, Pass
+f03, compile,   Fail,   no assembly produced
+f04, translate, Pass
+f04, compile,   Fail,   no assembly produced
+f05, translate, Pass
+f05, compile,   Fail,   no assembly produced
+f06, translate, Pass
+f06, compile,   Fail,   no assembly produced
+f07, translate, Pass
+f07, compile,   Fail,   no assembly produced
+f08, translate, Pass
+f08, compile,   Fail,   no assembly produced
+f09, translate, Pass
+f09, compile,   Fail,   no assembly produced
+f10, translate, FAIL,   Expected 1, got 0
+f10, compile,   Fail,   no assembly produced
+f11, translate, Pass
+f11, compile,   Fail,   no assembly produced
+f12, translate, FAIL,   Expected 10, got 0
+f12, compile,   Fail,   no assembly produced
+f13, translate, FAIL,   Expected 11, got 0
+f13, compile,   Fail,   no assembly produced
+f14, translate, FAIL,   Expected 10, got 0
+f14, compile,   Fail,   no assembly produced
+f15, translate, FAIL,   Expected 13, got 0
+f15, compile,   Fail,   no assembly produced
+f16, translate, FAIL,   Expected 11, got 0
+f16, compile,   Fail,   no assembly produced
+f17, translate, FAIL,   Expected 255, got 0
+f17, compile,   Fail,   no assembly produced

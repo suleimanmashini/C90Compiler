@@ -1,0 +1,134 @@
+g++  -std=c++11 -W -Wall -g -Wno-unused-parameter -I include  -c -o parser/PrintStructure.o parser/PrintStructure.cpp
+In file included from parser/ast/ASTFunction.hpp:4:0,
+                 from parser/AST.hpp:4,
+                 from parser/PrintStructure.cpp:1:
+parser/ast/ASTStatement.hpp: In constructor ‘ASTDeclarationStatement::ASTDeclarationStatement(const ASTExpression*, const ASTKeyword*, std::__cxx11::string)’:
+parser/ast/ASTStatement.hpp:61:23: warning: ‘ASTDeclarationStatement::child’ will be initialized after [-Wreorder]
+  const ASTExpression* child;
+                       ^
+parser/ast/ASTStatement.hpp:59:20: warning:   ‘const ASTKeyword* ASTDeclarationStatement::type’ [-Wreorder]
+  const ASTKeyword* type;
+                    ^
+In file included from parser/ast/ASTFunction.hpp:4:0,
+                 from parser/AST.hpp:4,
+                 from parser/PrintStructure.cpp:1:
+parser/ast/ASTStatement.hpp:52:2: warning:   when initialized here [-Wreorder]
+  ASTDeclarationStatement(const ASTExpression* expressionIn, const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(expressionIn), type(typeIn) {}
+  ^
+In file included from parser/ast/ASTFunction.hpp:4:0,
+                 from parser/AST.hpp:4,
+                 from parser/PrintStructure.cpp:1:
+parser/ast/ASTStatement.hpp: In constructor ‘ASTDeclarationStatement::ASTDeclarationStatement(const ASTKeyword*, std::__cxx11::string)’:
+parser/ast/ASTStatement.hpp:61:23: warning: ‘ASTDeclarationStatement::child’ will be initialized after [-Wreorder]
+  const ASTExpression* child;
+                       ^
+parser/ast/ASTStatement.hpp:59:20: warning:   ‘const ASTKeyword* ASTDeclarationStatement::type’ [-Wreorder]
+  const ASTKeyword* type;
+                    ^
+parser/ast/ASTStatement.hpp:53:2: warning:   when initialized here [-Wreorder]
+  ASTDeclarationStatement(const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(nullptr), type(typeIn) {}
+  ^
+In file included from parser/AST.hpp:4:0,
+                 from parser/PrintStructure.cpp:1:
+parser/ast/ASTFunction.hpp: In member function ‘virtual void ASTFunction::print() const’:
+parser/ast/ASTFunction.hpp:18:25: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+       for (int i = 0; i < globalVariables.size(); i++){
+                         ^
+parser/PrintStructure.cpp: In function ‘int main(int, char**)’:
+parser/PrintStructure.cpp:21:23: warning: unused variable ‘coutbuf’ [-Wunused-variable]
+       std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+                       ^
+bison -v -d parser/CParser.y -o parser/CParser.tab.cpp
+parser/CParser.y: warning: 6 shift/reduce conflicts [-Wconflicts-sr]
+parser/CParser.y: warning: 9 reduce/reduce conflicts [-Wconflicts-rr]
+g++  -std=c++11 -W -Wall -g -Wno-unused-parameter -I include  -c -o parser/CParser.tab.o parser/CParser.tab.cpp
+In file included from parser/ast/ASTFunction.hpp:4:0,
+                 from parser/AST.hpp:4,
+                 from parser/CParser.y:7:
+parser/ast/ASTStatement.hpp: In constructor ‘ASTDeclarationStatement::ASTDeclarationStatement(const ASTExpression*, const ASTKeyword*, std::__cxx11::string)’:
+parser/ast/ASTStatement.hpp:61:23: warning: ‘ASTDeclarationStatement::child’ will be initialized after [-Wreorder]
+  const ASTExpression* child;
+                       ^
+parser/ast/ASTStatement.hpp:59:20: warning:   ‘const ASTKeyword* ASTDeclarationStatement::type’ [-Wreorder]
+  const ASTKeyword* type;
+                    ^
+In file included from parser/ast/ASTFunction.hpp:4:0,
+                 from parser/AST.hpp:4,
+                 from parser/CParser.y:7:
+parser/ast/ASTStatement.hpp:52:2: warning:   when initialized here [-Wreorder]
+  ASTDeclarationStatement(const ASTExpression* expressionIn, const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(expressionIn), type(typeIn) {}
+  ^
+In file included from parser/ast/ASTFunction.hpp:4:0,
+                 from parser/AST.hpp:4,
+                 from parser/CParser.y:7:
+parser/ast/ASTStatement.hpp: In constructor ‘ASTDeclarationStatement::ASTDeclarationStatement(const ASTKeyword*, std::__cxx11::string)’:
+parser/ast/ASTStatement.hpp:61:23: warning: ‘ASTDeclarationStatement::child’ will be initialized after [-Wreorder]
+  const ASTExpression* child;
+                       ^
+parser/ast/ASTStatement.hpp:59:20: warning:   ‘const ASTKeyword* ASTDeclarationStatement::type’ [-Wreorder]
+  const ASTKeyword* type;
+                    ^
+parser/ast/ASTStatement.hpp:53:2: warning:   when initialized here [-Wreorder]
+  ASTDeclarationStatement(const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(nullptr), type(typeIn) {}
+  ^
+In file included from parser/AST.hpp:4:0,
+                 from parser/CParser.y:7:
+parser/ast/ASTFunction.hpp: In member function ‘virtual void ASTFunction::print() const’:
+parser/ast/ASTFunction.hpp:18:25: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+       for (int i = 0; i < globalVariables.size(); i++){
+                         ^
+bison -v -d parser/CParser.y -o parser/CParser.tab.cpp
+parser/CParser.y: warning: 6 shift/reduce conflicts [-Wconflicts-sr]
+parser/CParser.y: warning: 9 reduce/reduce conflicts [-Wconflicts-rr]
+flex -o Lexer/lex.yy.cpp  Lexer/c90.flex
+Lexer/c90.flex:96: warning, rule cannot be matched
+g++  -std=c++11 -W -Wall -g -Wno-unused-parameter -I include  -c -o Lexer/lex.yy.o Lexer/lex.yy.cpp
+In file included from Lexer/../parser/ast/ASTFunction.hpp:4:0,
+                 from Lexer/../parser/AST.hpp:4,
+                 from parser/CParser.y:7,
+                 from Lexer/c90.flex:4:
+Lexer/../parser/ast/ASTStatement.hpp: In constructor ‘ASTDeclarationStatement::ASTDeclarationStatement(const ASTExpression*, const ASTKeyword*, std::__cxx11::string)’:
+Lexer/../parser/ast/ASTStatement.hpp:61:23: warning: ‘ASTDeclarationStatement::child’ will be initialized after [-Wreorder]
+  const ASTExpression* child;
+                       ^
+Lexer/../parser/ast/ASTStatement.hpp:59:20: warning:   ‘const ASTKeyword* ASTDeclarationStatement::type’ [-Wreorder]
+  const ASTKeyword* type;
+                    ^
+In file included from Lexer/../parser/ast/ASTFunction.hpp:4:0,
+                 from Lexer/../parser/AST.hpp:4,
+                 from parser/CParser.y:7,
+                 from Lexer/c90.flex:4:
+Lexer/../parser/ast/ASTStatement.hpp:52:2: warning:   when initialized here [-Wreorder]
+  ASTDeclarationStatement(const ASTExpression* expressionIn, const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(expressionIn), type(typeIn) {}
+  ^
+In file included from Lexer/../parser/ast/ASTFunction.hpp:4:0,
+                 from Lexer/../parser/AST.hpp:4,
+                 from parser/CParser.y:7,
+                 from Lexer/c90.flex:4:
+Lexer/../parser/ast/ASTStatement.hpp: In constructor ‘ASTDeclarationStatement::ASTDeclarationStatement(const ASTKeyword*, std::__cxx11::string)’:
+Lexer/../parser/ast/ASTStatement.hpp:61:23: warning: ‘ASTDeclarationStatement::child’ will be initialized after [-Wreorder]
+  const ASTExpression* child;
+                       ^
+Lexer/../parser/ast/ASTStatement.hpp:59:20: warning:   ‘const ASTKeyword* ASTDeclarationStatement::type’ [-Wreorder]
+  const ASTKeyword* type;
+                    ^
+Lexer/../parser/ast/ASTStatement.hpp:53:2: warning:   when initialized here [-Wreorder]
+  ASTDeclarationStatement(const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(nullptr), type(typeIn) {}
+  ^
+In file included from Lexer/../parser/AST.hpp:4:0,
+                 from parser/CParser.y:7,
+                 from Lexer/c90.flex:4:
+Lexer/../parser/ast/ASTFunction.hpp: In member function ‘virtual void ASTFunction::print() const’:
+Lexer/../parser/ast/ASTFunction.hpp:18:25: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+       for (int i = 0; i < globalVariables.size(); i++){
+                         ^
+Lexer/lex.yy.cpp: In function ‘int yy_get_next_buffer()’:
+Lexer/lex.yy.cpp:1571:44: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  if ((int) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+                                            ^
+Lexer/lex.yy.cpp: At global scope:
+Lexer/lex.yy.cpp:1647:17: warning: ‘void yyunput(int, char*)’ defined but not used [-Wunused-function]
+     static void yyunput (int c, char * yy_bp )
+                 ^
+mkdir -p bin
+g++ -std=c++11 -W -Wall -g -Wno-unused-parameter -I include -o bin/c_compiler parser/PrintStructure.o parser/CParser.tab.o Lexer/lex.yy.o
