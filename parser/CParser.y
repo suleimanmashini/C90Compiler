@@ -33,7 +33,7 @@
 %type <Expression> EXPRESSION TERM FACTOR CONDITION
 %type <Node> PROGRAM
 %type <Function> FUNCTION
-%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION  STRUCTURE
+%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION  STRUCTURE ITERATION_STATEMENT
 %type <Primitive> TK_void
 %type <Keyword> RETURNTYPE
 %type <Argument> VARIABLES
@@ -89,6 +89,10 @@ STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
          | VARIABLE_DECLARATION TP_semiColon {$$ = $1;}
          | SELECTION_STATEMENT {$$ = $1;}
          | EXPRESSION TO_equal EXPRESSION TP_semiColon {$$ = new ASTAssignmentStatement($1, $3);}
+         | ITERATION_STATEMENT {$$ = $1;}
+
+ ITERATION_STATEMENT: TK_while T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new ASTIteratorStatementWhile($3, $5);}
+                    | TK_while T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTIteratorStatementWhile($3, $6);}
 
 SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new ASTSelectionStatement($3, $5);}
                    | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6);}
@@ -99,7 +103,11 @@ SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new A
 
 CONDITION: EXPRESSION TO_equalTo EXPRESSION {$$ = new ASTEquality($1, $3); }
          | EXPRESSION TO_lessThan EXPRESSION {$$ = new ASTLessThan($1, $3); }
+         | EXPRESSION TO_notEqualTo EXPRESSION {$$ = new ASTNotEqualTo($1, $3);}
          | EXPRESSION TO_moreThan EXPRESSION {$$ = new ASTMoreThan($1, $3); }
+         | EXPRESSION TO_moreThanOrEqual EXPRESSION {$$ = new ASTMoreThanOrEqual($1, $3);}
+         | EXPRESSION TO_lessThanOrEqual EXPRESSION {$$ = new ASTLessThanOrEqual($1, $3);}
+         | EXPRESSION {$$ = $1;}
 
 
 VARIABLES: VARIABLE_DECLARATION_FUNCTION {$$ = new ASTArgumentStatement($1);}
@@ -117,7 +125,9 @@ RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
 EXPRESSION: TERM {$$ = $1;}
           | EXPRESSION TO_plus EXPRESSION {$$ = new ASTPlus($1, $3);}
           | EXPRESSION TO_minus EXPRESSION {$$ = new ASTMinus($1, $3);}
+          | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
           | FUNCTION_CALL {$$ = $1;}
+
 
 TERM: FACTOR {$$ = $1;}
     | TERM TO_asterix FACTOR {$$ = new ASTMultiply($1, $3);}

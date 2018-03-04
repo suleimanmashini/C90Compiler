@@ -95,3 +95,46 @@ private:
   const ASTExpression* left;
   const ASTExpression* right;
 };
+
+
+struct ASTMoreThanOrEqual : public ASTExpression {
+public:
+  ~ASTMoreThanOrEqual(){}
+  void print() const override {
+    left->print();
+    std::cout<< " >= ";
+    right->print();
+  }
+  ASTMoreThanOrEqual(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const ASTExpression* left;
+  const ASTExpression* right;
+};
+
+struct ASTLessThanOrEqual : public ASTExpression {
+public:
+  ~ASTLessThanOrEqual(){}
+  void print() const override {
+    left->print();
+    std::cout<< " <= ";
+    right->print();
+  }
+  ASTLessThanOrEqual(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const ASTExpression* left;
+  const ASTExpression* right;
+};
+
+struct ASTNotEqualTo : public ASTExpression {
+public:
+  ~ASTNotEqualTo(){}
+  void print() const override {
+    left->print();
+    std::cout<< " != ";
+    right->print();
+  }
+  ASTNotEqualTo(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const ASTExpression* left;
+  const ASTExpression* right;
+};

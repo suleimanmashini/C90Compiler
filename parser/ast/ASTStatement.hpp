@@ -139,3 +139,23 @@ private:
 	const ASTStatement* ifTrue;
 	const ASTStatement* ifFalse;
 };
+
+struct ASTIteratorStatementWhile: public ASTStatement {
+public:
+	~ASTIteratorStatementWhile(){}
+	void print() const override{
+		tabify();
+		std::cout<<"while (";
+		if (Cond !=NULL) Cond->print();
+		std::cout<<" ): "<<std::endl;
+		tabspace++;
+		if (Block !=NULL) Block->print();
+		tabspace--;
+	}
+	ASTIteratorStatementWhile(const ASTExpression* CondIn) : Cond(CondIn), Block(nullptr){}
+	ASTIteratorStatementWhile(const ASTExpression* CondIn, const ASTStatement* BlockIn) : Cond(CondIn), Block(BlockIn){}
+	ASTIteratorStatementWhile(): Cond(nullptr), Block(nullptr) {}
+private:
+	const ASTExpression* Cond;
+	const ASTStatement* Block;
+};
