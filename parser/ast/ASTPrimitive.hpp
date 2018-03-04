@@ -16,7 +16,7 @@ struct ASTInteger : public ASTPrimitive {
 public:
 	~ASTInteger(){}
 	void print() const override {
-		std::cout<< Value;
+		std::cout<< "(" << Value << ")";
 	}
 	 ASTInteger(int IntegerIn){
 		Value = IntegerIn;

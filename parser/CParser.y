@@ -33,7 +33,7 @@
 %type <Expression> EXPRESSION TERM FACTOR CONDITION
 %type <Node> PROGRAM
 %type <Function> FUNCTION
-%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION  STRUCTURE ITERATION_STATEMENT
+%type <Statement> STATEMENT BLOCK VARIABLE_DECLARATION  STRUCTURE ITERATION_STATEMENT VARIABLE_DECLARATION_GLOBAL
 %type <Primitive> TK_void
 %type <Keyword> RETURNTYPE
 %type <Argument> VARIABLES
@@ -75,8 +75,8 @@ PROGRAM: STRUCTURE		{ASTRoot = $1;}
 
 STRUCTURE: FUNCTION STRUCTURE {$$ = new ASTStatement($1, $2);}
 	    	 | FUNCTION {$$ = new ASTStatement($1);}
-         | STATEMENT {$$ = $1; globalFlag = 1;}
-         | STATEMENT STRUCTURE {$$ = new ASTStatement($1, $2); globalFlag = 1;}
+         | VARIABLE_DECLARATION_GLOBAL {$$ = $1;}
+         | VARIABLE_DECLARATION_GLOBAL STRUCTURE {$$ = new ASTStatement($1, $2); }
 
 FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, NULL, $6);}
         | RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTFunction($1, *$2, $4, $7);}
@@ -116,8 +116,11 @@ VARIABLES: VARIABLE_DECLARATION_FUNCTION {$$ = new ASTArgumentStatement($1);}
 VARIABLE_DECLARATION_FUNCTION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTVariableName(*$2);}
 | RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTVariableName(*$3);}
 
-VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTDeclarationStatement($1, *$2); globalVariables.push_back(*$2); globalFlag = 0;}
-                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new ASTDeclarationStatement($4, $1, *$2); globalVariables.push_back(*$2); globalFlag = 0;}
+VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTDeclarationStatement($1, *$2, 0);}
+                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new ASTDeclarationStatement($4, $1, *$2, 0); }
+
+VARIABLE_DECLARATION_GLOBAL: RETURNTYPE T_IDENTIFIER TP_semiColon  {$$ = new ASTDeclarationStatement($1, *$2, 1);}
+                            | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new ASTDeclarationStatement($4, $1, *$2, 1); }
 
 RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
           | TK_int {$$ = new ASTKeyword("int");}

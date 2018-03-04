@@ -44,9 +44,11 @@ struct ASTMultiply : public ASTExpression {
 public:
   ~ASTMultiply(){}
   void print() const override {
+    std::cout << "( ";
     left->print();
     std::cout<< "*";
     right->print();
+      std::cout << " )";
   }
   ASTMultiply(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
 private:
@@ -72,9 +74,11 @@ struct ASTLessThan : public ASTExpression {
 public:
   ~ASTLessThan(){}
   void print() const override {
+    std::cout << "( ";
     left->print();
     std::cout<< " < ";
     right->print();
+    std::cout << " )";
   }
   ASTLessThan(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
 private:
@@ -101,9 +105,11 @@ struct ASTMoreThanOrEqual : public ASTExpression {
 public:
   ~ASTMoreThanOrEqual(){}
   void print() const override {
+      std::cout << "( ";
     left->print();
     std::cout<< " >= ";
     right->print();
+      std::cout << " )";
   }
   ASTMoreThanOrEqual(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
 private:
@@ -115,9 +121,11 @@ struct ASTLessThanOrEqual : public ASTExpression {
 public:
   ~ASTLessThanOrEqual(){}
   void print() const override {
+      std::cout << "( ";
     left->print();
     std::cout<< " <= ";
     right->print();
+      std::cout << " )";
   }
   ASTLessThanOrEqual(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
 private:
@@ -129,9 +137,11 @@ struct ASTNotEqualTo : public ASTExpression {
 public:
   ~ASTNotEqualTo(){}
   void print() const override {
+    std::cout << "( ";
     left->print();
     std::cout<< " != ";
     right->print();
+    std::cout << " )";
   }
   ASTNotEqualTo(const ASTExpression* leftIn, const ASTExpression* rightIn): left(leftIn), right(rightIn){ }
 private:

@@ -7,16 +7,18 @@
 
 extern int tabspace;
 
+inline void tabify () {
+	for (int i = 0; i < tabspace; i++){
+		std::cout<<" ";
+	}
+}
+
 struct ASTNode {
 public:
 	virtual ~ASTNode() {};
 	//virtual void codeGen() = 0;
 	virtual void print() const = 0;
-	void tabify () const{
-		for (int i = 0; i < tabspace; i++){
-			std::cout<<" ";
-		}
-	}
+
 };
 
 struct ASTStatement: public ASTNode {

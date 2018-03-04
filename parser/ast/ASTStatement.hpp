@@ -1,5 +1,6 @@
 #pragma once
 #include "ASTNode.hpp"
+extern std::vector <std::string> globalVariables;
 
 struct ASTReturnStatement : public ASTStatement{
 public:
@@ -44,21 +45,32 @@ public:
 	void print() const override {
 		tabify();
 		//type->print();
+
 		std::cout<<Name;
 		if (child != NULL) {std::cout<<"="; child->print();}
 		else std::cout<< " = 0";
 		std::cout<<std::endl;
 	}
-	ASTDeclarationStatement(const ASTExpression* expressionIn, const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(expressionIn), type(typeIn) {}
-	ASTDeclarationStatement(const ASTKeyword* typeIn, const std::string NameIn): Name(NameIn), child(nullptr), type(typeIn) {}
-	ASTDeclarationStatement(){
+	ASTDeclarationStatement(const ASTExpression* expressionIn, const ASTKeyword* typeIn, const std::string NameIn, const int flagIn): Name(NameIn), child(expressionIn), type(typeIn), globalFlag(flagIn){
+		if (globalFlag == 1){
+			globalVariables.push_back(Name);
+		}
+	}
+	ASTDeclarationStatement(const ASTKeyword* typeIn, const std::string NameIn, const int flagIn): Name(NameIn), child(nullptr), type(typeIn), globalFlag(flagIn) {
+		if (globalFlag == 1){
+			globalVariables.push_back(Name);
+		}
+	}
+	ASTDeclarationStatement(): globalFlag(0){
 		ASTInteger* temp = new ASTInteger(0);
 		child = temp;
+
 	}
 private:
 	const ASTKeyword* type;
 	const std::string Name;
 	const ASTExpression* child;
+	const int globalFlag;
 };
 
 
