@@ -1,7 +1,7 @@
 %option noyywrap
 
 %{
-  #include "../parser/CParser.tab.hpp"
+  #include "../CParser.tab.hpp"
   #include <stdio.h>
   #include <iostream>
 
