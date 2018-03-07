@@ -28,17 +28,19 @@
 %token	TP_comma TP_colon TP_semiColon
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
+%token TO_OrEqual TO_exOrEqual TO_andEqual TO_rightEqual TO_leftEqual TO_minusEqual TO_plusEqual TO_divEqual TO_multEqual
+%token TO_OR TO_logicOr TO_exclussiveOr TO_questionMark TO_modEqual
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
-%type <Integer> TC_integer
-%type <Node> STATEMENT DECLARATION_SPECIFIERS
+%type <Number> DECLARATION_SPECIFIERS
 %type <Node> TRANSLATION_UNIT
 %type <Function> FUNCTION_DEFINITION EXTERNAL_DECLARATION
-%type <Statement> COMPOUND_STATEMENT
+%type <Statement> STATEMENT
 %type <Number> TYPE_SPECIFIER
-%type <Declarator> DECLARATOR
+%type <DirectD> DECLARATOR
 %type <StateList> STATEMENT_LIST
+%type <Compound> COMPOUND_STATEMENT
 %type <Return> JUMP_STATEMENT
-%type <DirectD> DIRECT_DECLARATOR
+%type <word> DIRECT_DECLARATOR
 
 
 %union {
@@ -47,11 +49,13 @@ const ASTDirectDeclarator* DirectD;
 const ASTReturnStatement* Return;
 const ASTStatementList* StateList;
 const ASTStatement* Statement;
+const ASTCompoundStatement* Compound;
 const ASTDeclaration* Declarator;
 const std::string* word;
 const ASTFunctionDefinition* Function;
-const ASTExpression* Expression
+const ASTExpression* Expression;
 const int* Number;
+int Integer;
 }
 
 %start TRANSLATION_UNIT
@@ -166,7 +170,9 @@ DIRECT_DECLARATOR: T_IDENTIFIER {;}
                  | DIRECT_DECLARATOR T_LBRACKET IDENTIFIER_LIST T_RBRACKET {;}
                  | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET {;}
 */
-DIRECT_DECLARATOR: T_IDENTIFIER {$$ = new std::string($1);}
+DIRECT_DECLARATOR: T_IDENTIFIER {$$ = new std::string(*$1);}
+                 | T_LBRACKET DECLARATOR T_RBRACKET {;}
+                 | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET {$$ = $1;}
 /*
 POINTER: TO_asterix TYPE_QUALIFIER_LIST {;}
        | TO_asterix {;}

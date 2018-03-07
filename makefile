@@ -18,7 +18,7 @@ compiler: bin/c_compiler
 codeGen/CParser.tab.cpp codeGen/CParser.tab.hpp: codeGen/CParser.y
 	bison -v -d codeGen/CParser.y -o codeGen/CParser.tab.cpp
 
-codegen/Lexer/lex.yy.cpp : codegen/Lexer/c90.flex codeGen/CParser.tab.hpp
+codeGen/Lexer/lex.yy.cpp : codeGen/Lexer/c90.flex codeGen/CParser.tab.hpp
 	flex -o codeGen/Lexer/lex.yy.cpp  codeGen/Lexer/c90.flex
 
 bin/c_compiler : codeGen/generateCode.o codeGen/CParser.tab.o codeGen/Lexer/lex.yy.o
@@ -40,3 +40,6 @@ clean :
 
 run:
 	./bin/c_compiler
+
+translate:
+	./bin/c_translator
