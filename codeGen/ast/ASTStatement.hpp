@@ -1,11 +1,22 @@
 #pragma once
 #include "ASTNode.hpp"
 
-struct ASTFunction: public ASTNode {
+struct ASTStatement: public ASTNode {
+
+};
+
+struct ASTCompoundStatement: public ASTStatement {
 public:
+
 private:
-  const int returnType;
-  const std::string functionName;
-  const ASTStatement* block;
-  const AST
+  const ASTStatementList* StatList;
+  const ASTDeclarationList* DeclList;
+};
+
+struct ASTStatementList: public ASTStatement {
+
+};
+
+struct ASTReturnStatement: public ASTStatement {
+
 };
