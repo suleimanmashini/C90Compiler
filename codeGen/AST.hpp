@@ -1,13 +1,8 @@
 #pragma once
 
-#include "ast/ASTExpression.hpp"
-#include "ast/ASTFunction.hpp"
-#include "ast/ASTPrimitive.hpp"
-#include "ast/ASTStatement.hpp"
 #include "ast/ASTNode.hpp"
-#include "ast/ASTOperators.hpp"
-
-
+#include "ast/ASTStatement.hpp"
+#include "ast/ASTDeclaration.hpp"
+#include "ast/ASTExpression.hpp"
 
 extern const ASTNode *parseAST();
-extern std::vector <std::string> globalVariables;

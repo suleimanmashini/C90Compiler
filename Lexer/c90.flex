@@ -67,16 +67,16 @@ LGS						 [Ll]
 
 "->"					 {return TO_memberAccess;}
 "!"						 {return TO_not;}
-"?"            {return TO_questionMark}
-"^"            {return TO_exclussiveOr}
+"?"            {return TO_questionMark;}
+"^"            {return TO_exclussiveOr;}
 "="            {return TO_equal;}
 "~"						 {return TO_bitwiseNot;}
 "&"						 {return TO_ampersand;}
 "&&"					 {return TO_logicAnd;}
-"||"           {return TO_logicOr}
+"||"           {return TO_logicOr;}
 "*"						 {return TO_asterix;}
 "%"						 {return TO_mod;}
-"|"            {return TO_OR}
+"|"            {return TO_OR;}
 "<<"					 {return TO_bitwiseLeft;}
 ">>"					 {return TO_bitwiseRight;}
 "<"						 {return TO_lessThan;}
@@ -86,7 +86,7 @@ LGS						 [Ll]
 "=="					 {return TO_equalTo;}
 "*="           {return TO_multEqual;}
 "/="           {return TO_divEqual;}
-"%="           {return TO_modEqual}
+"%="           {return TO_modEqual;}
 "+="           {return TO_plusEqual;}
 "-="           {return TO_minusEqual;}
 "<<="           {return TO_leftEqual;}

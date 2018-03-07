@@ -28,6 +28,8 @@
 %token	TP_comma TP_colon TP_semiColon
 %token	TC_integer TC_unsigned TC_long TC_longLong TC_float TC_longDouble
 %token  TC_true TC_false TC_NULL TC_nullptr
+%token TO_OrEqual TO_exOrEqual TO_andEqual TO_rightEqual TO_modEqual TO_plusEqual TO_minusEqual
+%token TO_leftEqual TO_divEqual TO_questionMark TO_exclussiveOr TO_logicOr TO_OR TO_multEqual
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
 %type <Integer> TC_integer
 %type <Expression> EXPRESSION TERM FACTOR CONDITION

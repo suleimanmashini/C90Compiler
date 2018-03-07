@@ -50,6 +50,20 @@ Terminals unused in grammar
    TC_false
    TC_NULL
    TC_nullptr
+   TO_OrEqual
+   TO_exOrEqual
+   TO_andEqual
+   TO_rightEqual
+   TO_modEqual
+   TO_plusEqual
+   TO_minusEqual
+   TO_leftEqual
+   TO_divEqual
+   TO_questionMark
+   TO_exclussiveOr
+   TO_logicOr
+   TO_OR
+   TO_multEqual
 
 
 State 25 conflicts: 12 reduce/reduce
@@ -217,48 +231,62 @@ TC_true (330)
 TC_false (331)
 TC_NULL (332)
 TC_nullptr (333)
+TO_OrEqual (334)
+TO_exOrEqual (335)
+TO_andEqual (336)
+TO_rightEqual (337)
+TO_modEqual (338)
+TO_plusEqual (339)
+TO_minusEqual (340)
+TO_leftEqual (341)
+TO_divEqual (342)
+TO_questionMark (343)
+TO_exclussiveOr (344)
+TO_logicOr (345)
+TO_OR (346)
+TO_multEqual (347)
 
 
 Nonterminals, with rules where they appear
 
-$accept (79)
+$accept (93)
     on left: 0
-PROGRAM (80)
+PROGRAM (94)
     on left: 1, on right: 0
-STRUCTURE (81)
+STRUCTURE (95)
     on left: 2 3 4 5, on right: 1 2 5
-FUNCTION (82)
+FUNCTION (96)
     on left: 6 7, on right: 2 3
-BLOCK (83)
+BLOCK (97)
     on left: 8 9, on right: 6 7 9 17 19 21 22 23
-STATEMENT (84)
+STATEMENT (98)
     on left: 10 11 12 13 14 15, on right: 8 9 16 18 20 21 22
-ITERATION_STATEMENT (85)
+ITERATION_STATEMENT (99)
     on left: 16 17, on right: 15
-SELECTION_STATEMENT (86)
+SELECTION_STATEMENT (100)
     on left: 18 19 20 21 22 23, on right: 13
-CONDITION (87)
+CONDITION (101)
     on left: 24 25 26 27 28 29 30, on right: 16 17 18 19 20 21 22 23
-VARIABLES (88)
+VARIABLES (102)
     on left: 31 32, on right: 7 32
-VARIABLE_DECLARATION_FUNCTION (89)
+VARIABLE_DECLARATION_FUNCTION (103)
     on left: 33 34, on right: 31 32
-VARIABLE_DECLARATION (90)
+VARIABLE_DECLARATION (104)
     on left: 35 36, on right: 12
-VARIABLE_DECLARATION_GLOBAL (91)
+VARIABLE_DECLARATION_GLOBAL (105)
     on left: 37 38, on right: 4 5
-RETURNTYPE (92)
+RETURNTYPE (106)
     on left: 39 40, on right: 6 7 33 34 35 36 37 38
-EXPRESSION (93)
+EXPRESSION (107)
     on left: 41 42 43 44 45, on right: 10 11 14 24 25 26 27 28 29 30
     36 38 42 43 44 54 55
-TERM (94)
+TERM (108)
     on left: 46 47 48, on right: 41 47 48
-FACTOR (95)
+FACTOR (109)
     on left: 49 50 51, on right: 46 47 48
-FUNCTION_CALL (96)
+FUNCTION_CALL (110)
     on left: 52 53, on right: 45 51
-EXPRESSION_STATEMENTS (97)
+EXPRESSION_STATEMENTS (111)
     on left: 54 55, on right: 53 55
 
 

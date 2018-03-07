@@ -1,6 +1,7 @@
 #pragma once
-#include "ASTNode.hpp"
 
 struct ASTExpression: public ASTNode {
-
+public:
+	virtual ~ASTExpression() {};
+	virtual void codeGen() const = 0;
 };
