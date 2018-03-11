@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+std::vector<variable> allVariables;
 
 int main() {
 				const ASTFunctionDefinition *ASTRoot = parseAST();

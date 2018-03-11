@@ -34,18 +34,25 @@
 %type <Number> DECLARATION_SPECIFIERS TYPE_SPECIFIER
 %type <Node> TRANSLATION_UNIT
 %type <Function> FUNCTION_DEFINITION EXTERNAL_DECLARATION
-%type <DirectD> DECLARATOR DIRECT_DECLARATOR
+%type <DirectD> DECLARATOR DIRECT_DECLARATOR INIT_DECLARATION_LIST INIT_DECLARATOR
 %type <StateList> STATEMENT_LIST
 %type <Compound> COMPOUND_STATEMENT
 %type <Return> JUMP_STATEMENT STATEMENT
-%type <Expression> EXPRESSION PRIMARY_EXPRESSION
+%type <Expression> EXPRESSION PRIMARY_EXPRESSION POSTFIX_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION
 %type <Integer> TC_integer
 %type <IntegerP> CONSTANT
-
+%type <DecList> DECLARATION_LIST
+%type <Declaration> DECLARATION
+%type <MultExp> MULTIPLICATIVE_EXPRESSION
+%type <AddExp> ADDITIVE_EXPRESSION
 
 
 %union {
 const ASTNode* Node;
+const ASTVariableDeclaration* Declaration;
+const ASTMultiplicativeExpression* MultExp;
+const ASTAdditiveExpression* AddExp;
+const ASTDeclarationList* DecList;
 const ASTDirectDeclarator* DirectD;
 const ASTReturnStatement* Return;
 const ASTStatementList* StateList;
@@ -56,7 +63,7 @@ const std::string* word;
 const ASTFunctionDefinition* Function;
 const ASTExpression* Expression;
 const int* Number;
-const ASTIntegerConstConst* IntegerP;
+const ASTIntegerConst* IntegerP;
 int Integer;
 }
 
@@ -135,7 +142,7 @@ JUMP_STATEMENT: TK_return TP_semiColon {$$ = new ASTReturnStatement(NULL);}
 DECLARATION: DECLARATION_SPECIFIERS TP_semiColon{;}
              | DECLARATION_SPECIFIERS `INIT_DECLARATION_LIST` TP_semiColon {;}
 */
-DECLARATION: DELCARTION_SPECIFIERS INIT_DECLARATION_LIST TP_semiColon {$$ = new ASTVariableDeclaration($1, $2);}
+DECLARATION: DECLARATION_SPECIFIERS INIT_DECLARATION_LIST TP_semiColon {$$ = new ASTVariableDeclaration(*$1, $2);}
 /*
 DECLARATION_SPECIFIERS: STORAGE_CLASS_SPECIFIER DELCARATION DECLARATION_SPECIFIERS {;}
                        | TYPE_SPECIFIER DECLARATION_SPECIFIERS {;}
@@ -224,11 +231,11 @@ TYPE_QUALIFIER: TK_const {;}
 
 EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
 
-PRIMARY_EXPRESSION: CONSTANT {$$ = new ASTExpression($1, NULL);}
+PRIMARY_EXPRESSION: CONSTANT {$$ = new ASTExpression($1, NULL, NULL);}
                   | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
-                  | T_IDENTIFIER {}
+                  | T_IDENTIFIER {$$ = new ASTExpression(NULL, NULL, *$1);}
 
-CONSTANT: TC_integer {$$ = new ASTIntegerConstConst($1);}
+CONSTANT: TC_integer {$$ = new ASTIntegerConst($1);}
 /*
 EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | POSTFIX_EXPRESSION {;}
@@ -254,7 +261,7 @@ PRIMARY_EXPRESSION: T_IDENTIFIER {;}
                   | STRING_LITERAL {;}
                   | T_LBRACKET EXPRESSION T_RBRACKET {} {;}
 */
-POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {;}
+POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
 /*
 
 POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {;}
@@ -276,7 +283,7 @@ UNARY_EXPRESSION: POSTFIX_EXPRESSION {;}
                 | TK_sizeof UNARY_EXPRESSION {;}
                 | TK_sizeof T_LBRACKET TYPE_NAME T_RBRACKET {;}
 */
-UNARY_EXPRESSION: POSTFIX_EXPRESSION {;}
+UNARY_EXPRESSION: POSTFIX_EXPRESSION {$$ = $1;}
 /*
 UNARY_OPERATOR: TO_ampersand {;}
               | TO_asterix {;}
@@ -290,16 +297,16 @@ CAST_EXPRESSION: UNARY_EXPRESSION {;}
                | T_LBRACKET TYPE_NAME T_RBRACKET {;}
 */
 
-CAST_EXPRESSION: UNARY_EXPRESSION {$$ = new ASTCastExpression;}
+CAST_EXPRESSION: UNARY_EXPRESSION {$$ = $1;}
 
 MULTIPLICATIVE_EXPRESSION: CAST_EXPRESSION {$$ = $1;}
-                         | MULTIPLICATIVE_EXPRESSION TO_asterix CAST_EXPRESSION {;}
-                         | MULTIPLICATIVE_EXPRESSION TO_divide CAST_EXPRESSION {;}
-                         | MULTIPLICATIVE_EXPRESSION TO_mod CAST_EXPRESSION {;}
+                         | MULTIPLICATIVE_EXPRESSION TO_asterix CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 0);;}
+                         | MULTIPLICATIVE_EXPRESSION TO_divide CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 1);;}
+                         | MULTIPLICATIVE_EXPRESSION TO_mod CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 2);;}
 
-ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {;}
-                   | ADDITIVE_EXPRESSION TO_plus MULTIPLICATIVE_EXPRESSION {;}
-                   | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {;}
+ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ = ASTAdditiveExpression(NULL, $1, 0);}
+                   | ADDITIVE_EXPRESSION TO_plus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 1);}
+                   | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 2);}
 
 /*
 SHIFT_EXPRESSION: ADDITIVE_EXPRESSION {;}

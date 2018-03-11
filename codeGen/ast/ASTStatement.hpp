@@ -1,5 +1,5 @@
 #pragma once
-struct ASTDeclarationList;
+
 
 struct ASTStatement: public ASTNode {
 public:
@@ -24,6 +24,7 @@ private:
 
 
 struct ASTStatementList: public ASTStatement {
+
 ASTStatementList(const ASTStatementList* _Child, const ASTReturnStatement* _Statement): Child(_Child), Statement(_Statement) {}
 void codeGen() const override {
   if (Child == NULL && Statement == NULL) {
@@ -42,7 +43,7 @@ private:
   const ASTReturnStatement* Statement;
 
 };
-
+struct ASTDeclarationList;
 struct ASTCompoundStatement: public ASTStatement {
 public:
 ~ASTCompoundStatement() {}

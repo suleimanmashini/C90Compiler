@@ -19,7 +19,7 @@ int type;
 std::string name;
 };
 
-std::vector<variable> allVariables;
+extern std::vector<variable> allVariables;
 
 enum {
 	RZERO, //HARD WIRES TO 0

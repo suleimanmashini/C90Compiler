@@ -1,5 +1,4 @@
 #pragma once
-#include "ASTStatement.hpp"
 
 struct ASTDeclaration: public ASTNode {
 public:
@@ -60,13 +59,13 @@ private:
 
 
 struct ASTDeclarationList: public ASTDeclaration {
-ASTDeclarationList(const ASTDeclarationList* _Child, const ASTReturnStatement* _Statement): Child(_Child), Declaration(_Statement) {}
+ASTDeclarationList(const ASTDeclarationList* _Child, const ASTDeclaration* _Statement): Child(_Child), Declaration(_Statement) {}
 void codeGen() const override {
-  if (Child == NULL && Statement == NULL) {
+  if (Child == NULL && Declaration == NULL) {
 		std::cout <<"\tnop\n";
 		return;
 	}
-	if (Statement != NULL) {
+	if (Declaration != NULL) {
 		Declaration->codeGen();
 	}
 	if (Child != NULL) {
@@ -80,9 +79,11 @@ private:
 
 struct ASTVariableDeclaration: public ASTDeclaration {
 public:
+	~ASTVariableDeclaration() {}
 	ASTVariableDeclaration(const int _typeNumber, const ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
+	void codeGen() const {}
 	void updateVariables() {
-		variable TEMP(typeNumber, Variable.getName());
+		variable TEMP(typeNumber, Variable->getName());
 		allVariables.push_back(TEMP);
 	}
 private:
