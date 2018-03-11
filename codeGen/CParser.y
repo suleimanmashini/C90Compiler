@@ -6,7 +6,7 @@
 
   #include "AST.hpp"
 
-  extern const ASTNode *ASTRoot;
+  extern const ASTFunctionDefinition *ASTRoot;
 
   int yylex(void);
   void yyerror(const char*);
@@ -31,16 +31,17 @@
 %token TO_OrEqual TO_exOrEqual TO_andEqual TO_rightEqual TO_leftEqual TO_minusEqual TO_plusEqual TO_divEqual TO_multEqual
 %token TO_OR TO_logicOr TO_exclussiveOr TO_questionMark TO_modEqual
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
-%type <Number> DECLARATION_SPECIFIERS
+%type <Number> DECLARATION_SPECIFIERS TYPE_SPECIFIER
 %type <Node> TRANSLATION_UNIT
 %type <Function> FUNCTION_DEFINITION EXTERNAL_DECLARATION
-%type <Statement> STATEMENT
-%type <Number> TYPE_SPECIFIER
-%type <DirectD> DECLARATOR
+%type <DirectD> DECLARATOR DIRECT_DECLARATOR
 %type <StateList> STATEMENT_LIST
 %type <Compound> COMPOUND_STATEMENT
-%type <Return> JUMP_STATEMENT
-%type <word> DIRECT_DECLARATOR
+%type <Return> JUMP_STATEMENT STATEMENT
+%type <Expression> EXPRESSION PRIMARY_EXPRESSION
+%type <Integer> TC_integer
+%type <IntegerP> CONSTANT
+
 
 
 %union {
@@ -55,6 +56,7 @@ const std::string* word;
 const ASTFunctionDefinition* Function;
 const ASTExpression* Expression;
 const int* Number;
+const ASTIntegerConstConst* IntegerP;
 int Integer;
 }
 
@@ -62,8 +64,8 @@ int Integer;
 
 %%
 
-TRANSLATION_UNIT: EXTERNAL_DECLARATION {$$ = $1;}
-                | TRANSLATION_UNIT EXTERNAL_DECLARATION {;}
+TRANSLATION_UNIT: EXTERNAL_DECLARATION {ASTRoot = $1;}
+                | TRANSLATION_UNIT EXTERNAL_DECLARATION {ASTRoot = $2;}
 /*
 EXTERNAL_DECLARATION: FUNCTION_DEFINITION {$$ = $1;}
                     | DECLARATION {;}
@@ -87,25 +89,23 @@ STATEMENT: LABELED_STATEMENT {;}
 */
 STATEMENT: COMPOUND_STATEMENT {;}
          | JUMP_STATEMENT {$$ = $1;}
+
 /*
 LABELLED_STATEMENT: T_IDENTIFIER TP_colon STATEMENT {;}
                   | TK_case CONSTANT_EXPRESSION TP_colon STATEMENT {;}
                   | TK_default TP_colon STATEMENT {;}
 */
 
-/*
-COMPOUND_STATEMENT: T_LBRACE DECLARATION_LIST STATEMENT_LIST T_RBRACE {;}
-                  | T_LBRACE STATEMENT_LIST T_RBRACE {;}
-                  | T_LBRACE DECLARATION_LIST T_RBRACE {;}
-                  | T_LBRACE T_RBRACE {;}
-*/
-COMPOUND_STATEMENT: T_LBRACE STATEMENT_LIST T_RBRACE {$$ = new ASTCompoundStatement($2, NULL);}
-/*
-DECLARATION_LIST: DECLARATION {;}
-                | DECLARATION_LIST DECLARATION {;}
-*/
-STATEMENT_LIST: STATEMENT {$$ = new ASTStatementList(NULL, $1);}
-              | STATEMENT_LIST STATEMENT {;}
+COMPOUND_STATEMENT: T_LBRACE DECLARATION_LIST STATEMENT_LIST T_RBRACE {$$ = new ASTCompoundStatement($3, $2);}
+                  | T_LBRACE STATEMENT_LIST T_RBRACE {$$ = new ASTCompoundStatement($2, nullptr);}
+                  | T_LBRACE DECLARATION_LIST T_RBRACE {$$ = new ASTCompoundStatement(nullptr, $2);}
+                  | T_LBRACE T_RBRACE {$$ = new ASTCompoundStatement(NULL, NULL);}
+
+DECLARATION_LIST: DECLARATION {$$ = new ASTDeclarationList(NULL, $1);}
+                | DECLARATION_LIST DECLARATION {$$ = new ASTDeclarationList($1, $2);}
+
+STATEMENT_LIST: STATEMENT {$$ = new ASTStatementList(nullptr, $1);}
+              | STATEMENT_LIST STATEMENT {$$ = new ASTStatementList($1, $2);}
 
 /*
 EXPRESSION_STATEMENT: EXPRESSION TP_semiColon {;}
@@ -128,22 +128,34 @@ JUMP_STATEMENT: TK_goto T_IDENTIFIER TP_semiColon {;}
 */
 
 JUMP_STATEMENT: TK_return TP_semiColon {$$ = new ASTReturnStatement(NULL);}
+              | TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
+
 
 /*
-DECLARATION: DECLARATION_SPECIFIERS {;}
-           | DECLARATION_SPECIFIERS INIT_DECLARATION_LIST {;}
+DECLARATION: DECLARATION_SPECIFIERS TP_semiColon{;}
+             | DECLARATION_SPECIFIERS `INIT_DECLARATION_LIST` TP_semiColon {;}
 */
+DECLARATION: DELCARTION_SPECIFIERS INIT_DECLARATION_LIST TP_semiColon {$$ = new ASTVariableDeclaration($1, $2);}
 /*
 DECLARATION_SPECIFIERS: STORAGE_CLASS_SPECIFIER DELCARATION DECLARATION_SPECIFIERS {;}
                        | TYPE_SPECIFIER DECLARATION_SPECIFIERS {;}
                        | TYPE_SPECIFIER {;}
                        | TYPE_QUALIFIER DECLARATION_SPECIFIERS {;}
                        | TYPE_QUALIFIER {;}
-
+*/
+/*
 INIT_DECLARATION_LIST: INIT_DECLARATOR {;}
                      | INIT_DECLARATOR_LIST TP_comma INIT_DECLARATOR DECLARATION_SPECIFIERS {;}
 */
 DECLARATION_SPECIFIERS: TYPE_SPECIFIER {$$ = $1;}
+                      | TYPE_SPECIFIER DECLARATION_SPECIFIERS {$$ = $1;}
+                      | TYPE_QUALIFIER {;}
+                      | TYPE_QUALIFIER DECLARATION_SPECIFIERS {$$ = $2;}
+
+INIT_DECLARATION_LIST: INIT_DECLARATOR {$$ = $1;}
+
+INIT_DECLARATOR: DECLARATOR {$$ = $1;}
+
 /*
 INIT_DECLARATOR: DECLARATOR {;}
                | DECLARATOR TO_equal INITIALIZER {;}
@@ -159,7 +171,7 @@ INITIALIZER_LIST: INITIALIZER
 DECLARATOR: POINTER DIRECT_DECLARATOR {;}
           | DIRECT_DECLARATOR {;}
 */
-DECLARATOR: DIRECT_DECLARATOR {$$ = new ASTDirectDeclarator(*$1);}
+DECLARATOR: DIRECT_DECLARATOR {$$ = $1;}
 
 /*
 DIRECT_DECLARATOR: T_IDENTIFIER {;}
@@ -170,7 +182,7 @@ DIRECT_DECLARATOR: T_IDENTIFIER {;}
                  | DIRECT_DECLARATOR T_LBRACKET IDENTIFIER_LIST T_RBRACKET {;}
                  | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET {;}
 */
-DIRECT_DECLARATOR: T_IDENTIFIER {$$ = new std::string(*$1);}
+DIRECT_DECLARATOR: T_IDENTIFIER {$$ = new ASTDirectDeclarator(*$1);}
                  | T_LBRACKET DECLARATOR T_RBRACKET {;}
                  | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET {$$ = $1;}
 /*
@@ -206,10 +218,17 @@ TYPE_SPECIFIER: TK_void {$$ = new int(0);}
               | TK_signed {;}
               | TK_unsigned {;}
 
-/*
+
 TYPE_QUALIFIER: TK_const {;}
               | TK_volatile {;}
-*/
+
+EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
+
+PRIMARY_EXPRESSION: CONSTANT {$$ = new ASTExpression($1, NULL);}
+                  | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
+                  | T_IDENTIFIER {}
+
+CONSTANT: TC_integer {$$ = new ASTIntegerConstConst($1);}
 /*
 EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | POSTFIX_EXPRESSION {;}
@@ -234,7 +253,9 @@ PRIMARY_EXPRESSION: T_IDENTIFIER {;}
                   | CONSTANT {;}
                   | STRING_LITERAL {;}
                   | T_LBRACKET EXPRESSION T_RBRACKET {} {;}
-
+*/
+POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {;}
+/*
 
 POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {;}
                   | POSTFIX_EXPRESSION T_LINDEX EXPRESSION T_RINDEX {;}
@@ -254,18 +275,24 @@ UNARY_EXPRESSION: POSTFIX_EXPRESSION {;}
                 | UNARY_OPERATOR CAST_EXPRESSION {;}
                 | TK_sizeof UNARY_EXPRESSION {;}
                 | TK_sizeof T_LBRACKET TYPE_NAME T_RBRACKET {;}
-
+*/
+UNARY_EXPRESSION: POSTFIX_EXPRESSION {;}
+/*
 UNARY_OPERATOR: TO_ampersand {;}
               | TO_asterix {;}
               | TO_plus {;}
               | TO_minus {;}
               | TO_bitwiseNot {;}
               | TO_not {;}
-
+*/
+/*
 CAST_EXPRESSION: UNARY_EXPRESSION {;}
                | T_LBRACKET TYPE_NAME T_RBRACKET {;}
+*/
 
-MULTIPLICATIVE_EXPRESSION: CAST_EXPRESSION {;}
+CAST_EXPRESSION: UNARY_EXPRESSION {$$ = new ASTCastExpression;}
+
+MULTIPLICATIVE_EXPRESSION: CAST_EXPRESSION {$$ = $1;}
                          | MULTIPLICATIVE_EXPRESSION TO_asterix CAST_EXPRESSION {;}
                          | MULTIPLICATIVE_EXPRESSION TO_divide CAST_EXPRESSION {;}
                          | MULTIPLICATIVE_EXPRESSION TO_mod CAST_EXPRESSION {;}
@@ -274,6 +301,7 @@ ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {;}
                    | ADDITIVE_EXPRESSION TO_plus MULTIPLICATIVE_EXPRESSION {;}
                    | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {;}
 
+/*
 SHIFT_EXPRESSION: ADDITIVE_EXPRESSION {;}
                 | SHIFT_EXPRESSION TO_bitwiseLeft ADDITIVE_EXPRESSION {;}
                 | SHIFT_EXPRESSION TO_bitwiseRight ADDITIVE_EXPRESSION {;}
@@ -328,9 +356,9 @@ ASSIGNMENT_OPERATOR: TO_equal {;}
 
 %%
 
-const ASTNode *ASTRoot; // Definition of variable (to match declaration earlier)
+const ASTFunctionDefinition *ASTRoot; // Definition of variable (to match declaration earlier)
 
-const ASTNode *parseAST()
+const ASTFunctionDefinition *parseAST()
 {
   ASTRoot=0;
   yyparse();

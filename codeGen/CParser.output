@@ -50,7 +50,6 @@ Terminals unused in grammar
    TO_equal
    TP_comma
    TP_colon
-   TC_integer
    TC_unsigned
    TC_long
    TC_longLong
@@ -91,72 +90,80 @@ Grammar
     6          | JUMP_STATEMENT
 
     7 COMPOUND_STATEMENT: T_LBRACE STATEMENT_LIST T_RBRACE
+    8                   | T_LBRACE T_RBRACE
 
-    8 STATEMENT_LIST: STATEMENT
-    9               | STATEMENT_LIST STATEMENT
+    9 STATEMENT_LIST: STATEMENT
+   10               | STATEMENT_LIST STATEMENT
 
-   10 JUMP_STATEMENT: TK_return TP_semiColon
+   11 JUMP_STATEMENT: TK_return TP_semiColon
+   12               | TK_return EXPRESSION TP_semiColon
 
-   11 DECLARATION_SPECIFIERS: TYPE_SPECIFIER
+   13 DECLARATION_SPECIFIERS: TYPE_SPECIFIER
 
-   12 DECLARATOR: DIRECT_DECLARATOR
+   14 DECLARATOR: DIRECT_DECLARATOR
 
-   13 DIRECT_DECLARATOR: T_IDENTIFIER
-   14                  | T_LBRACKET DECLARATOR T_RBRACKET
-   15                  | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET
+   15 DIRECT_DECLARATOR: T_IDENTIFIER
+   16                  | T_LBRACKET DECLARATOR T_RBRACKET
+   17                  | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET
 
-   16 TYPE_SPECIFIER: TK_void
-   17               | TK_char
-   18               | TK_short
-   19               | TK_int
-   20               | TK_long
-   21               | TK_float
-   22               | TK_double
-   23               | TK_signed
-   24               | TK_unsigned
+   18 TYPE_SPECIFIER: TK_void
+   19               | TK_char
+   20               | TK_short
+   21               | TK_int
+   22               | TK_long
+   23               | TK_float
+   24               | TK_double
+   25               | TK_signed
+   26               | TK_unsigned
+
+   27 EXPRESSION: PRIMARY_EXPRESSION
+
+   28 PRIMARY_EXPRESSION: CONSTANT
+
+   29 CONSTANT: TC_integer
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-T_IDENTIFIER (258) 13
-T_LBRACE (259) 7
-T_RBRACE (260) 7
-T_LBRACKET (261) 14 15
-T_RBRACKET (262) 14 15
+T_IDENTIFIER (258) 15
+T_LBRACE (259) 7 8
+T_RBRACE (260) 7 8
+T_LBRACKET (261) 16 17
+T_RBRACKET (262) 16 17
 T_LINDEX (263)
 T_RINDEX (264)
 TK_auto (265)
 TK_break (266)
 TK_case (267)
-TK_char (268) 17
+TK_char (268) 19
 TK_const (269)
 TK_continue (270)
 TK_default (271)
 TK_do (272)
-TK_double (273) 22
+TK_double (273) 24
 TK_else (274)
 TK_enum (275)
 TK_extern (276)
-TK_float (277) 21
+TK_float (277) 23
 TK_for (278)
 TK_goto (279)
 TK_if (280)
-TK_int (281) 19
-TK_long (282) 20
+TK_int (281) 21
+TK_long (282) 22
 TK_register (283)
-TK_return (284) 10
-TK_short (285) 18
-TK_signed (286) 23
+TK_return (284) 11 12
+TK_short (285) 20
+TK_signed (286) 25
 TK_sizeof (287)
 TK_static (288)
 TK_struct (289)
 TK_switch (290)
 TK_typedef (291)
 TK_union (292)
-TK_unsigned (293) 24
-TK_void (294) 16
+TK_unsigned (293) 26
+TK_void (294) 18
 TK_volatile (295)
 TK_while (296)
 T_StringLiteral (297)
@@ -185,8 +192,8 @@ TO_decrement (319)
 TO_equal (320)
 TP_comma (321)
 TP_colon (322)
-TP_semiColon (323) 10
-TC_integer (324)
+TP_semiColon (323) 11 12
+TC_integer (324) 29
 TC_unsigned (325)
 TC_long (326)
 TC_longLong (327)
@@ -223,21 +230,27 @@ EXTERNAL_DECLARATION (95)
 FUNCTION_DEFINITION (96)
     on left: 4, on right: 3
 STATEMENT (97)
-    on left: 5 6, on right: 8 9
+    on left: 5 6, on right: 9 10
 COMPOUND_STATEMENT (98)
-    on left: 7, on right: 4 5
+    on left: 7 8, on right: 4 5
 STATEMENT_LIST (99)
-    on left: 8 9, on right: 7 9
+    on left: 9 10, on right: 7 10
 JUMP_STATEMENT (100)
-    on left: 10, on right: 6
+    on left: 11 12, on right: 6
 DECLARATION_SPECIFIERS (101)
-    on left: 11, on right: 4
+    on left: 13, on right: 4
 DECLARATOR (102)
-    on left: 12, on right: 4 14
+    on left: 14, on right: 4 16
 DIRECT_DECLARATOR (103)
-    on left: 13 14 15, on right: 12 15
+    on left: 15 16 17, on right: 14 17
 TYPE_SPECIFIER (104)
-    on left: 16 17 18 19 20 21 22 23 24, on right: 11
+    on left: 18 19 20 21 22 23 24 25 26, on right: 13
+EXPRESSION (105)
+    on left: 27, on right: 12
+PRIMARY_EXPRESSION (106)
+    on left: 28, on right: 27
+CONSTANT (107)
+    on left: 29, on right: 28
 
 
 State 0
@@ -263,65 +276,65 @@ State 0
 
 State 1
 
-   17 TYPE_SPECIFIER: TK_char .
-
-    $default  reduce using rule 17 (TYPE_SPECIFIER)
-
-
-State 2
-
-   22 TYPE_SPECIFIER: TK_double .
-
-    $default  reduce using rule 22 (TYPE_SPECIFIER)
-
-
-State 3
-
-   21 TYPE_SPECIFIER: TK_float .
-
-    $default  reduce using rule 21 (TYPE_SPECIFIER)
-
-
-State 4
-
-   19 TYPE_SPECIFIER: TK_int .
+   19 TYPE_SPECIFIER: TK_char .
 
     $default  reduce using rule 19 (TYPE_SPECIFIER)
 
 
-State 5
+State 2
 
-   20 TYPE_SPECIFIER: TK_long .
-
-    $default  reduce using rule 20 (TYPE_SPECIFIER)
-
-
-State 6
-
-   18 TYPE_SPECIFIER: TK_short .
-
-    $default  reduce using rule 18 (TYPE_SPECIFIER)
-
-
-State 7
-
-   23 TYPE_SPECIFIER: TK_signed .
-
-    $default  reduce using rule 23 (TYPE_SPECIFIER)
-
-
-State 8
-
-   24 TYPE_SPECIFIER: TK_unsigned .
+   24 TYPE_SPECIFIER: TK_double .
 
     $default  reduce using rule 24 (TYPE_SPECIFIER)
 
 
+State 3
+
+   23 TYPE_SPECIFIER: TK_float .
+
+    $default  reduce using rule 23 (TYPE_SPECIFIER)
+
+
+State 4
+
+   21 TYPE_SPECIFIER: TK_int .
+
+    $default  reduce using rule 21 (TYPE_SPECIFIER)
+
+
+State 5
+
+   22 TYPE_SPECIFIER: TK_long .
+
+    $default  reduce using rule 22 (TYPE_SPECIFIER)
+
+
+State 6
+
+   20 TYPE_SPECIFIER: TK_short .
+
+    $default  reduce using rule 20 (TYPE_SPECIFIER)
+
+
+State 7
+
+   25 TYPE_SPECIFIER: TK_signed .
+
+    $default  reduce using rule 25 (TYPE_SPECIFIER)
+
+
+State 8
+
+   26 TYPE_SPECIFIER: TK_unsigned .
+
+    $default  reduce using rule 26 (TYPE_SPECIFIER)
+
+
 State 9
 
-   16 TYPE_SPECIFIER: TK_void .
+   18 TYPE_SPECIFIER: TK_void .
 
-    $default  reduce using rule 16 (TYPE_SPECIFIER)
+    $default  reduce using rule 18 (TYPE_SPECIFIER)
 
 
 State 10
@@ -373,9 +386,9 @@ State 13
 
 State 14
 
-   11 DECLARATION_SPECIFIERS: TYPE_SPECIFIER .
+   13 DECLARATION_SPECIFIERS: TYPE_SPECIFIER .
 
-    $default  reduce using rule 11 (DECLARATION_SPECIFIERS)
+    $default  reduce using rule 13 (DECLARATION_SPECIFIERS)
 
 
 State 15
@@ -394,14 +407,14 @@ State 16
 
 State 17
 
-   13 DIRECT_DECLARATOR: T_IDENTIFIER .
+   15 DIRECT_DECLARATOR: T_IDENTIFIER .
 
-    $default  reduce using rule 13 (DIRECT_DECLARATOR)
+    $default  reduce using rule 15 (DIRECT_DECLARATOR)
 
 
 State 18
 
-   14 DIRECT_DECLARATOR: T_LBRACKET . DECLARATOR T_RBRACKET
+   16 DIRECT_DECLARATOR: T_LBRACKET . DECLARATOR T_RBRACKET
 
     T_IDENTIFIER  shift, and go to state 17
     T_LBRACKET    shift, and go to state 18
@@ -421,17 +434,17 @@ State 19
 
 State 20
 
-   12 DECLARATOR: DIRECT_DECLARATOR .
-   15 DIRECT_DECLARATOR: DIRECT_DECLARATOR . T_LBRACKET T_RBRACKET
+   14 DECLARATOR: DIRECT_DECLARATOR .
+   17 DIRECT_DECLARATOR: DIRECT_DECLARATOR . T_LBRACKET T_RBRACKET
 
     T_LBRACKET  shift, and go to state 24
 
-    $default  reduce using rule 12 (DECLARATOR)
+    $default  reduce using rule 14 (DECLARATOR)
 
 
 State 21
 
-   14 DIRECT_DECLARATOR: T_LBRACKET DECLARATOR . T_RBRACKET
+   16 DIRECT_DECLARATOR: T_LBRACKET DECLARATOR . T_RBRACKET
 
     T_RBRACKET  shift, and go to state 25
 
@@ -439,14 +452,16 @@ State 21
 State 22
 
     7 COMPOUND_STATEMENT: T_LBRACE . STATEMENT_LIST T_RBRACE
+    8                   | T_LBRACE . T_RBRACE
 
     T_LBRACE   shift, and go to state 22
-    TK_return  shift, and go to state 26
+    T_RBRACE   shift, and go to state 26
+    TK_return  shift, and go to state 27
 
-    STATEMENT           go to state 27
-    COMPOUND_STATEMENT  go to state 28
-    STATEMENT_LIST      go to state 29
-    JUMP_STATEMENT      go to state 30
+    STATEMENT           go to state 28
+    COMPOUND_STATEMENT  go to state 29
+    STATEMENT_LIST      go to state 30
+    JUMP_STATEMENT      go to state 31
 
 
 State 23
@@ -458,83 +473,131 @@ State 23
 
 State 24
 
-   15 DIRECT_DECLARATOR: DIRECT_DECLARATOR T_LBRACKET . T_RBRACKET
+   17 DIRECT_DECLARATOR: DIRECT_DECLARATOR T_LBRACKET . T_RBRACKET
 
-    T_RBRACKET  shift, and go to state 31
+    T_RBRACKET  shift, and go to state 32
 
 
 State 25
 
-   14 DIRECT_DECLARATOR: T_LBRACKET DECLARATOR T_RBRACKET .
+   16 DIRECT_DECLARATOR: T_LBRACKET DECLARATOR T_RBRACKET .
 
-    $default  reduce using rule 14 (DIRECT_DECLARATOR)
+    $default  reduce using rule 16 (DIRECT_DECLARATOR)
 
 
 State 26
 
-   10 JUMP_STATEMENT: TK_return . TP_semiColon
+    8 COMPOUND_STATEMENT: T_LBRACE T_RBRACE .
 
-    TP_semiColon  shift, and go to state 32
+    $default  reduce using rule 8 (COMPOUND_STATEMENT)
 
 
 State 27
 
-    8 STATEMENT_LIST: STATEMENT .
+   11 JUMP_STATEMENT: TK_return . TP_semiColon
+   12               | TK_return . EXPRESSION TP_semiColon
 
-    $default  reduce using rule 8 (STATEMENT_LIST)
+    TP_semiColon  shift, and go to state 33
+    TC_integer    shift, and go to state 34
+
+    EXPRESSION          go to state 35
+    PRIMARY_EXPRESSION  go to state 36
+    CONSTANT            go to state 37
 
 
 State 28
+
+    9 STATEMENT_LIST: STATEMENT .
+
+    $default  reduce using rule 9 (STATEMENT_LIST)
+
+
+State 29
 
     5 STATEMENT: COMPOUND_STATEMENT .
 
     $default  reduce using rule 5 (STATEMENT)
 
 
-State 29
+State 30
 
     7 COMPOUND_STATEMENT: T_LBRACE STATEMENT_LIST . T_RBRACE
-    9 STATEMENT_LIST: STATEMENT_LIST . STATEMENT
+   10 STATEMENT_LIST: STATEMENT_LIST . STATEMENT
 
     T_LBRACE   shift, and go to state 22
-    T_RBRACE   shift, and go to state 33
-    TK_return  shift, and go to state 26
+    T_RBRACE   shift, and go to state 38
+    TK_return  shift, and go to state 27
 
-    STATEMENT           go to state 34
-    COMPOUND_STATEMENT  go to state 28
-    JUMP_STATEMENT      go to state 30
+    STATEMENT           go to state 39
+    COMPOUND_STATEMENT  go to state 29
+    JUMP_STATEMENT      go to state 31
 
 
-State 30
+State 31
 
     6 STATEMENT: JUMP_STATEMENT .
 
     $default  reduce using rule 6 (STATEMENT)
 
 
-State 31
-
-   15 DIRECT_DECLARATOR: DIRECT_DECLARATOR T_LBRACKET T_RBRACKET .
-
-    $default  reduce using rule 15 (DIRECT_DECLARATOR)
-
-
 State 32
 
-   10 JUMP_STATEMENT: TK_return TP_semiColon .
+   17 DIRECT_DECLARATOR: DIRECT_DECLARATOR T_LBRACKET T_RBRACKET .
 
-    $default  reduce using rule 10 (JUMP_STATEMENT)
+    $default  reduce using rule 17 (DIRECT_DECLARATOR)
 
 
 State 33
+
+   11 JUMP_STATEMENT: TK_return TP_semiColon .
+
+    $default  reduce using rule 11 (JUMP_STATEMENT)
+
+
+State 34
+
+   29 CONSTANT: TC_integer .
+
+    $default  reduce using rule 29 (CONSTANT)
+
+
+State 35
+
+   12 JUMP_STATEMENT: TK_return EXPRESSION . TP_semiColon
+
+    TP_semiColon  shift, and go to state 40
+
+
+State 36
+
+   27 EXPRESSION: PRIMARY_EXPRESSION .
+
+    $default  reduce using rule 27 (EXPRESSION)
+
+
+State 37
+
+   28 PRIMARY_EXPRESSION: CONSTANT .
+
+    $default  reduce using rule 28 (PRIMARY_EXPRESSION)
+
+
+State 38
 
     7 COMPOUND_STATEMENT: T_LBRACE STATEMENT_LIST T_RBRACE .
 
     $default  reduce using rule 7 (COMPOUND_STATEMENT)
 
 
-State 34
+State 39
 
-    9 STATEMENT_LIST: STATEMENT_LIST STATEMENT .
+   10 STATEMENT_LIST: STATEMENT_LIST STATEMENT .
 
-    $default  reduce using rule 9 (STATEMENT_LIST)
+    $default  reduce using rule 10 (STATEMENT_LIST)
+
+
+State 40
+
+   12 JUMP_STATEMENT: TK_return EXPRESSION TP_semiColon .
+
+    $default  reduce using rule 12 (JUMP_STATEMENT)

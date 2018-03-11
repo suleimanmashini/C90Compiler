@@ -3,3 +3,6 @@ DefineInitialMilestones,             ,1,    ?,           , Come up with initial 
 Started Project,Made some flex files,8,,yes,Actually got around to starting
 Got a working AST,"Bison File, printing functions",9,,yes,
 Getting the Parser tests to Pass,,,,,
+Started CodeGen,,,,,
+Restructure all the AST,,,,,
+Generated Code for a basic Function,,,,,

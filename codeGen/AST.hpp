@@ -5,4 +5,4 @@
 #include "ast/ASTDeclaration.hpp"
 #include "ast/ASTExpression.hpp"
 
-extern const ASTNode *parseAST();
+extern const ASTFunctionDefinition *parseAST();

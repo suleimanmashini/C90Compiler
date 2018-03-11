@@ -1,4 +1,4 @@
-CPPFLAGS += -std=c++11 -W -Wall -g -Wno-unused-parameter
+CPPFLAGS += -std=c++11 -W -Wall -g -ggdb -O0 -Wno-unused-parameter
 CPPFLAGS += -I include
 
 translator : bin/c_translator

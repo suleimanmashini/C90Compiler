@@ -1,16 +1,20 @@
 #pragma once
+#include "ASTStatement.hpp"
 
 struct ASTDeclaration: public ASTNode {
 public:
 	virtual ~ASTDeclaration() {};
 	virtual void codeGen() const = 0;
+
+private:
+
 };
 
 struct ASTDirectDeclarator: public ASTDeclaration {
 public:
   ASTDirectDeclarator(const std::string _Identifier): Identifier(_Identifier) {}
   void codeGen() const override{
-    std::cout<< '\t' <<  this->getName() << ":\t";
+    std::cout <<  this->getName() << ":\t";
   }
   std::string getName() const {return Identifier;}
 private:
@@ -37,7 +41,7 @@ public:
     std::cout << "nop\n";
   }
 private:
-  const int functionType;
+	const int functionType;
   const ASTDirectDeclarator* Declarator;
   const ASTCompoundStatement* Block;
 };
@@ -47,15 +51,41 @@ private:
 struct ASTTypeSpecifier: public ASTDeclaration {
 public:
   ASTTypeSpecifier(const int _typeNumber): typeNumber(_typeNumber) {}
+	void codeGen() const override  {}
   int getType() { return typeNumber;}
 private:
   const int typeNumber;
   //lets assume for now 0 is void and 1 is int
 };
 
+
 struct ASTDeclarationList: public ASTDeclaration {
-public:
-ASTDeclarationList(const ASTDeclaration* _Decl): Decl(_Decl) {}
+ASTDeclarationList(const ASTDeclarationList* _Child, const ASTReturnStatement* _Statement): Child(_Child), Declaration(_Statement) {}
+void codeGen() const override {
+  if (Child == NULL && Statement == NULL) {
+		std::cout <<"\tnop\n";
+		return;
+	}
+	if (Statement != NULL) {
+		Declaration->codeGen();
+	}
+	if (Child != NULL) {
+		Child->codeGen();
+	}
+}
 private:
-const ASTDeclaration* Decl;
+  const ASTDeclarationList* Child;
+  const ASTDeclaration* Declaration;
+};
+
+struct ASTVariableDeclaration: public ASTDeclaration {
+public:
+	ASTVariableDeclaration(const int _typeNumber, const ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
+	void updateVariables() {
+		variable TEMP(typeNumber, Variable.getName());
+		allVariables.push_back(TEMP);
+	}
+private:
+	const int typeNumber;
+	const ASTDirectDeclarator* Variable;
 };
