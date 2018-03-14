@@ -40,7 +40,6 @@
 %type <AssExpression> ASSIGNMENT_EXPRESSION
 %type <Expression> EXPRESSION PRIMARY_EXPRESSION  POSTFIX_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION MULTIPLICATIVE_EXPRESSION ADDITIVE_EXPRESSION
 %type <Integer> TC_integer
-%type <IntegerP> CONSTANT
 %type <Statement> STATEMENT EXPRESSION_STATEMENT
 %type <DecList> DECLARATION_LIST
 %type <Declaration> DECLARATION
@@ -49,6 +48,7 @@
 
 
 %union {
+const ASTVariableExp* Vexp;
 const ASTNode* Node;
 const ASTVariableDeclaration* Declaration;
 const ASTMultiplicativeExpression* MultExp;
@@ -243,11 +243,10 @@ EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | ADDITIVE_EXPRESSION {$$ = $1;}
           | ASSIGNMENT_EXPRESSION {$$ = $1;}
 
-PRIMARY_EXPRESSION: CONSTANT {$$ = new ASTExpression($1, NULL, "");}
+PRIMARY_EXPRESSION: TC_integer {$$ = new ASTIntegerConst($1);;}
                   | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
-                  | T_IDENTIFIER {$$ = new ASTExpression(NULL, NULL, *$1);}
+                  | T_IDENTIFIER {$$ = new ASTVariableExp(*$1);}
 
-CONSTANT: TC_integer {$$ = new ASTIntegerConst($1);}
 /*
 EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | POSTFIX_EXPRESSION {;}

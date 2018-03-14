@@ -13,7 +13,7 @@ void codeGen() const override {
 	if(returnExpression == NULL) {
   std::cout<< "\tnop \n";
 } else {
-	returnExpression->codeGen(V0);
+	returnExpression->codeGen();
 	std::cout<< "\tnop \n";
 }
 }
@@ -52,7 +52,12 @@ void codeGen() const override {
 		std::cout <<"\tnop\n";
 		return;
 	}
+	if(DeclList != NULL) {
+		DeclList->codeGen();
+	}
+	if(StatList != NULL){
   StatList->codeGen();
+}
   //TODO: INCLUDE DECLlIST HERE!!
 }
 void pushVariables() const {
@@ -70,7 +75,9 @@ struct ASTExpression;
 struct ASTExpressionStatement: ASTStatement {
 	~ASTExpressionStatement() {}
 	ASTExpressionStatement(const ASTExpression* _Exp): Exp(_Exp) {}
-	void codeGen() const {}
+	void codeGen() const {
+		Exp->codeGen();
+	}
 private:
 const ASTExpression* Exp;
 };

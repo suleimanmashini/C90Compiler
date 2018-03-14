@@ -3,7 +3,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <list>
 
+
+extern std::vector<std::string> regList;
 
 struct variable {
 public:
@@ -14,6 +17,9 @@ std::string name;
 };
 
 extern std::vector<variable> allVariables;
+
+std::vector<std::string> tail(std::vector<std::string> vIn);
+std::string head(std::vector<std::string> vIn);
 
 struct ASTNode {
 public:

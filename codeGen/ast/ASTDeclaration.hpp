@@ -23,19 +23,14 @@ public:
 		int initialVSize = allVariables.size();
 		Declarator->codeGen();
 		Block->pushVariables();
-    int Framesize = ((initialVSize - allVariables.size()) * 8)
+    int Framesize = ((initialVSize - allVariables.size()) * 8);
     //TODO: FIX THIS NOW!!!
     //im going to assume that all functions are leaves.
     //FOR NOW!
     //this is where i push the stack and print shit but for now itll be simple
-    std::cout << "  addiu $sp, $sp, -" << Framesize << std::endl;
-    std::cout << "  sw    $fp, " << (Framesize-4) << "($sp)\n";
-    std::cout << "  move  $fp, $sp\n";
+    std::cout<<"generating block" << std::endl;
     Block->codeGen();
-    std::cout << "  move  $sp, $fp\n";
-    std::cout << "  lw    $fp, 4($sp)\n";
-    std::cout << "  addiu $sp, $sp, 8\n";
-    std::cout << "  jr    $31\n";
+
     std::cout << "nop\n";
   }
 private:
