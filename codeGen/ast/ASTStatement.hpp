@@ -1,7 +1,6 @@
 #pragma once
 
-
-struct ASTStatement: public ASTNode {
+struct ASTStatement: public ASTExpression {
 public:
 	virtual ~ASTStatement() {};
 	virtual void codeGen() const = 0;
@@ -25,7 +24,7 @@ private:
 
 struct ASTStatementList: public ASTStatement {
 
-ASTStatementList(const ASTStatementList* _Child, const ASTReturnStatement* _Statement): Child(_Child), Statement(_Statement) {}
+ASTStatementList(const ASTStatementList* _Child, const ASTStatement* _Statement): Child(_Child), Statement(_Statement) {}
 void codeGen() const override {
   if (Child == NULL && Statement == NULL) {
 		std::cout <<"\tnop\n";
@@ -40,10 +39,10 @@ void codeGen() const override {
 }
 private:
   const ASTStatementList* Child;
-  const ASTReturnStatement* Statement;
+  const ASTStatement* Statement;
 
 };
-struct ASTDeclarationList;
+
 struct ASTCompoundStatement: public ASTStatement {
 public:
 ~ASTCompoundStatement() {}
@@ -56,9 +55,22 @@ void codeGen() const override {
   StatList->codeGen();
   //TODO: INCLUDE DECLlIST HERE!!
 }
+void pushVariables() const {
+	if (DeclList != NULL) {
+		DeclList->pushVariables();
+		//TODO: ADD SUPPORT TO OTHER STATEMENTS THAT HAVE BLOCKS
+	}
+}
 private:
   const ASTStatementList* StatList;
   const ASTDeclarationList* DeclList;
 };
 
 struct ASTExpression;
+struct ASTExpressionStatement: ASTStatement {
+	~ASTExpressionStatement() {}
+	ASTExpressionStatement(const ASTExpression* _Exp): Exp(_Exp) {}
+	void codeGen() const {}
+private:
+const ASTExpression* Exp;
+};

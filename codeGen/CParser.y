@@ -6,7 +6,7 @@
 
   #include "AST.hpp"
 
-  extern const ASTFunctionDefinition *ASTRoot;
+  extern const ASTTranslationUnit *ASTRoot;
 
   int yylex(void);
   void yyerror(const char*);
@@ -31,20 +31,21 @@
 %token TO_OrEqual TO_exOrEqual TO_andEqual TO_rightEqual TO_leftEqual TO_minusEqual TO_plusEqual TO_divEqual TO_multEqual
 %token TO_OR TO_logicOr TO_exclussiveOr TO_questionMark TO_modEqual
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
-%type <Number> DECLARATION_SPECIFIERS TYPE_SPECIFIER
-%type <Node> TRANSLATION_UNIT
-%type <Function> FUNCTION_DEFINITION EXTERNAL_DECLARATION
+%type <Number> DECLARATION_SPECIFIERS TYPE_SPECIFIER ASSIGNMENT_OPERATOR
+%type <Function> FUNCTION_DEFINITION
 %type <DirectD> DECLARATOR DIRECT_DECLARATOR INIT_DECLARATION_LIST INIT_DECLARATOR
 %type <StateList> STATEMENT_LIST
 %type <Compound> COMPOUND_STATEMENT
-%type <Return> JUMP_STATEMENT STATEMENT
-%type <Expression> EXPRESSION PRIMARY_EXPRESSION POSTFIX_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION
+%type <Return> JUMP_STATEMENT
+%type <AssExpression> ASSIGNMENT_EXPRESSION
+%type <Expression> EXPRESSION PRIMARY_EXPRESSION  POSTFIX_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION MULTIPLICATIVE_EXPRESSION ADDITIVE_EXPRESSION
 %type <Integer> TC_integer
 %type <IntegerP> CONSTANT
+%type <Statement> STATEMENT EXPRESSION_STATEMENT
 %type <DecList> DECLARATION_LIST
 %type <Declaration> DECLARATION
-%type <MultExp> MULTIPLICATIVE_EXPRESSION
-%type <AddExp> ADDITIVE_EXPRESSION
+
+%type <Translation> TRANSLATION_UNIT START
 
 
 %union {
@@ -62,22 +63,28 @@ const ASTDeclaration* Declarator;
 const std::string* word;
 const ASTFunctionDefinition* Function;
 const ASTExpression* Expression;
+const ASTAssignmentExpression* AssExpression;
 const int* Number;
+const ASTTranslationUnit* Translation;
 const ASTIntegerConst* IntegerP;
 int Integer;
 }
 
-%start TRANSLATION_UNIT
+%start START
 
 %%
 
-TRANSLATION_UNIT: EXTERNAL_DECLARATION {ASTRoot = $1;}
-                | TRANSLATION_UNIT EXTERNAL_DECLARATION {ASTRoot = $2;}
+START: TRANSLATION_UNIT {ASTRoot = $1;}
+
+TRANSLATION_UNIT: FUNCTION_DEFINITION {$$ = new ASTTranslationUnit($1, NULL, NULL);}
+                | DECLARATION {$$ = new ASTTranslationUnit(NULL, $1, NULL);}
+                | TRANSLATION_UNIT FUNCTION_DEFINITION {$$ = new ASTTranslationUnit($2, NULL, $1);}
+                | TRANSLATION_UNIT DECLARATION {$$ = new ASTTranslationUnit(NULL, $2, NULL);}
 /*
 EXTERNAL_DECLARATION: FUNCTION_DEFINITION {$$ = $1;}
                     | DECLARATION {;}
 */
-EXTERNAL_DECLARATION: FUNCTION_DEFINITION {$$ = $1;}
+
 /*
 FUNCTION_DEFINITION: DECLARATION_SPECIFIERS DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT {;}
                    | DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT {;}
@@ -96,6 +103,7 @@ STATEMENT: LABELED_STATEMENT {;}
 */
 STATEMENT: COMPOUND_STATEMENT {;}
          | JUMP_STATEMENT {$$ = $1;}
+         | EXPRESSION_STATEMENT {$$ = $1;}
 
 /*
 LABELLED_STATEMENT: T_IDENTIFIER TP_colon STATEMENT {;}
@@ -114,9 +122,10 @@ DECLARATION_LIST: DECLARATION {$$ = new ASTDeclarationList(NULL, $1);}
 STATEMENT_LIST: STATEMENT {$$ = new ASTStatementList(nullptr, $1);}
               | STATEMENT_LIST STATEMENT {$$ = new ASTStatementList($1, $2);}
 
-/*
-EXPRESSION_STATEMENT: EXPRESSION TP_semiColon {;}
+EXPRESSION_STATEMENT: EXPRESSION TP_semiColon {$$ = new ASTExpressionStatement($1);}
                     | TP_semiColon {;}
+/*
+
 
 SELECTION_STATEMENT: TK_if T_LBRACKET EXPRESSION T_RBRACKET STATEMENT {;}
                    | TK_if T_LBRACKET EXPRESSION T_RBRACKET STATEMENT TK_else STATEMENT {;}
@@ -230,8 +239,11 @@ TYPE_QUALIFIER: TK_const {;}
               | TK_volatile {;}
 
 EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
+          | MULTIPLICATIVE_EXPRESSION {$$ = $1;}
+          | ADDITIVE_EXPRESSION {$$ = $1;}
+          | ASSIGNMENT_EXPRESSION {$$ = $1;}
 
-PRIMARY_EXPRESSION: CONSTANT {$$ = new ASTExpression($1, NULL, NULL);}
+PRIMARY_EXPRESSION: CONSTANT {$$ = new ASTExpression($1, NULL, "");}
                   | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
                   | T_IDENTIFIER {$$ = new ASTExpression(NULL, NULL, *$1);}
 
@@ -251,7 +263,6 @@ EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | LOGICAL_AND_EXPRESSION {;}
           | LOGICAL_OR_EXPRESSION {;}
           | CONDITIONAL_EXPRESSION {;}
-          | ASSIGNMENT_EXPRESSION {;}
           | ASSIGNMENT_EXPRESSION {;}
           | EXPRESSION TP_comma ASSIGNMENT_EXPRESSION {;}
 
@@ -304,7 +315,7 @@ MULTIPLICATIVE_EXPRESSION: CAST_EXPRESSION {$$ = $1;}
                          | MULTIPLICATIVE_EXPRESSION TO_divide CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 1);;}
                          | MULTIPLICATIVE_EXPRESSION TO_mod CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 2);;}
 
-ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ = ASTAdditiveExpression(NULL, $1, 0);}
+ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ =  $1;}
                    | ADDITIVE_EXPRESSION TO_plus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 1);}
                    | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 2);}
 
@@ -345,27 +356,30 @@ CONDITIONAL_EXPRESSION: LOGICAL_OR_EXPRESSION {;}
 
 ASSIGNMENT_EXPRESSION: CONDITIONAL_EXPRESSION {;}
                      | UNARY_EXPRESSION ASSIGNMENT_OPERATOR ASSIGNMENT_EXPRESSION {;}
-
-ASSIGNMENT_OPERATOR: TO_equal {;}
-                   | TO_multEqual {;}
-                   | TO_divEqual {;}
-                   | TO_modEqual {;}
-                   | TO_plusEqual {;}
-                   | TO_minusEqual {;}
-                   | TO_rightEqual {;}
-                   | TO_leftEqual {;}
-                   | TO_andEqual {;}
-                   | TO_exOrEqual {;}
-                   | TO_OrEqual {;}
-
 */
+//TODO: THIS IS SUPER IMPORTANT NEEDS TO BECOME A CONDITIONAL EXPRESSION!!!!!
+ASSIGNMENT_EXPRESSION: UNARY_EXPRESSION ASSIGNMENT_OPERATOR ADDITIVE_EXPRESSION {$$ = new ASTAssignmentExpression($1, $3, *$2);}
+
+ASSIGNMENT_OPERATOR: TO_equal {$$ = new int(0);}
+                   | TO_multEqual {$$ = new int(1);}
+                   | TO_divEqual {$$ = new int(2);}
+                   | TO_modEqual {$$ = new int(3);}
+                   | TO_plusEqual {$$ = new int(4);}
+                   | TO_minusEqual {$$ = new int(5);}
+                   | TO_rightEqual {$$ = new int(6);}
+                   | TO_leftEqual {$$ = new int(7);}
+                   | TO_andEqual {$$ = new int(8);}
+                   | TO_exOrEqual {$$ = new int(9);}
+                   | TO_OrEqual {$$ = new int(10);}
+
+
 
 
 %%
 
-const ASTFunctionDefinition *ASTRoot; // Definition of variable (to match declaration earlier)
+const ASTTranslationUnit *ASTRoot; // Definition of variable (to match declaration earlier)
 
-const ASTFunctionDefinition *parseAST()
+const ASTTranslationUnit *parseAST()
 {
   ASTRoot=0;
   yyparse();

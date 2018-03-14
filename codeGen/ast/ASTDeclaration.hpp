@@ -1,13 +1,6 @@
 #pragma once
 
-struct ASTDeclaration: public ASTNode {
-public:
-	virtual ~ASTDeclaration() {};
-	virtual void codeGen() const = 0;
 
-private:
-
-};
 
 struct ASTDirectDeclarator: public ASTDeclaration {
 public:
@@ -27,10 +20,16 @@ public:
   int getReturnType() const {return functionType;}
   std::string getFunctionName() const {return Declarator->getName();}
   void codeGen() const override {
-    Declarator->codeGen();
+		int initialVSize = allVariables.size();
+		Declarator->codeGen();
+		Block->pushVariables();
+    int Framesize = ((initialVSize - allVariables.size()) * 8)
+    //TODO: FIX THIS NOW!!!
+    //im going to assume that all functions are leaves.
+    //FOR NOW!
     //this is where i push the stack and print shit but for now itll be simple
-    std::cout << "  addiu $sp, $sp, -8\n";
-    std::cout << "  sw    $fp, 4($sp)\n";
+    std::cout << "  addiu $sp, $sp, -" << Framesize << std::endl;
+    std::cout << "  sw    $fp, " << (Framesize-4) << "($sp)\n";
     std::cout << "  move  $fp, $sp\n";
     Block->codeGen();
     std::cout << "  move  $sp, $fp\n";
@@ -58,24 +57,7 @@ private:
 };
 
 
-struct ASTDeclarationList: public ASTDeclaration {
-ASTDeclarationList(const ASTDeclarationList* _Child, const ASTDeclaration* _Statement): Child(_Child), Declaration(_Statement) {}
-void codeGen() const override {
-  if (Child == NULL && Declaration == NULL) {
-		std::cout <<"\tnop\n";
-		return;
-	}
-	if (Declaration != NULL) {
-		Declaration->codeGen();
-	}
-	if (Child != NULL) {
-		Child->codeGen();
-	}
-}
-private:
-  const ASTDeclarationList* Child;
-  const ASTDeclaration* Declaration;
-};
+
 
 struct ASTVariableDeclaration: public ASTDeclaration {
 public:

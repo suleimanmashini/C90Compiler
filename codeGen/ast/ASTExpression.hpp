@@ -36,7 +36,7 @@ private:
 struct ASTMultiplicativeExpression: public ASTExpression {
 public:
 	~ASTMultiplicativeExpression() {}
-	ASTMultiplicativeExpression(const ASTMultiplicativeExpression* _right, const ASTExpression* _left, const int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
+	ASTMultiplicativeExpression(const ASTExpression* _right, const ASTExpression* _left, const int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
 	void codeGen() const override {}
 	void codeGen(int destReg) const{
 		if (operationFlag == 1) {
@@ -45,7 +45,7 @@ public:
 		}
 	}
 private:
-	const ASTMultiplicativeExpression* right;
+	const ASTExpression* right;
 	const ASTExpression* left;
 	const int operationFlag;
 	//TODO: SUPPORT GOING THRU AND FINDING THE STUFF;};
@@ -54,8 +54,10 @@ private:
 struct ASTAdditiveExpression: public ASTExpression {
 public:
 	~ASTAdditiveExpression() {}
-	ASTAdditiveExpression(const ASTAdditiveExpression* _right, const ASTMultiplicativeExpression* _left, const int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
-	void codeGen() const override {}
+	ASTAdditiveExpression(const ASTExpression* _right, const ASTExpression* _left, const int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
+	void codeGen() const override {
+
+	}
 	void codeGen(int destReg) {
 		if (operationFlag == 1) {
 			left->codeGen(destReg);
@@ -63,8 +65,22 @@ public:
 		}
 	}
 private:
-	const ASTAdditiveExpression* right;
-	const ASTMultiplicativeExpression* left;
+	const ASTExpression* right;
+	const ASTExpression* left;
 	const int operationFlag;
 	//TODO: SUPPORT GOING THRU AND FINDING THE STUFF;
+};
+
+struct ASTAssignmentExpression: public ASTExpression {
+public:
+	~ASTAssignmentExpression() {}
+	ASTAssignmentExpression(const ASTExpression* _variable, const ASTExpression* _EquivalentExp, const int _assignmentOp): variable(_variable), EquivalentExp(_EquivalentExp), assignmentOp(_assignmentOp) {}
+	void codeGen() const {
+
+	}
+private:
+	const ASTExpression* variable;
+	const int assignmentOp;
+	const ASTExpression* EquivalentExp;
+	//TODO: change the additive expression to the other thing
 };

@@ -5,12 +5,6 @@
 #include <vector>
 
 
-struct ASTNode {
-public:
-	virtual ~ASTNode() {};
-	virtual void codeGen() const = 0;
-};
-
 struct variable {
 public:
 variable(int _type, std::string _name): type(_type), name(_name) {}
@@ -20,6 +14,48 @@ std::string name;
 };
 
 extern std::vector<variable> allVariables;
+
+struct ASTNode {
+public:
+	virtual ~ASTNode() {}
+	virtual void codeGen() const {};
+};
+
+struct ASTDeclaration: public ASTNode {
+public:
+	virtual ~ASTDeclaration() {};
+	virtual void codeGen() const {};
+	virtual void pushVariables() const {}
+private:
+};
+
+struct ASTDeclarationList: public ASTDeclaration {
+~ASTDeclarationList() {}
+ASTDeclarationList(const ASTDeclarationList* _Child, const ASTDeclaration* _Statement): Child(_Child), Declaration(_Statement) {}
+void codeGen() const override {
+  if (Child == NULL && Declaration == NULL) {
+		std::cout <<"\tnop\n";
+		return;
+	}
+	if (Declaration != NULL) {
+		Declaration->codeGen();
+	}
+	if (Child != NULL) {
+		Child->codeGen();
+	}
+}
+void pushVariables() const {
+	if (Declaration != NULL) {
+		Declaration->pushVariables();
+	}
+	if (Child != NULL) {
+		Child->pushVariables();
+	}
+}
+private:
+  const ASTDeclarationList* Child;
+  const ASTDeclaration* Declaration;
+};
 
 enum {
 	RZERO, //HARD WIRES TO 0

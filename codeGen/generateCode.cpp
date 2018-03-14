@@ -5,7 +5,7 @@
 std::vector<variable> allVariables;
 
 int main() {
-				const ASTFunctionDefinition *ASTRoot = parseAST();
+				const ASTTranslationUnit *ASTRoot = parseAST();
 				ASTRoot->codeGen();
 
 	return 0;
