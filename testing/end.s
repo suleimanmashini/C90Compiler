@@ -21,17 +21,11 @@ uhm:
 	addiu	$sp,$sp,-24
 	sw	$fp,20($sp)
 	move	$fp,$sp
-	li	$2,5			# 0x5
+	li	$2,7			# 0x7
 	sw	$2,4($fp)
-	li	$2,8			# 0x8
+	li	$2,2			# 0x2
 	sw	$2,8($fp)
-	lw	$3,4($fp)
-	move	$2,$3
-	sll	$2,$2,3
-	subu	$3,$2,$3
-	lw	$2,8($fp)
-	mul	$2,$3,$2
-	addiu	$2,$2,-25
+	li	$2,5			# 0x5
 	sw	$2,12($fp)
 	nop
 	move	$sp,$fp

@@ -1,24 +1,24 @@
 #pragma once
 
-#include "ASTExpression.hpp"
+#include "TSTExpression.hpp"
 
 enum types {integer = 0, character = 1, vOID = 2, key = 3};
 
 
-struct ASTPrimitive : public ASTExpression {
+struct TSTPrimitive : public TSTExpression {
 public:
-	ASTPrimitive() {}
+	TSTPrimitive() {}
 protected:
 	int typeValue;
 };
 
-struct ASTInteger : public ASTPrimitive {
+struct TSTInteger : public TSTPrimitive {
 public:
-	~ASTInteger(){}
+	~TSTInteger(){}
 	void print() const override {
 		std::cout<< "(" << Value << ")";
 	}
-	 ASTInteger(int IntegerIn){
+	 TSTInteger(int IntegerIn){
 		Value = IntegerIn;
 		typeValue = integer;
 	}
@@ -26,22 +26,22 @@ protected:
 	int Value;
 };
 
-struct ASTVoid : public ASTPrimitive {
+struct TSTVoid : public TSTPrimitive {
 public:
-	~ASTVoid(){}
+	~TSTVoid(){}
 	void print() const override {
 		std::cout<< "Void!" << std::endl;
 	}
-	 ASTVoid(){
+	 TSTVoid(){
 		typeValue = vOID;
 	}
 };
 
-struct ASTKeyword : public ASTPrimitive {
+struct TSTKeyword : public TSTPrimitive {
 public:
-	~ASTKeyword(){}
-	ASTKeyword() {}
-	ASTKeyword(std::string Name): keyword(Name) {}
+	~TSTKeyword(){}
+	TSTKeyword() {}
+	TSTKeyword(std::string Name): keyword(Name) {}
 	void print() const override {
 		std::cout<< keyword;
 	}
@@ -50,26 +50,26 @@ private:
 };
 
 
-struct ASTVariable : public ASTPrimitive {
+struct TSTVariable : public TSTPrimitive {
 public:
-	~ASTVariable(){}
-	ASTVariable() {}
-	ASTVariable(const ASTKeyword* Name, std::string IDIn): keyword(Name), ID(IDIn) {}
+	~TSTVariable(){}
+	TSTVariable() {}
+	TSTVariable(const TSTKeyword* Name, std::string IDIn): keyword(Name), ID(IDIn) {}
 	void print() const override {
 		keyword->print();
 		std::cout<< " " << ID ;
 
 	}
 private:
-	const ASTKeyword* keyword;
+	const TSTKeyword* keyword;
 	const std::string ID;
 };
 
-struct ASTVariableName : public ASTPrimitive {
+struct TSTVariableName : public TSTPrimitive {
 public:
-	~ASTVariableName(){}
-	ASTVariableName() {}
-	ASTVariableName(std::string IDIn): ID(IDIn) {}
+	~TSTVariableName(){}
+	TSTVariableName() {}
+	TSTVariableName(std::string IDIn): ID(IDIn) {}
 	void print() const override {
 		std::cout<< ID ;
 

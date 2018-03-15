@@ -11,15 +11,21 @@ extern std::vector<std::string> regList;
 struct variable {
 public:
 variable(int _type, std::string _name): type(_type), name(_name) {}
+std::string getName() {
+	return name;
+}
 private:
 int type;
 std::string name;
 };
 
 extern std::vector<variable> allVariables;
-
+extern int initialVSize;
+extern int NumberofVaraibles;
 std::vector<std::string> tail(std::vector<std::string> vIn);
 std::string head(std::vector<std::string> vIn);
+int findVariableIndex (std::vector<variable> vIn, std::string variableName);
+
 
 struct ASTNode {
 public:

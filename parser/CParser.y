@@ -4,12 +4,12 @@
   #include <iostream>
   #include <cassert>
 
-  #include "AST.hpp"
+  #include "TST.hpp"
 
-  extern const ASTNode *ASTRoot;
+  extern const TSTNode *TSTRootTrans;
 
-  int yylex(void);
-  void yyerror(const char*);
+  int zzlex(void);
+  void zzerror(const char*);
 
 }
 
@@ -22,7 +22,7 @@
 %token  TK_void TK_volatile TK_while
 %token	T_StringLiteral T_LStringLiteral
 %token  T_dot TO_divide TO_memberAccess TO_not TO_bitwiseNot TO_ampersand TO_logicAnd
-%token  TO_asterix TO_mod TO_bitwiseLeft TO_bitwiseRight
+%token  TO_TSTerix TO_mod TO_bitwiseLeft TO_bitwiseRight
 %token  TO_lessThan TO_moreThan TO_lessThanOrEqual TO_moreThanOrEqual TO_equalTo TO_notEqualTo
 %token	TO_plus TO_minus TO_increment TO_decrement TO_equal
 %token	TP_comma TP_colon TP_semiColon
@@ -46,23 +46,23 @@
 
 
 %union {
-const ASTNode* Node;
-const ASTMultiply* Mult;
-const ASTDivide* Divide;
-const ASTVariable* Variable;
-const ASTVariableName* VName;
-const ASTKeyword* Keyword;
-const ASTSelectionStatement* Selection;
-const ASTExpressionStatement* EStatement;
-const ASTPlus* Plus;
-const ASTMinus* Minus;
-const ASTFunctionCall* Call;
-const ASTArgumentStatement* Argument;
-const ASTExpression* Expression;
-const ASTReturnStatement* RStatement;
-const ASTStatement* Statement;
-const ASTPrimitive* Primitive;
-const ASTFunction* Function;
+const TSTNode* Node;
+const TSTMultiply* Mult;
+const TSTDivide* Divide;
+const TSTVariable* Variable;
+const TSTVariableName* VName;
+const TSTKeyword* Keyword;
+const TSTSelectionStatement* Selection;
+const TSTExpressionStatement* EStatement;
+const TSTPlus* Plus;
+const TSTMinus* Minus;
+const TSTFunctionCall* Call;
+const TSTArgumentStatement* Argument;
+const TSTExpression* Expression;
+const TSTReturnStatement* RStatement;
+const TSTStatement* Statement;
+const TSTPrimitive* Primitive;
+const TSTFunction* Function;
 std::string* word;
 int Integer;
 float FNumber;
@@ -72,90 +72,90 @@ float FNumber;
 
 %%
 
-PROGRAM: STRUCTURE		{ASTRoot = $1;}
+PROGRAM: STRUCTURE		{TSTRootTrans = $1;}
 
 
-STRUCTURE: FUNCTION STRUCTURE {$$ = new ASTStatement($1, $2);}
-	    	 | FUNCTION {$$ = new ASTStatement($1);}
+STRUCTURE: FUNCTION STRUCTURE {$$ = new TSTStatement($1, $2);}
+	    	 | FUNCTION {$$ = new TSTStatement($1);}
          | VARIABLE_DECLARATION_GLOBAL {$$ = $1;}
-         | VARIABLE_DECLARATION_GLOBAL STRUCTURE {$$ = new ASTStatement($1, $2); }
+         | VARIABLE_DECLARATION_GLOBAL STRUCTURE {$$ = new TSTStatement($1, $2); }
 
-FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new ASTFunction($1, *$2, NULL, $6);}
-        | RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTFunction($1, *$2, $4, $7);}
+FUNCTION: RETURNTYPE T_IDENTIFIER T_LBRACKET T_RBRACKET T_LBRACE BLOCK T_RBRACE { $$ = new TSTFunction($1, *$2, NULL, $6);}
+        | RETURNTYPE T_IDENTIFIER T_LBRACKET VARIABLES T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new TSTFunction($1, *$2, $4, $7);}
 
-BLOCK: STATEMENT {$$ = new ASTStatement($1);}
-     | BLOCK STATEMENT {$$ = new ASTStatement($1, $2);}
+BLOCK: STATEMENT {$$ = new TSTStatement($1);}
+     | BLOCK STATEMENT {$$ = new TSTStatement($1, $2);}
 
-STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new ASTReturnStatement($2);}
-         | EXPRESSION TP_semiColon {$$ = new ASTStatement($1);}
+STATEMENT: TK_return EXPRESSION TP_semiColon {$$ = new TSTReturnStatement($2);}
+         | EXPRESSION TP_semiColon {$$ = new TSTStatement($1);}
          | VARIABLE_DECLARATION TP_semiColon {$$ = $1;}
          | SELECTION_STATEMENT {$$ = $1;}
-         | EXPRESSION TO_equal EXPRESSION TP_semiColon {$$ = new ASTAssignmentStatement($1, $3);}
+         | EXPRESSION TO_equal EXPRESSION TP_semiColon {$$ = new TSTAssignmentStatement($1, $3);}
          | ITERATION_STATEMENT {$$ = $1;}
 
- ITERATION_STATEMENT: TK_while T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new ASTIteratorStatementWhile($3, $5);}
-                    | TK_while T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTIteratorStatementWhile($3, $6);}
+ ITERATION_STATEMENT: TK_while T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new TSTIteratorStatementWhile($3, $5);}
+                    | TK_while T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new TSTIteratorStatementWhile($3, $6);}
 
-SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new ASTSelectionStatement($3, $5);}
-                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6);}
-                   | TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT TK_else STATEMENT {$$ = new ASTSelectionStatement($3, $5, $7);}
-                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else STATEMENT {$$ = new ASTSelectionStatement($3, $6, $9);}
-                   | TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT TK_else T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $5, $8);}
-                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else T_LBRACE BLOCK T_RBRACE {$$ = new ASTSelectionStatement($3, $6, $10);}
+SELECTION_STATEMENT: TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT {$$ = new TSTSelectionStatement($3, $5);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE {$$ = new TSTSelectionStatement($3, $6);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT TK_else STATEMENT {$$ = new TSTSelectionStatement($3, $5, $7);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else STATEMENT {$$ = new TSTSelectionStatement($3, $6, $9);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET STATEMENT TK_else T_LBRACE BLOCK T_RBRACE {$$ = new TSTSelectionStatement($3, $5, $8);}
+                   | TK_if T_LBRACKET CONDITION T_RBRACKET T_LBRACE BLOCK T_RBRACE TK_else T_LBRACE BLOCK T_RBRACE {$$ = new TSTSelectionStatement($3, $6, $10);}
 
-CONDITION: EXPRESSION TO_equalTo EXPRESSION {$$ = new ASTEquality($1, $3); }
-         | EXPRESSION TO_lessThan EXPRESSION {$$ = new ASTLessThan($1, $3); }
-         | EXPRESSION TO_notEqualTo EXPRESSION {$$ = new ASTNotEqualTo($1, $3);}
-         | EXPRESSION TO_moreThan EXPRESSION {$$ = new ASTMoreThan($1, $3); }
-         | EXPRESSION TO_moreThanOrEqual EXPRESSION {$$ = new ASTMoreThanOrEqual($1, $3);}
-         | EXPRESSION TO_lessThanOrEqual EXPRESSION {$$ = new ASTLessThanOrEqual($1, $3);}
+CONDITION: EXPRESSION TO_equalTo EXPRESSION {$$ = new TSTEquality($1, $3); }
+         | EXPRESSION TO_lessThan EXPRESSION {$$ = new TSTLessThan($1, $3); }
+         | EXPRESSION TO_notEqualTo EXPRESSION {$$ = new TSTNotEqualTo($1, $3);}
+         | EXPRESSION TO_moreThan EXPRESSION {$$ = new TSTMoreThan($1, $3); }
+         | EXPRESSION TO_moreThanOrEqual EXPRESSION {$$ = new TSTMoreThanOrEqual($1, $3);}
+         | EXPRESSION TO_lessThanOrEqual EXPRESSION {$$ = new TSTLessThanOrEqual($1, $3);}
          | EXPRESSION {$$ = $1;}
 
 
-VARIABLES: VARIABLE_DECLARATION_FUNCTION {$$ = new ASTArgumentStatement($1);}
-         | VARIABLE_DECLARATION_FUNCTION TP_comma VARIABLES {$$ = new ASTArgumentStatement($1, $3);}
+VARIABLES: VARIABLE_DECLARATION_FUNCTION {$$ = new TSTArgumentStatement($1);}
+         | VARIABLE_DECLARATION_FUNCTION TP_comma VARIABLES {$$ = new TSTArgumentStatement($1, $3);}
 
-VARIABLE_DECLARATION_FUNCTION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTVariableName(*$2);}
-| RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new ASTVariableName(*$3);}
+VARIABLE_DECLARATION_FUNCTION: RETURNTYPE T_IDENTIFIER  {$$ = new TSTVariableName(*$2);}
+| RETURNTYPE TO_ampersand T_IDENTIFIER {$$ = new TSTVariableName(*$3);}
 
-VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new ASTDeclarationStatement($1, *$2, 0);}
-                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new ASTDeclarationStatement($4, $1, *$2, 0); }
+VARIABLE_DECLARATION: RETURNTYPE T_IDENTIFIER  {$$ = new TSTDeclarationStatement($1, *$2, 0);}
+                    | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION {$$ = new TSTDeclarationStatement($4, $1, *$2, 0); }
 
-VARIABLE_DECLARATION_GLOBAL: RETURNTYPE T_IDENTIFIER TP_semiColon  {$$ = new ASTDeclarationStatement($1, *$2, 1);}
-                            | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new ASTDeclarationStatement($4, $1, *$2, 1); }
+VARIABLE_DECLARATION_GLOBAL: RETURNTYPE T_IDENTIFIER TP_semiColon  {$$ = new TSTDeclarationStatement($1, *$2, 1);}
+                            | RETURNTYPE T_IDENTIFIER TO_equal EXPRESSION TP_semiColon {$$ = new TSTDeclarationStatement($4, $1, *$2, 1); }
 
-RETURNTYPE: TK_void {$$ = new ASTKeyword("void");}
-          | TK_int {$$ = new ASTKeyword("int");}
+RETURNTYPE: TK_void {$$ = new TSTKeyword("void");}
+          | TK_int {$$ = new TSTKeyword("int");}
 
 EXPRESSION: TERM {$$ = $1;}
-          | EXPRESSION TO_plus EXPRESSION {$$ = new ASTPlus($1, $3);}
-          | EXPRESSION TO_minus EXPRESSION {$$ = new ASTMinus($1, $3);}
+          | EXPRESSION TO_plus EXPRESSION {$$ = new TSTPlus($1, $3);}
+          | EXPRESSION TO_minus EXPRESSION {$$ = new TSTMinus($1, $3);}
           | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
           | FUNCTION_CALL {$$ = $1;}
 
 
 TERM: FACTOR {$$ = $1;}
-    | TERM TO_asterix FACTOR {$$ = new ASTMultiply($1, $3);}
-    | TERM TO_divide FACTOR {$$ = new ASTDivide($1, $3);}
+    | TERM TO_TSTerix FACTOR {$$ = new TSTMultiply($1, $3);}
+    | TERM TO_divide FACTOR {$$ = new TSTDivide($1, $3);}
 
-FACTOR: TC_integer {$$ = new ASTInteger($1); }
-      | T_IDENTIFIER {$$ = new ASTVariableName(*$1);}
+FACTOR: TC_integer {$$ = new TSTInteger($1); }
+      | T_IDENTIFIER {$$ = new TSTVariableName(*$1);}
       | FUNCTION_CALL {$$ = $1;}
 
-FUNCTION_CALL: T_IDENTIFIER T_LBRACKET T_RBRACKET {$$ = new ASTFunctionCall(*$1);}
-             | T_IDENTIFIER T_LBRACKET EXPRESSION_STATEMENTS T_RBRACKET {$$ = new ASTFunctionCall(*$1, $3);}
+FUNCTION_CALL: T_IDENTIFIER T_LBRACKET T_RBRACKET {$$ = new TSTFunctionCall(*$1);}
+             | T_IDENTIFIER T_LBRACKET EXPRESSION_STATEMENTS T_RBRACKET {$$ = new TSTFunctionCall(*$1, $3);}
 
-EXPRESSION_STATEMENTS: EXPRESSION {$$ = new ASTExpressionStatement($1);}
-                     | EXPRESSION TP_comma EXPRESSION_STATEMENTS {$$ = new ASTExpressionStatement($1, $3);}
+EXPRESSION_STATEMENTS: EXPRESSION {$$ = new TSTExpressionStatement($1);}
+                     | EXPRESSION TP_comma EXPRESSION_STATEMENTS {$$ = new TSTExpressionStatement($1, $3);}
 
 
 %%
 
-const ASTNode *ASTRoot; // Definition of variable (to match declaration earlier)
+const TSTNode *TSTRootTrans; // Definition of variable (to match declaration earlier)
 
-const ASTNode *parseAST()
+const TSTNode *parseTSTTrans()
 {
-  ASTRoot=0;
-  yyparse();
-  return ASTRoot;
+  TSTRootTrans=0;
+  zzparse();
+  return TSTRootTrans;
 }

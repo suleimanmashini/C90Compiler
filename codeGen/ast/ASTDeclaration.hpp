@@ -20,18 +20,28 @@ public:
   int getReturnType()  {return functionType;}
   std::string getFunctionName()  {return Declarator->getName();}
   void codeGen()  override {
-		int initialVSize = allVariables.size();
+		initialVSize = allVariables.size();
+    if (initialVSize == -1) initialVSize = 0;
 		Declarator->codeGen();
 		Block->pushVariables();
-    int Framesize = ((initialVSize - allVariables.size()) * 8);
-    //TODO: FIX THIS NOW!!!
-    //im going to assume that all functions are leaves.
-    //FOR NOW!
-    //this is where i push the stack and print shit but for now itll be simple
-    std::cout<<"generating block" << std::endl;
+    int newsize = allVariables.size();
+    NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+    int Framesize;
+    if (NumberofVaraibles != 0) {
+    Framesize = ((NumberofVaraibles * 4) + ((NumberofVaraibles * 4)%8));
+  } else {
+    Framesize = 8;
+  }
+    std::cout <<"\taddiu $sp, $sp, -" << Framesize << std::endl;
+    std::cout << "\tsw $fp," << Framesize - 4 << "($sp)" << std::endl;
+    std::cout << "\tmove $fp, $sp" << std::endl;
     Block->codeGen();
-
-    std::cout << "nop\n";
+    std::cout << "\tnop\n";
+    std::cout << "\tmove $sp, $fp" << std::endl;
+    std::cout << "\tlw $fp," << Framesize - 4 << "($sp)" << std::endl;
+    std::cout << "\taddiu $sp, $sp," << Framesize << std::endl;
+    std::cout << "\tjr $31" << std::endl;
+    std::cout << "\tnop\n";
   }
 private:
 	 int functionType;
@@ -59,8 +69,8 @@ public:
 	~ASTVariableDeclaration() {}
 	ASTVariableDeclaration( int _typeNumber,  ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
 	void codeGen()  {}
-	void updateVariables() {
-		variable TEMP(typeNumber, Variable->getName());
+	void pushVariables() override {
+		variable TEMP = variable(typeNumber, Variable->getName());
 		allVariables.push_back(TEMP);
 	}
 private:

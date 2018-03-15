@@ -2,7 +2,10 @@ MilestoneID,             Dependencies, EstimatedEffort, Lead,  Completed, Descri
 DefineInitialMilestones,             ,1,    ?,           , Come up with initial milestones for getting started
 Started Project,Made some flex files,8,,yes,Actually got around to starting
 Got a working AST,"Bison File, printing functions",9,,yes,
-Getting the Parser tests to Pass,,,,,
-Started CodeGen,,,,,
-Restructure all the AST,,,,,
-Generated Code for a basic Function,,,,,
+Getting the Parser tests to Pass,"Bison File, printing functions",,,yes,
+Started CodeGen,New folder system,,,yes,
+Restructure all the AST,CodeGen folder,,,yes,
+Generated Code for a basic Function,CodeGen folder,,,yes,
+Created working new AST for expressions,,,,,
+Created all working expressions,CodeGen folder,,,yes,
+Started working on stack variable locations,,,,,

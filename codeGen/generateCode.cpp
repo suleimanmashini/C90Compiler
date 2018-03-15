@@ -4,12 +4,11 @@
 #include <stdio.h>
 std::vector<variable> allVariables;
 std::vector<std::string> regList = {"$v0", "$v1", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9"};
-
-int main() {
-				 ASTTranslationUnit *ASTRoot = parseAST();
+int initialVSize;
+int NumberofVaraibles;
+void fullCompiler() {
+			 	ASTTranslationUnit *ASTRoot = parseAST();
 				ASTRoot->codeGen();
-
-	return 0;
 }
 
 std::vector<std::string> tail(std::vector<std::string> vIn){
@@ -19,4 +18,13 @@ std::vector<std::string> tail(std::vector<std::string> vIn){
 
 std::string head(std::vector<std::string> vIn) {
 	return vIn[0];
+}
+
+int findVariableIndex (std::vector<variable> vIn, std::string variableName){
+	for (int i = vIn.size() - 1; i >= 0; i--) {
+		if (vIn[i].getName() == variableName) {
+			return i;
+		}
+	}
+	return -1;
 }

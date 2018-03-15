@@ -1,13 +1,13 @@
 #pragma once
-#include "ASTNode.hpp"
-#include "ASTPrimitive.hpp"
-#include "ASTStatement.hpp"
+#include "TSTNode.hpp"
+#include "TSTPrimitive.hpp"
+#include "TSTStatement.hpp"
 extern std::vector <std::string> globalVariables;
 
-struct ASTFunction : public ASTStatement {
+struct TSTFunction : public TSTStatement {
 public:
-  ~ASTFunction() {}
-  ASTFunction(const ASTPrimitive* returnTypeIn, std::string functionNameIn, const ASTStatement* parametersIn, const ASTStatement* BlockIn )
+  ~TSTFunction() {}
+  TSTFunction(const TSTPrimitive* returnTypeIn, std::string functionNameIn, const TSTStatement* parametersIn, const TSTStatement* BlockIn )
   : returnType(returnTypeIn), functionName(functionNameIn), parameters(parametersIn), Block(BlockIn){}
   void print() const override {
     tabspace += 4;
@@ -25,8 +25,8 @@ public:
     tabspace -= 4;
   }
 protected:
-  const ASTPrimitive* returnType;
+  const TSTPrimitive* returnType;
   const std::string functionName;
-  const ASTStatement* parameters;
-  const ASTStatement* Block;
+  const TSTStatement* parameters;
+  const TSTStatement* Block;
 };

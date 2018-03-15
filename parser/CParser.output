@@ -137,7 +137,7 @@ Grammar
    45           | FUNCTION_CALL
 
    46 TERM: FACTOR
-   47     | TERM TO_asterix FACTOR
+   47     | TERM TO_TSTerix FACTOR
    48     | TERM TO_divide FACTOR
 
    49 FACTOR: TC_integer
@@ -203,7 +203,7 @@ TO_not (302)
 TO_bitwiseNot (303)
 TO_ampersand (304) 34
 TO_logicAnd (305)
-TO_asterix (306) 47
+TO_TSTerix (306) 47
 TO_mod (307)
 TO_bitwiseLeft (308)
 TO_bitwiseRight (309)
@@ -521,11 +521,11 @@ State 22
 State 23
 
    41 EXPRESSION: TERM .
-   47 TERM: TERM . TO_asterix FACTOR
+   47 TERM: TERM . TO_TSTerix FACTOR
    48     | TERM . TO_divide FACTOR
 
     TO_divide   shift, and go to state 36
-    TO_asterix  shift, and go to state 37
+    TO_TSTerix  shift, and go to state 37
 
     $default  reduce using rule 41 (EXPRESSION)
 
@@ -545,7 +545,7 @@ State 25
     T_RBRACKET          reduce using rule 45 (EXPRESSION)
     T_RBRACKET          [reduce using rule 51 (FACTOR)]
     TO_divide           reduce using rule 51 (FACTOR)
-    TO_asterix          reduce using rule 51 (FACTOR)
+    TO_TSTerix          reduce using rule 51 (FACTOR)
     TO_lessThan         reduce using rule 45 (EXPRESSION)
     TO_lessThan         [reduce using rule 51 (FACTOR)]
     TO_moreThan         reduce using rule 45 (EXPRESSION)
@@ -705,7 +705,7 @@ State 36
 
 State 37
 
-   47 TERM: TERM TO_asterix . FACTOR
+   47 TERM: TERM TO_TSTerix . FACTOR
 
     T_IDENTIFIER  shift, and go to state 19
     TC_integer    shift, and go to state 21
@@ -941,7 +941,7 @@ State 58
 
 State 59
 
-   47 TERM: TERM TO_asterix FACTOR .
+   47 TERM: TERM TO_TSTerix FACTOR .
 
     $default  reduce using rule 47 (TERM)
 

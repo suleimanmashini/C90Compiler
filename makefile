@@ -1,19 +1,13 @@
 CPPFLAGS += -std=c++11 -W -Wall -g -ggdb -O0 -Wno-unused-parameter
 CPPFLAGS += -I include
 
-translator : bin/c_translator
+compiler: bin/c_compiler
 
 parser/CParser.tab.cpp parser/CParser.tab.hpp : parser/CParser.y
-	bison -v -d parser/CParser.y -o parser/CParser.tab.cpp
+	bison -v -d -p zz parser/CParser.y -o parser/CParser.tab.cpp
 
 parser/Lexer/lex.yy.cpp : parser/Lexer/c90.flex parser/CParser.tab.hpp
-	flex -o parser/Lexer/lex.yy.cpp  parser/Lexer/c90.flex
-
-bin/c_translator : parser/PrintStructure.o parser/CParser.tab.o parser/Lexer/lex.yy.o
-	mkdir -p bin
-	g++ $(CPPFLAGS) -o bin/c_translator $^
-
-compiler: bin/c_compiler
+	flex -P zz -o parser/Lexer/lex.yy.cpp  parser/Lexer/c90.flex
 
 codeGen/CParser.tab.cpp codeGen/CParser.tab.hpp: codeGen/CParser.y
 	bison -v -d codeGen/CParser.y -o codeGen/CParser.tab.cpp
@@ -21,7 +15,7 @@ codeGen/CParser.tab.cpp codeGen/CParser.tab.hpp: codeGen/CParser.y
 codeGen/Lexer/lex.yy.cpp : codeGen/Lexer/c90.flex codeGen/CParser.tab.hpp
 	flex -o codeGen/Lexer/lex.yy.cpp  codeGen/Lexer/c90.flex
 
-bin/c_compiler : codeGen/generateCode.o codeGen/CParser.tab.o codeGen/Lexer/lex.yy.o
+bin/c_compiler : codeGen/generateCode.o codeGen/CParser.tab.o codeGen/Lexer/lex.yy.o parser/PrintStructure.o parser/CParser.tab.o parser/Lexer/lex.yy.o
 	mkdir -p bin
 	g++ $(CPPFLAGS) -o bin/c_compiler $^
 

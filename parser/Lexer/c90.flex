@@ -6,9 +6,9 @@
   #include <iostream>
 
 extern "C" int fileno(FILE *stream);
-#define SAVE_TOKEN yylval.string = new
+#define SAVE_TOKEN zzlval.string = new
 
-void yyerror (char const *s);
+void zzerror (char const *s);
 %}
 
 DIGIT					 [0-9]
@@ -74,7 +74,7 @@ LGS						 [Ll]
 "&"						 {return TO_ampersand;}
 "&&"					 {return TO_logicAnd;}
 "||"           {return TO_logicOr;}
-"*"						 {return TO_asterix;}
+"*"						 {return TO_TSTerix;}
 "%"						 {return TO_mod;}
 "|"            {return TO_OR;}
 "<<"					 {return TO_bitwiseLeft;}
@@ -106,7 +106,7 @@ LGS						 [Ll]
 ":"						 {return TP_colon;}
 ";"						 {return TP_semiColon;}
 
-[0-9][0-9]*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer; /*to be changes later */}
+[0-9][0-9]*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {zzlval.Integer=strtod(zztext, 0); return TC_integer; /*to be changes later */}
 [0]|([0]{OCT}+(({USS}?{LGS}?)|({LGS}?{USS}?)))			   {return TC_integer;}
 [0][xX]{HEX}+(({USS}?{LGS}?)|({LGS}?{USS}?))				   {return TC_integer;}
 (DIGIT)*"."(DIGIT)+([eE]("+"|"-")?DIGIT+)?[flFL]?  {return TC_float;}
@@ -116,12 +116,12 @@ LGS						 [Ll]
 "NULL"					 {return TC_NULL;}
 "nullptr"				 {return TC_nullptr;}
 
-{ID}({DIGIT}|{ID})*			 {yylval.word = new std::string(yytext); return T_IDENTIFIER;}
+{ID}({DIGIT}|{ID})*			 {zzlval.word = new std::string(zztext); return T_IDENTIFIER;}
 
 .                 {;}
 
 %%
 
- void yyerror (char const *s) {
+ void zzerror (char const *s) {
    fprintf (stderr, "Parse Error: %s\n", s);
  }

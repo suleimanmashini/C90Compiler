@@ -8,6 +8,7 @@ public:
 	~ASTExpression() {}
 	ASTExpression() {}
 	ASTExpression( ASTExpression* _left,  ASTExpression* _right,  std::string _vleft): right(_right), left(_left), vleft(_vleft) {}
+	virtual int returnIndex () {}
 	void codeGen()  {
 		//unsure of the purpose of this now
 	}
@@ -29,7 +30,7 @@ public:
 	}
 	void codeGen (std::vector<std::string> regIn)   override{
 		std::string r1 = head(regIn);
-		std::cout<< "\t li, " << r1 << ", " << numValue << std::endl;
+		std::cout<< "\tli, " << r1 << ", " << numValue << std::endl;
 	}
 	int getregs()  override {return registerNeeds;}
 	int getValue()  {return numValue;}
@@ -45,9 +46,14 @@ public:
 	int getregs()  override {return registerNeeds;}
 	void updateRegisterNeeds() override {
 	}
+	int returnIndex () override{
+		return ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
+	}
 	void codeGen (std::vector<std::string> regIn) override {
 		std::string r1 = head(regIn);
-		std::cout<< "\t lw, " << r1 << ", " << "FIND LOCATION OF VARIABLE" << std::endl;
+		int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
+		//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
+		std::cout<< "\tlw, " << r1 << ", " << index <<"($fp)" << std::endl;
 	}
 private:
 	 std::string variableName;
@@ -79,11 +85,11 @@ public:
 				left->codeGen(regIn);
 				right->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\tmult " << r1 << ", " << r2 << std::endl;
-					std::cout << "mov "<< r1 << ", $LO" << std::endl;
+					std::cout << "\tmul " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tmov "<< r1 << ", $LO" << std::endl;
 				} else if (operationFlag == 2){
 					std::cout << "\tdiv, " << r1 << ", " << r2 << std::endl;
-					std::cout << "mov "<< r1 << ", $LO" << std::endl;
+					std::cout << "\tmov "<< r1 << ", $LO" << std::endl;
 				} else {
 					//MOD
 					std::cout << "\tdiv, " << r1 << ", " << r2 << std::endl;
@@ -93,15 +99,15 @@ public:
 				right->codeGen(regIn);
 				left->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\tmult " << r2 << ", " << r1 << std::endl;
-					std::cout << "mov "<< r2 << ", $LO" << std::endl;
+					std::cout << "\tmul " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tmov "<< r2 << ", $LO" << std::endl;
 				} else if (operationFlag == 2){
 					std::cout << "\tdiv, " << r2 << ", " << r1 << std::endl;
-					std::cout << "mov "<< r2 << ", $LO" << std::endl;
+					std::cout << "\tmov "<< r2 << ", $LO" << std::endl;
 				} else {
 					//MOD
 					std::cout << "\tdiv, " << r2 << ", " << r1 << std::endl;
-					std::cout << "mov "<< r2 << ", $HI" << std::endl;
+					std::cout << "\tmov "<< r2 << ", $HI" << std::endl;
 				}
 			}
 		}
@@ -300,6 +306,7 @@ public:
 		EquivalentExp->updateRegisterNeeds();
 		EquivalentExp->codeGen(regList);
 		//now youll store v0 to the variable;
+		std::cout<<"\tsw $v0," << variable->returnIndex() << "($fp)" << std::endl;
 	}
 private:
 	 ASTExpression* variable;
