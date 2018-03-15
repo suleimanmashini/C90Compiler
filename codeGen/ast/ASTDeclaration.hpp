@@ -4,22 +4,22 @@
 
 struct ASTDirectDeclarator: public ASTDeclaration {
 public:
-  ASTDirectDeclarator(const std::string _Identifier): Identifier(_Identifier) {}
-  void codeGen() const override{
+  ASTDirectDeclarator( std::string _Identifier): Identifier(_Identifier) {}
+  void codeGen()  override{
     std::cout <<  this->getName() << ":\t";
   }
-  std::string getName() const {return Identifier;}
+  std::string getName()  {return Identifier;}
 private:
   //TODO: add a parameters PARAMETEr list
-  const std::string Identifier;
+   std::string Identifier;
 };
 
 struct ASTFunctionDefinition: public ASTNode {
 public:
-	ASTFunctionDefinition(const int _functionType, const ASTDirectDeclarator* _Declarator, const ASTCompoundStatement* _Block): functionType(_functionType), Declarator(_Declarator), Block(_Block) {}
-  int getReturnType() const {return functionType;}
-  std::string getFunctionName() const {return Declarator->getName();}
-  void codeGen() const override {
+	ASTFunctionDefinition( int _functionType,  ASTDirectDeclarator* _Declarator,  ASTCompoundStatement* _Block): functionType(_functionType), Declarator(_Declarator), Block(_Block) {}
+  int getReturnType()  {return functionType;}
+  std::string getFunctionName()  {return Declarator->getName();}
+  void codeGen()  override {
 		int initialVSize = allVariables.size();
 		Declarator->codeGen();
 		Block->pushVariables();
@@ -34,20 +34,20 @@ public:
     std::cout << "nop\n";
   }
 private:
-	const int functionType;
-  const ASTDirectDeclarator* Declarator;
-  const ASTCompoundStatement* Block;
+	 int functionType;
+   ASTDirectDeclarator* Declarator;
+   ASTCompoundStatement* Block;
 };
 
 
 
 struct ASTTypeSpecifier: public ASTDeclaration {
 public:
-  ASTTypeSpecifier(const int _typeNumber): typeNumber(_typeNumber) {}
-	void codeGen() const override  {}
+  ASTTypeSpecifier( int _typeNumber): typeNumber(_typeNumber) {}
+	void codeGen()  override  {}
   int getType() { return typeNumber;}
 private:
-  const int typeNumber;
+   int typeNumber;
   //lets assume for now 0 is void and 1 is int
 };
 
@@ -57,13 +57,13 @@ private:
 struct ASTVariableDeclaration: public ASTDeclaration {
 public:
 	~ASTVariableDeclaration() {}
-	ASTVariableDeclaration(const int _typeNumber, const ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
-	void codeGen() const {}
+	ASTVariableDeclaration( int _typeNumber,  ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
+	void codeGen()  {}
 	void updateVariables() {
 		variable TEMP(typeNumber, Variable->getName());
 		allVariables.push_back(TEMP);
 	}
 private:
-	const int typeNumber;
-	const ASTDirectDeclarator* Variable;
+	 int typeNumber;
+	 ASTDirectDeclarator* Variable;
 };

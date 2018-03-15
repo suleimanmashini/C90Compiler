@@ -24,21 +24,21 @@ std::string head(std::vector<std::string> vIn);
 struct ASTNode {
 public:
 	virtual ~ASTNode() {}
-	virtual void codeGen() const {};
+	virtual void codeGen()  {};
 };
 
 struct ASTDeclaration: public ASTNode {
 public:
 	virtual ~ASTDeclaration() {};
-	virtual void codeGen() const {};
-	virtual void pushVariables() const {}
+	virtual void codeGen()  {};
+	virtual void pushVariables()  {}
 private:
 };
 
 struct ASTDeclarationList: public ASTDeclaration {
 ~ASTDeclarationList() {}
-ASTDeclarationList(const ASTDeclarationList* _Child, const ASTDeclaration* _Statement): Child(_Child), Declaration(_Statement) {}
-void codeGen() const override {
+ASTDeclarationList( ASTDeclarationList* _Child,  ASTDeclaration* _Statement): Child(_Child), Declaration(_Statement) {}
+void codeGen()  override {
   if (Child == NULL && Declaration == NULL) {
 		std::cout <<"\tnop\n";
 		return;
@@ -50,7 +50,7 @@ void codeGen() const override {
 		Child->codeGen();
 	}
 }
-void pushVariables() const {
+void pushVariables()  {
 	if (Declaration != NULL) {
 		Declaration->pushVariables();
 	}
@@ -59,8 +59,8 @@ void pushVariables() const {
 	}
 }
 private:
-  const ASTDeclarationList* Child;
-  const ASTDeclaration* Declaration;
+   ASTDeclarationList* Child;
+   ASTDeclaration* Declaration;
 };
 
 enum {

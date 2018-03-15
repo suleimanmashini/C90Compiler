@@ -6,7 +6,7 @@
 
   #include "AST.hpp"
 
-  extern const ASTTranslationUnit *ASTRoot;
+  extern  ASTTranslationUnit *ASTRoot;
 
   int yylex(void);
   void yyerror(const char*);
@@ -37,8 +37,7 @@
 %type <StateList> STATEMENT_LIST
 %type <Compound> COMPOUND_STATEMENT
 %type <Return> JUMP_STATEMENT
-%type <AssExpression> ASSIGNMENT_EXPRESSION
-%type <Expression> EXPRESSION PRIMARY_EXPRESSION  POSTFIX_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION MULTIPLICATIVE_EXPRESSION ADDITIVE_EXPRESSION
+%type <Expression> EXPRESSION CONDITIONAL_EXPRESSION PRIMARY_EXPRESSION ASSIGNMENT_EXPRESSION POSTFIX_EXPRESSION AND_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION MULTIPLICATIVE_EXPRESSION ADDITIVE_EXPRESSION INCLUSIVE_OR_EXPRESSION EXCLUSIVE_OR_EXPRESSION
 %type <Integer> TC_integer
 %type <Statement> STATEMENT EXPRESSION_STATEMENT
 %type <DecList> DECLARATION_LIST
@@ -48,25 +47,28 @@
 
 
 %union {
-const ASTVariableExp* Vexp;
-const ASTNode* Node;
-const ASTVariableDeclaration* Declaration;
-const ASTMultiplicativeExpression* MultExp;
-const ASTAdditiveExpression* AddExp;
-const ASTDeclarationList* DecList;
-const ASTDirectDeclarator* DirectD;
-const ASTReturnStatement* Return;
-const ASTStatementList* StateList;
-const ASTStatement* Statement;
-const ASTCompoundStatement* Compound;
-const ASTDeclaration* Declarator;
-const std::string* word;
-const ASTFunctionDefinition* Function;
-const ASTExpression* Expression;
-const ASTAssignmentExpression* AssExpression;
-const int* Number;
-const ASTTranslationUnit* Translation;
-const ASTIntegerConst* IntegerP;
+ ASTVariableExp* Vexp;
+ ASTNode* Node;
+ ASTInclusiveOr* Incl;
+ ASTExclusiveOr* ExclOr;
+ ASTBitwiseAnd* bitAnd;
+ ASTVariableDeclaration* Declaration;
+ ASTMultiplicativeExpression* MultExp;
+ ASTAdditiveExpression* AddExp;
+ ASTDeclarationList* DecList;
+ ASTDirectDeclarator* DirectD;
+ ASTReturnStatement* Return;
+ ASTStatementList* StateList;
+ ASTStatement* Statement;
+ ASTCompoundStatement* Compound;
+ ASTDeclaration* Declarator;
+ std::string* word;
+ ASTFunctionDefinition* Function;
+ ASTExpression* Expression;
+ ASTAssignmentExpression* AssExpression;
+ int* Number;
+ ASTTranslationUnit* Translation;
+ ASTIntegerConst* IntegerP;
 int Integer;
 }
 
@@ -242,6 +244,9 @@ EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | MULTIPLICATIVE_EXPRESSION {$$ = $1;}
           | ADDITIVE_EXPRESSION {$$ = $1;}
           | ASSIGNMENT_EXPRESSION {$$ = $1;}
+          | AND_EXPRESSION {;}
+          | EXCLUSIVE_OR_EXPRESSION {;}
+          | INCLUSIVE_OR_EXPRESSION {;}
 
 PRIMARY_EXPRESSION: TC_integer {$$ = new ASTIntegerConst($1);;}
                   | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
@@ -310,11 +315,11 @@ CAST_EXPRESSION: UNARY_EXPRESSION {;}
 CAST_EXPRESSION: UNARY_EXPRESSION {$$ = $1;}
 
 MULTIPLICATIVE_EXPRESSION: CAST_EXPRESSION {$$ = $1;}
-                         | MULTIPLICATIVE_EXPRESSION TO_asterix CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 0);;}
-                         | MULTIPLICATIVE_EXPRESSION TO_divide CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 1);;}
-                         | MULTIPLICATIVE_EXPRESSION TO_mod CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 2);;}
+                         | MULTIPLICATIVE_EXPRESSION TO_asterix CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 1);;}
+                         | MULTIPLICATIVE_EXPRESSION TO_divide CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 2);;}
+                         | MULTIPLICATIVE_EXPRESSION TO_mod CAST_EXPRESSION {$$ = new ASTMultiplicativeExpression($1, $3, 3);;}
 
-ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ =  $1;}
+ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ = $1;}
                    | ADDITIVE_EXPRESSION TO_plus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 1);}
                    | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 2);}
 
@@ -337,27 +342,34 @@ EQUALITY_EXPRESSION: RELATIONAL_EXPRESSION {;}
 
 AND_EXPRESSION: EQUALITY_EXPRESSION {;}
               | AND_EXPRESSION TO_ampersand EQUALITY_EXPRESSION {;}
+*/
 
-EXCLUSIVE_OR_EXPRESSION: AND_EXPRESSION {;}
-                       | EXCLUSIVE_OR_EXPRESSION TO_exclussiveOr AND_EXPRESSION {;}
+//NEEDS TO BE EQUALITY BUT FOR NOW ITLL BE ADDITIONAL_EXPRESSION!!!!
+//*****************************************************************
+//*****************************************************************
+AND_EXPRESSION: ADDITIVE_EXPRESSION {$$ = $1;}
+              | AND_EXPRESSION TO_ampersand ADDITIVE_EXPRESSION {$$ = new ASTBitwiseAnd($3 ,$1);}
 
-INCLUSIVE_OR_EXPRESSION: EXCLUSIVE_OR_EXPRESSION {;}
-                       | INCLUSIVE_OR_EXPRESSION TO_OR EXCLUSIVE_OR_EXPRESSION {;}
+EXCLUSIVE_OR_EXPRESSION: AND_EXPRESSION {$$ = $1;}
+                       | EXCLUSIVE_OR_EXPRESSION TO_exclussiveOr AND_EXPRESSION {$$ = new ASTExclusiveOr($3, $1);}
 
+INCLUSIVE_OR_EXPRESSION: EXCLUSIVE_OR_EXPRESSION {$$ = $1;}
+                       | INCLUSIVE_OR_EXPRESSION TO_OR EXCLUSIVE_OR_EXPRESSION {$$ = new ASTInclusiveOr($3, $1);}
+/*
 LOGICAL_AND_EXPRESSION: INCLUSIVE_OR_EXPRESSION {;}
                       | LOGICAL_AND_EXPRESSION TO_logicAnd INCLUSIVE_OR_EXPRESSION {;}
 
 LOGICAL_OR_EXPRESSION: LOGICAL_AND_EXPRESSION {;}
                      | LOGICAL_OR_EXPRESSION TO_logicOr LOGICAL_AND_EXPRESSION {;}
 
-CONDITIONAL_EXPRESSION: LOGICAL_OR_EXPRESSION {;}
-                      | LOGICAL_OR_EXPRESSION TO_questionMark EXPRESSION TP_colon CONDITIONAL_EXPRESSION {;}
 
-ASSIGNMENT_EXPRESSION: CONDITIONAL_EXPRESSION {;}
-                     | UNARY_EXPRESSION ASSIGNMENT_OPERATOR ASSIGNMENT_EXPRESSION {;}
+CONDITIONAL_EXPRESSION: LOGICAL_OR_EXPRESSION {;}
+                //      | LOGICAL_OR_EXPRESSION TO_questionMark EXPRESSION TP_colon CONDITIONAL_EXPRESSION {;}
 */
-//TODO: THIS IS SUPER IMPORTANT NEEDS TO BECOME A CONDITIONAL EXPRESSION!!!!!
-ASSIGNMENT_EXPRESSION: UNARY_EXPRESSION ASSIGNMENT_OPERATOR ADDITIVE_EXPRESSION {$$ = new ASTAssignmentExpression($1, $3, *$2);}
+CONDITIONAL_EXPRESSION: INCLUSIVE_OR_EXPRESSION {$$ = $1;}
+
+ASSIGNMENT_EXPRESSION: CONDITIONAL_EXPRESSION {$$ = $1;}
+                     | UNARY_EXPRESSION ASSIGNMENT_OPERATOR CONDITIONAL_EXPRESSION {$$ = new ASTAssignmentExpression($1, $3, *$2);}
 
 ASSIGNMENT_OPERATOR: TO_equal {$$ = new int(0);}
                    | TO_multEqual {$$ = new int(1);}
@@ -376,9 +388,9 @@ ASSIGNMENT_OPERATOR: TO_equal {$$ = new int(0);}
 
 %%
 
-const ASTTranslationUnit *ASTRoot; // Definition of variable (to match declaration earlier)
+ ASTTranslationUnit *ASTRoot; // Definition of variable (to match declaration earlier)
 
-const ASTTranslationUnit *parseAST()
+ ASTTranslationUnit *parseAST()
 {
   ASTRoot=0;
   yyparse();

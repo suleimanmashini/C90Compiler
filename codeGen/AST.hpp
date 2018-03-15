@@ -9,8 +9,8 @@
 struct ASTTranslationUnit : public ASTNode {
 public:
   ~ASTTranslationUnit() {}
-  ASTTranslationUnit(const ASTFunctionDefinition* _Function, const ASTDeclaration* _Dec, const ASTTranslationUnit* _Next): Next(_Next), Dec(_Dec), Function(_Function) {}
-  void codeGen() const {
+  ASTTranslationUnit( ASTFunctionDefinition* _Function,  ASTDeclaration* _Dec,  ASTTranslationUnit* _Next): Next(_Next), Dec(_Dec), Function(_Function) {}
+  void codeGen()  {
     if (Function != NULL) {
       Function->codeGen();
     }
@@ -22,9 +22,9 @@ public:
     }
   }
 private:
-  const ASTFunctionDefinition* Function;
-  const ASTDeclaration* Dec;
-  const ASTTranslationUnit* Next;
+   ASTFunctionDefinition* Function;
+   ASTDeclaration* Dec;
+   ASTTranslationUnit* Next;
 };
 
-extern const ASTTranslationUnit *parseAST();
+extern  ASTTranslationUnit *parseAST();
