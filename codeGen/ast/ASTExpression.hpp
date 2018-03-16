@@ -120,6 +120,55 @@ private:
 	//TODO: SUPPORT GOING THRU AND FINDING THE STUFF;};
 };
 
+struct ASTShiftExpression: public ASTExpression {
+public:
+	~ASTShiftExpression() {}
+	ASTShiftExpression( ASTExpression* _right,  ASTExpression* _left,  int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
+	int getregs()  override {return registerNeeds;}
+	void updateRegisterNeeds()  {
+		left->updateRegisterNeeds();
+		right->updateRegisterNeeds();
+		if (left->getregs() == right->getregs()){
+			registerNeeds = right->getregs() + 1;
+		} else {
+			registerNeeds = std::max(right->getregs(), left->getregs());
+		}
+	}
+	void codeGen(std::vector<std::string> regIn) override  {
+
+		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tsllv " << r1 << ", " << r1 << ", " << r2 << std::endl;
+				} else {
+					std::cout << "\tsra " << r1 << ", " << r1 << ", " << r2 << std::endl;
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tsllv " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				} else {
+					std::cout << "\tsra " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				}
+			}
+		}
+	}
+
+private:
+	 ASTExpression* right;
+	 ASTExpression* left;
+	 int operationFlag;
+	int registerNeeds = 1;
+	//TODO: SUPPORT GOING THRU AND FINDING THE STUFF;
+};
+
 struct ASTAdditiveExpression: public ASTExpression {
 public:
 	~ASTAdditiveExpression() {}
@@ -156,6 +205,144 @@ public:
 					std::cout << "\tadd " << r1 << ", " << r2 << ", " << r1 << std::endl;
 				} else {
 					std::cout << "\tsub " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				}
+			}
+		}
+	}
+
+private:
+	 ASTExpression* right;
+	 ASTExpression* left;
+	 int operationFlag;
+	int registerNeeds = 1;
+	//TODO: SUPPORT GOING THRU AND FINDING THE STUFF;
+};
+
+struct ASTEqualityExpression: public ASTExpression {
+public:
+	~ASTEqualityExpression() {}
+	ASTEqualityExpression( ASTExpression* _right,  ASTExpression* _left,  int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
+	int getregs()  override {return registerNeeds;}
+	void updateRegisterNeeds()  {
+		left->updateRegisterNeeds();
+		right->updateRegisterNeeds();
+		if (left->getregs() == right->getregs()){
+			registerNeeds = right->getregs() + 1;
+		} else {
+			registerNeeds = std::max(right->getregs(), left->getregs());
+		}
+	}
+	void codeGen(std::vector<std::string> regIn) override  {
+
+		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu" << r1 << ", " << r1 << ", " << "1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+
+				} else {
+					std::cout << "\txor" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu" << r1 << ", " << "0" << ", " << r1 << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu" << r1 << ", " << r1 << ", " << "1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+
+				} else {
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu" << r1 << ", " << r1 << ", " << "1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				}
+			}
+		}
+	}
+
+private:
+	 ASTExpression* right;
+	 ASTExpression* left;
+	 int operationFlag;
+	int registerNeeds = 1;
+	//TODO: SUPPORT GOING THRU AND FINDING THE STUFF;
+};
+
+struct ASTRelationalExpression: public ASTExpression {
+public:
+	~ASTRelationalExpression() {}
+	ASTRelationalExpression( ASTExpression* _right,  ASTExpression* _left,  int _operationFlag): right(_right), left(_left), operationFlag(_operationFlag) {}
+	int getregs()  override {return registerNeeds;}
+	void updateRegisterNeeds()  {
+		left->updateRegisterNeeds();
+		right->updateRegisterNeeds();
+		if (left->getregs() == right->getregs()){
+			registerNeeds = right->getregs() + 1;
+		} else {
+			registerNeeds = std::max(right->getregs(), left->getregs());
+		}
+	}
+	void codeGen(std::vector<std::string> regIn) override  {
+
+		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					//less than
+					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+
+				} else if(operationFlag == 2){
+					//more than
+					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				} else if (operationFlag == 3){
+					//less than or equal to
+					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				} else {
+					//more than or equal to
+					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					//less than
+					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+
+				} else if(operationFlag == 2){
+					//more than
+					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				} else if (operationFlag == 3){
+					//less than or equal to
+					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				} else {
+					//more than or equal to
+					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				}
 			}
 		}

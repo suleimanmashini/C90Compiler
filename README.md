@@ -8,11 +8,11 @@ _The aim of this project is to create an ANSI C90 compiler that will both parse 
 
 There are many things to do:
 - [x] Lexer
-- [ ] AST
+- [x] AST
 - [ ] Codegen
-- [ ] Integer
+- [x] Integer
 - [ ] String
-- [ ] Return
+- [x] Return
 - [ ] Arrays
 - [ ] Pointers
 - [ ] Types of Constants
@@ -20,4 +20,4 @@ There are many things to do:
 - [ ] if-Else
 - [ ] Switch
 - [ ] conditional statements
-- [ ] Support Excessive Brackets!!
+- [x] Support Excessive Brackets!!
