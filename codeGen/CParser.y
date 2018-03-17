@@ -104,7 +104,7 @@ STATEMENT: LABELED_STATEMENT {;}
          | ITERATION_STATEMENT {;}
          | JUMP_STATEMENT {;}
 */
-STATEMENT: COMPOUND_STATEMENT {;}
+STATEMENT: COMPOUND_STATEMENT {$$ = $1;}
          | JUMP_STATEMENT {$$ = $1;}
          | EXPRESSION_STATEMENT {$$ = $1;}
 
@@ -118,12 +118,13 @@ COMPOUND_STATEMENT: T_LBRACE DECLARATION_LIST STATEMENT_LIST T_RBRACE {$$ = new 
                   | T_LBRACE STATEMENT_LIST T_RBRACE {$$ = new ASTCompoundStatement($2, nullptr);}
                   | T_LBRACE DECLARATION_LIST T_RBRACE {$$ = new ASTCompoundStatement(nullptr, $2);}
                   | T_LBRACE T_RBRACE {$$ = new ASTCompoundStatement(NULL, NULL);}
+//THESE TWO MAY NEED TO BE SWITCHED AROUND!!!
 
 DECLARATION_LIST: DECLARATION {$$ = new ASTDeclarationList(NULL, $1);}
-                | DECLARATION_LIST DECLARATION {$$ = new ASTDeclarationList($1, $2);}
+                | DECLARATION DECLARATION_LIST {$$ = new ASTDeclarationList($2, $1);}
 
-STATEMENT_LIST: STATEMENT {$$ = new ASTStatementList(nullptr, $1);}
-              | STATEMENT_LIST STATEMENT {$$ = new ASTStatementList($1, $2);}
+STATEMENT_LIST: STATEMENT {$$ = new ASTStatementList(NULL, $1);}
+              | STATEMENT STATEMENT_LIST {$$ = new ASTStatementList($2, $1);}
 
 EXPRESSION_STATEMENT: EXPRESSION TP_semiColon {$$ = new ASTExpressionStatement($1);}
                     | TP_semiColon {;}
@@ -245,9 +246,13 @@ EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | MULTIPLICATIVE_EXPRESSION {$$ = $1;}
           | ADDITIVE_EXPRESSION {$$ = $1;}
           | ASSIGNMENT_EXPRESSION {$$ = $1;}
-          | AND_EXPRESSION {;}
-          | EXCLUSIVE_OR_EXPRESSION {;}
-          | INCLUSIVE_OR_EXPRESSION {;}
+          | AND_EXPRESSION {$$ = $1;}
+          | EXCLUSIVE_OR_EXPRESSION {$$ = $1;}
+          | INCLUSIVE_OR_EXPRESSION {$$ = $1;}
+          | SHIFT_EXPRESSION {$$ = $1;}
+          | RELATIONAL_EXPRESSION {$$ = $1;}
+          | EQUALITY_EXPRESSION {$$ = $1;}
+
 
 PRIMARY_EXPRESSION: TC_integer {$$ = new ASTIntegerConst($1);;}
                   | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
@@ -325,20 +330,8 @@ ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ = $1;}
                    | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 2);}
 
 /*
-
-
-
-
 CONSTANT_EXPRESSION: CONDITIONAL_EXPRESSION {;}
-
-
-AND_EXPRESSION: EQUALITY_EXPRESSION {;}
-              | AND_EXPRESSION TO_ampersand EQUALITY_EXPRESSION {;}
 */
-
-//NEEDS TO BE EQUALITY BUT FOR NOW ITLL BE SHIFT_EXPRESSION!!!!
-//*****************************************************************
-//*****************************************************************
 
 SHIFT_EXPRESSION: ADDITIVE_EXPRESSION {$$ = $1;}
                 | SHIFT_EXPRESSION TO_bitwiseLeft ADDITIVE_EXPRESSION {$$ = new ASTShiftExpression($3, $1, 1);}
@@ -376,7 +369,7 @@ CONDITIONAL_EXPRESSION: LOGICAL_OR_EXPRESSION {;}
 CONDITIONAL_EXPRESSION: INCLUSIVE_OR_EXPRESSION {$$ = $1;}
 
 ASSIGNMENT_EXPRESSION: CONDITIONAL_EXPRESSION {$$ = $1;}
-                     | UNARY_EXPRESSION ASSIGNMENT_OPERATOR CONDITIONAL_EXPRESSION {$$ = new ASTAssignmentExpression($1, $3, *$2);}
+                     | UNARY_EXPRESSION ASSIGNMENT_OPERATOR ASSIGNMENT_EXPRESSION {$$ = new ASTAssignmentExpression($1, $3, *$2);}
 
 ASSIGNMENT_OPERATOR: TO_equal {$$ = new int(0);}
                    | TO_multEqual {$$ = new int(1);}

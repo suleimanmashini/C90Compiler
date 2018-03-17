@@ -493,6 +493,63 @@ public:
 		EquivalentExp->updateRegisterNeeds();
 		EquivalentExp->codeGen(regList);
 		//now youll store v0 to the variable;
+		switch(assignmentOp){
+			case 0:
+				break;
+			case 1:
+				//*=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tmul $t0,$v0"<<std::endl;
+				std::cout<<"\tmov $v0,$LO"<<std::endl;
+				break;
+			case 2:
+				///=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tdiv $t0,$v0"<<std::endl;
+				std::cout<<"\tmov $v0,$LO"<<std::endl;
+				break;
+			case 3:
+				//%=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tdiv $t0,$v0"<<std::endl;
+				std::cout<<"\tmov $v0,$HI"<<std::endl;
+				break;
+			case 4:
+				//+=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tadd $v0,$t0,$v0"<<std::endl;
+				break;
+			case 5:
+				//-=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tsub $v0,$t0,$v0"<<std::endl;
+				break;
+			case 6:
+				//>>=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tsrlv $v0,$t0,$v0"<<std::endl;
+				break;
+			case 7:
+				//<<=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tsllv $v0,$t0,$v0"<<std::endl;
+				break;
+			case 8:
+				//&=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tand $v0,$t0,$v0"<<std::endl;
+				break;
+			case 9:
+				//^=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\txor $v0,$t0,$v0"<<std::endl;
+				break;
+			case 10:
+				//|=
+				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tor $v0,$t0,$v0"<<std::endl;
+				break;
+		}
 		std::cout<<"\tsw $v0," << variable->returnIndex() << "($fp)" << std::endl;
 	}
 private:

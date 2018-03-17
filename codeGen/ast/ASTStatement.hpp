@@ -3,6 +3,7 @@
 struct ASTStatement: public ASTExpression {
 public:
 	virtual ~ASTStatement() {};
+	virtual void pushVariables() {}
 	virtual void codeGen()  = 0;
 };
 
@@ -37,6 +38,14 @@ void codeGen()  override {
 		Child->codeGen();
 	}
 }
+void pushVariables() override{
+	if(Statement!=NULL) {
+		Statement->pushVariables();
+	}
+	if (Child != NULL) {
+		Child->pushVariables();
+	}
+}
 private:
    ASTStatementList* Child;
    ASTStatement* Statement;
@@ -48,6 +57,7 @@ public:
 ~ASTCompoundStatement() {}
 ASTCompoundStatement( ASTStatementList* _StateList,  ASTDeclarationList* _DeclList): StatList(_StateList), DeclList(_DeclList) {}
 void codeGen()  override {
+	currentScope++;
 	if (StatList == NULL && DeclList == NULL) {
 		std::cout <<"\tnop\n";
 		return;
@@ -58,13 +68,19 @@ void codeGen()  override {
 	if(StatList != NULL){
   StatList->codeGen();
 }
+	currentScope--;
   //TODO: INCLUDE DECLlIST HERE!!
 }
 void pushVariables()  {
+	currentScope++;
 	if (DeclList != NULL) {
 		DeclList->pushVariables();
 		//TODO: ADD SUPPORT TO OTHER STATEMENTS THAT HAVE BLOCKS
 	}
+	if (StatList != NULL) {
+		StatList->pushVariables();
+	}
+	currentScope--;
 }
 private:
    ASTStatementList* StatList;

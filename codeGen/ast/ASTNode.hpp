@@ -5,23 +5,28 @@
 #include <vector>
 #include <list>
 
-
+extern int initialVSize;
+extern int NumberofVaraibles;
+extern int currentScope;
 extern std::vector<std::string> regList;
 
 struct variable {
 public:
-variable(int _type, std::string _name): type(_type), name(_name) {}
+variable(int _type, std::string _name, int _foundInScope): type(_type), name(_name), foundInScope(_foundInScope) {}
 std::string getName() {
 	return name;
 }
+int getScope() {
+	return foundInScope;
+}
 private:
 int type;
+int foundInScope;
 std::string name;
 };
 
 extern std::vector<variable> allVariables;
-extern int initialVSize;
-extern int NumberofVaraibles;
+
 std::vector<std::string> tail(std::vector<std::string> vIn);
 std::string head(std::vector<std::string> vIn);
 int findVariableIndex (std::vector<variable> vIn, std::string variableName);

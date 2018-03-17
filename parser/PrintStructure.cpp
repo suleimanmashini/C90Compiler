@@ -9,10 +9,11 @@ int globalFlag = 0;
 int tabspace = 0;
 void fullCompiler();
 int main(int argc, char* argv[]) {
-
+	if (argc > 1) {
+if ((std::string) argv[1] == "--translate") {
 	std::string inputFile = argv[2];
 	std::string outputFile = argv[4];
-	if ((std::string) argv[1] == "--translate") {
+
 
 				freopen(argv[2], "r", stdin);
 				const TSTNode *TSTRootTrans = parseTSTTrans();
@@ -30,7 +31,8 @@ int main(int argc, char* argv[]) {
 				std::cout<<"    sys.exit(ret)"<<std::endl;
 
 
-} else {
+}
+}else {
 	fullCompiler();
 }
 

@@ -9,6 +9,7 @@ _The aim of this project is to create an ANSI C90 compiler that will both parse 
 There are many things to do:
 - [x] Lexer
 - [x] AST
+- [ ] Support for register spilling
 - [ ] Codegen
 - [x] Integer
 - [ ] String

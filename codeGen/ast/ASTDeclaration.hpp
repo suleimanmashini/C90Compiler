@@ -70,7 +70,7 @@ public:
 	ASTVariableDeclaration( int _typeNumber,  ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
 	void codeGen()  {}
 	void pushVariables() override {
-		variable TEMP = variable(typeNumber, Variable->getName());
+		variable TEMP = variable(typeNumber, Variable->getName(), currentScope);
 		allVariables.push_back(TEMP);
 	}
 private:
