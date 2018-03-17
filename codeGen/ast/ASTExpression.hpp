@@ -30,7 +30,7 @@ public:
 	}
 	void codeGen (std::vector<std::string> regIn)   override{
 		std::string r1 = head(regIn);
-		std::cout<< "\tli, " << r1 << ", " << numValue << std::endl;
+		std::cout<< "\tli " << r1 << ", " << numValue << std::endl;
 	}
 	int getregs()  override {return registerNeeds;}
 	int getValue()  {return numValue;}

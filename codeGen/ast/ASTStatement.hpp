@@ -14,7 +14,7 @@ void codeGen()  override {
 	if(returnExpression == NULL) {
   std::cout<< "\tnop \n";
 } else {
-	returnExpression->codeGen();
+	returnExpression->codeGen(regList);
 	std::cout<< "\tnop \n";
 }
 }

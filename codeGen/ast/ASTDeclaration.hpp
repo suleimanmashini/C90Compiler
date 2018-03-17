@@ -6,7 +6,7 @@ struct ASTDirectDeclarator: public ASTDeclaration {
 public:
   ASTDirectDeclarator( std::string _Identifier): Identifier(_Identifier) {}
   void codeGen()  override{
-    std::cout <<  this->getName() << ":\t";
+    std::cout <<  this->getName();
   }
   std::string getName()  {return Identifier;}
 private:
@@ -22,8 +22,15 @@ public:
   void codeGen()  override {
 		initialVSize = allVariables.size();
     if (initialVSize == -1) initialVSize = 0;
-		Declarator->codeGen();
+    std::cout<<"\t.text\n";
+    std::cout<<"\t.align  2\n";
+    std::cout<<"\t.global "; Declarator->codeGen(); std::cout<<std::endl;
+    std::cout<<"\t.ent  "; Declarator->codeGen(); std::cout << std::endl;
+    std::cout<<"\t.type  "; Declarator->codeGen(); std::cout <<", @function" <<  std::endl;
+
+    Declarator->codeGen();
 		Block->pushVariables();
+    std::cout<< ":\n";;
     int newsize = allVariables.size();
     NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
     int Framesize;
@@ -32,6 +39,11 @@ public:
   } else {
     Framesize = 8;
   }
+    std::cout << "\n\t.frame $fp," << Framesize <<",$31"<<std::endl;
+    std::cout << "\t.mask 0x40000000,-4" << std::endl;
+    std::cout << "\t.fmask	0x00000000,0" << std::endl;
+    std::cout << "\t.set	noreorder" << std::endl;
+    std::cout << "\t.set nomacro" << std::endl;
     std::cout <<"\taddiu $sp, $sp, -" << Framesize << std::endl;
     std::cout << "\tsw $fp," << Framesize - 4 << "($sp)" << std::endl;
     std::cout << "\tmove $fp, $sp" << std::endl;
@@ -42,6 +54,13 @@ public:
     std::cout << "\taddiu $sp, $sp," << Framesize << std::endl;
     std::cout << "\tjr $31" << std::endl;
     std::cout << "\tnop\n";
+    std::cout << "\t.set  macro" << std::endl;
+    std::cout << "\t.set  reorder";
+    std::cout << "\n\t.end  ";
+    Declarator->codeGen();
+    std::cout<<"\n\t.size "; Declarator->codeGen();
+    std::cout<<", .-"; Declarator->codeGen(); std::cout<<std::endl;
+    std::cout << std::endl;
   }
 private:
 	 int functionType;

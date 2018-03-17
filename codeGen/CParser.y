@@ -81,8 +81,8 @@ START: TRANSLATION_UNIT {ASTRoot = $1;}
 
 TRANSLATION_UNIT: FUNCTION_DEFINITION {$$ = new ASTTranslationUnit($1, NULL, NULL);}
                 | DECLARATION {$$ = new ASTTranslationUnit(NULL, $1, NULL);}
-                | TRANSLATION_UNIT FUNCTION_DEFINITION {$$ = new ASTTranslationUnit($2, NULL, $1);}
-                | TRANSLATION_UNIT DECLARATION {$$ = new ASTTranslationUnit(NULL, $2, NULL);}
+                | FUNCTION_DEFINITION TRANSLATION_UNIT  {$$ = new ASTTranslationUnit($1, NULL, $2);}
+                | DECLARATION TRANSLATION_UNIT  {$$ = new ASTTranslationUnit(NULL, $1, $2);}
 /*
 EXTERNAL_DECLARATION: FUNCTION_DEFINITION {$$ = $1;}
                     | DECLARATION {;}
@@ -252,6 +252,9 @@ EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | SHIFT_EXPRESSION {$$ = $1;}
           | RELATIONAL_EXPRESSION {$$ = $1;}
           | EQUALITY_EXPRESSION {$$ = $1;}
+          | POSTFIX_EXPRESSION {$$ = $1;}
+          | UNARY_EXPRESSION {$$ = $1;}
+          | CAST_EXPRESSION {$$ = $1;}
 
 
 PRIMARY_EXPRESSION: TC_integer {$$ = new ASTIntegerConst($1);;}
