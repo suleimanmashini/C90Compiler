@@ -11,11 +11,12 @@ int NumberofVaraibles;
 int currentScope;
 
 void fullCompiler() {
+
+ 	ASTTranslationUnit *ASTRoot = parseAST();
 	std::cout<<"\t.nan  legacy\n";
 	std::cout<<"\t.module fp=xx\n";
 	std::cout<<"\t.module nooddspreg\n";
 	std::cout<<"\t.abicalls\n";
- 	ASTTranslationUnit *ASTRoot = parseAST();
 	ASTRoot->codeGen();
 }
 

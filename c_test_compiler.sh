@@ -31,9 +31,11 @@ for i in ${input_dir}/*.c ; do
     fi
 
     #Set up the linking process of the two files:
+
     mips-linux-gnu-gcc -static -march=mips32 ${working}/${base}_driver.s ${working}/${base}_got.s -o ${working}/${base}_test
 
     #get the value thats returned
+
     qemu-mips ${working}/${base}_test
     GOT_C_OUT=$?
 
