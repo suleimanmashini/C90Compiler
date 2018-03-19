@@ -1,11 +1,13 @@
 MilestoneID,             Dependencies, EstimatedEffort, Lead,  Completed, Description
-DefineInitialMilestones,             ,1,    ?,           , Come up with initial milestones for getting started
-Started Project,Made some flex files,8,,yes,Actually got around to starting
-Got a working AST,"Bison File, printing functions",9,,yes,
-Getting the Parser tests to Pass,"Bison File, printing functions",,,yes,
-Started CodeGen,New folder system,,,yes,
-Restructure all the AST,CodeGen folder,,,yes,
-Generated Code for a basic Function,CodeGen folder,,,yes,
-Created working new AST for expressions,,,,,
-Created all working expressions,CodeGen folder,,,yes,
-Started working on stack variable locations,,,,,
+DefineInitialMilestones,             ,0,sm3516,           , Come up with initial milestones for getting started
+StartProject,,1,sm3516,,Actually got around to starting
+workingAST,StartProject,5,sm3516,,
+ParserPass,workingAST,3,sm3516,,
+CodeGenStart,,0,sm3516,,
+RestrucutedAST,CodeGenStart,7,sm3516,,
+BasicFunctionPassed,RestrucutedAST,11,sm3516,,
+newASTExpression,RestrucutedAST,5,sm3516,,
+fullExpressionSupport,,5,sm3516,,
+StackSupport,,7,sm3516,,
+Savedregisters,StackSupport,1,sm3516,,
+ArgumentsSupportAST,StackSupport; Savedregisters,3,sm3516,this,Im not going to lie I forgot to update my progress on the system I will try to update it daily from now one

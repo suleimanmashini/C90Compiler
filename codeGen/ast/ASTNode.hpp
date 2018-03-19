@@ -30,6 +30,8 @@ extern std::vector<variable> allVariables;
 std::vector<std::string> tail(std::vector<std::string> vIn);
 std::string head(std::vector<std::string> vIn);
 int findVariableIndex (std::vector<variable> vIn, std::string variableName);
+//WE NEED THIS TO KEEP TRACK OF PROTOTYPING
+extern std::vector<std::string> listOfFunctions;
 
 
 struct ASTNode {
@@ -40,9 +42,13 @@ public:
 
 struct ASTDeclaration: public ASTNode {
 public:
-	virtual ~ASTDeclaration() {};
-	virtual void codeGen()  {};
+	~ASTDeclaration() {}
+	virtual void codeGen()  {}
 	virtual void pushVariables()  {}
+	virtual std::string getName() {}
+	virtual void pushArguments() {}
+	virtual int countArgs() {}
+	virtual void popVariables() {}
 private:
 };
 

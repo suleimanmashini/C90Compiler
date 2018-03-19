@@ -1,22 +1,92 @@
 #pragma once
 
-
-
+struct ASTParameterList;
 struct ASTDirectDeclarator: public ASTDeclaration {
 public:
-  ASTDirectDeclarator( std::string _Identifier): Identifier(_Identifier) {}
+  ASTDirectDeclarator( std::string _Identifier, ASTDeclaration* _Parameters): Identifier(_Identifier), Parameters(_Parameters) {}
   void codeGen()  override{
     std::cout <<  this->getName();
   }
   std::string getName()  {return Identifier;}
+  virtual void pushVariables()  {}
+  void pushArguments() override {
+    if(Parameters != NULL ){
+      Parameters->pushArguments();
+    }
+  }
+  void popVariables() override {
+    if (Parameters != NULL ){
+        Parameters->popVariables();
+  }
+}
+  int countArgs() override{
+    if (Parameters != NULL) {
+      return Parameters->countArgs();
+    } else {
+      return 0;
+    }
+  }
 private:
-  //TODO: add a parameters PARAMETEr list
-   std::string Identifier;
+  //TODO: add a parameters parameter list
+  ASTDeclaration* Parameters;
+  std::string Identifier;
 };
+
+struct ASTVariableDeclaration: public ASTDeclaration {
+public:
+	~ASTVariableDeclaration() {}
+	ASTVariableDeclaration( int _typeNumber,  ASTDeclaration* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
+	void codeGen() override {}
+	void pushVariables() override {
+		variable TEMP = variable(typeNumber, Variable->getName(), currentScope);
+		allVariables.push_back(TEMP);
+	}
+  void popVariables() override{
+    allVariables.pop_back();
+  }
+  int countArgs() override {
+    return 1;
+  }
+private:
+	 int typeNumber;
+	 ASTDeclaration* Variable;
+};
+
+struct ASTParameterList: public ASTDeclaration {
+public:
+  ASTParameterList(ASTDeclaration* _Parameter, ASTDeclaration* _NextParameter): Parameter(_Parameter), NextParameter(_NextParameter) {}
+  void pushArguments() override {
+    Parameter->pushVariables();
+    if (NextParameter != NULL) {
+      NextParameter->pushArguments();
+    }
+  }
+  virtual void codeGen()  {}
+  virtual void pushVariables() {}
+  void popVariables() override {
+    Parameter->popVariables();
+    if (NextParameter != NULL) {
+      NextParameter->popVariables();
+    }
+  }
+  int countArgs() override {
+    if (NextParameter != NULL) {
+      return NextParameter->countArgs() + Parameter->countArgs();
+    } else {
+      return Parameter->countArgs();
+    }
+  }
+private:
+  ASTDeclaration* Parameter;
+  ASTDeclaration* NextParameter;
+};
+
 
 struct ASTFunctionDefinition: public ASTNode {
 public:
-	ASTFunctionDefinition( int _functionType,  ASTDirectDeclarator* _Declarator,  ASTCompoundStatement* _Block): functionType(_functionType), Declarator(_Declarator), Block(_Block) {}
+	ASTFunctionDefinition( int _functionType,  ASTDirectDeclarator* _Declarator,  ASTCompoundStatement* _Block): functionType(_functionType), Declarator(_Declarator), Block(_Block) {
+    listOfFunctions->push_back(Declarator->getName());
+  }
   int getReturnType()  {return functionType;}
   std::string getFunctionName()  {return Declarator->getName();}
   void codeGen()  override {
@@ -77,10 +147,12 @@ public:
     std::cout << "\t.set  macro" << std::endl;
     std::cout << "\t.set  reorder";
     std::cout << "\n\t.end  ";
+
     Declarator->codeGen();
     std::cout<<"\n\t.size "; Declarator->codeGen();
     std::cout<<", .-"; Declarator->codeGen(); std::cout<<std::endl;
     std::cout << std::endl;
+    //END OF A FUNCTION TIME TO POP THE VARIABLES
   }
 private:
 	 int functionType;
@@ -98,21 +170,4 @@ public:
 private:
    int typeNumber;
   //lets assume for now 0 is void and 1 is int
-};
-
-
-
-
-struct ASTVariableDeclaration: public ASTDeclaration {
-public:
-	~ASTVariableDeclaration() {}
-	ASTVariableDeclaration( int _typeNumber,  ASTDirectDeclarator* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
-	void codeGen()  {}
-	void pushVariables() override {
-		variable TEMP = variable(typeNumber, Variable->getName(), currentScope);
-		allVariables.push_back(TEMP);
-	}
-private:
-	 int typeNumber;
-	 ASTDirectDeclarator* Variable;
 };

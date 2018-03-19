@@ -50,10 +50,24 @@ public:
 		return ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
 	}
 	void codeGen (std::vector<std::string> regIn) override {
-		std::string r1 = head(regIn);
-		int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
-		//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
-		std::cout<< "\tlw, " << r1 << ", " << index <<"($fp)" << std::endl;
+		if (returnIndex == -1) {
+			//save $2 in the stack below
+			//this is me winging it it probably doesnt work but why not;
+			std::cout<<"\tsw	$2,-4(fp)" std::endl;
+			std::cout<<"\tlw	$2,%got("<<variableName<<")($28)" std::endl;
+			if(r1 == "$v0") {
+			std::cout<<"\lw	" << r1 << "0($2)" << std::endl;
+		} else {
+			std::cout<<"\lw	" << r1 << "0($2)" << std::endl;
+			std::cout<<"\tlw	$2,-4(fp)" std::endl;
+		}
+
+		} else {
+			std::string r1 = head(regIn);
+			int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
+			//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
+			std::cout<< "\tlw, " << r1 << ", " << index <<"($fp)" << std::endl;
+		}
 	}
 private:
 	 std::string variableName;
@@ -557,4 +571,28 @@ private:
 	 int assignmentOp;
 	 ASTExpression* EquivalentExp;
 	//TODO: change the additive expression to the other thing
+};
+
+struct ASTFunctionCall: public ASTExpression {
+public:
+	ASTFunctionaCall(std::string FunctionName, ){
+		isPrototype = std::find(listOfFunctions.begin(), listOfFunctions.end(), FunctionName);
+	}
+	void codeGen() override {
+		if (isPrototype) {
+			//this is the part where we do that cool handle;
+			std::cout<<"\tlui	$28,%hi(__gnu_local_gp)"<<std::endl;
+			std::cout<<"\taddiu	$28,$28,%lo(__gnu_local_gp)"<<std::endl;
+			std::cout<<"\t.cprestore	16"<<std::endl;
+			//TODO:load the arguments now
+			std::cout<<"\tlw	$2,%call16("<<FunctionName<<")($28)"<<std::endl;
+			std::cout<<"\tmove $25.$2"<<std::endl;
+			std::cout<<"\t.reloc	1f,R_MIPS_JALR,"<<FunctionName<<std::endl;
+			std::cout<<"1.	jalr $25" << std::endl << "\tnop" << std::endl;
+
+		}
+	}
+private:
+	std::string FunctionName;
+	bool isPrototype;
 };

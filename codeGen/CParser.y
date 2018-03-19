@@ -42,8 +42,7 @@
 %type <Integer> TC_integer
 %type <Statement> STATEMENT EXPRESSION_STATEMENT
 %type <DecList> DECLARATION_LIST
-%type <Declaration> DECLARATION
-
+%type <ActualDeclaration> DECLARATION PARAMETER_DECLARATION PARAMETER_TYPE_LIST PARAMETER_LIST
 %type <Translation> TRANSLATION_UNIT START
 
 
@@ -51,6 +50,8 @@
  ASTVariableExp* Vexp;
  ASTNode* Node;
  ASTInclusiveOr* Incl;
+ ASTParameterList* Plist;
+ ASTDeclaration* ActualDeclaration;
  ASTExclusiveOr* ExclOr;
  ASTBitwiseAnd* bitAnd;
  ASTVariableDeclaration* Declaration;
@@ -202,9 +203,20 @@ DIRECT_DECLARATOR: T_IDENTIFIER {;}
                  | DIRECT_DECLARATOR T_LBRACKET IDENTIFIER_LIST T_RBRACKET {;}
                  | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET {;}
 */
-DIRECT_DECLARATOR: T_IDENTIFIER {$$ = new ASTDirectDeclarator(*$1);}
+DIRECT_DECLARATOR: T_IDENTIFIER {$$ = new ASTDirectDeclarator(*$1, NULL);}
                  | T_LBRACKET DECLARATOR T_RBRACKET {;}
-                 | DIRECT_DECLARATOR T_LBRACKET T_RBRACKET {$$ = $1;}
+                 | T_IDENTIFIER T_LBRACKET T_RBRACKET {$$ = new ASTDirectDeclarator(*$1, NULL);}
+                 | T_IDENTIFIER T_LBRACKET PARAMETER_TYPE_LIST T_RBRACKET {$$ = new ASTDirectDeclarator(*$1, $3);}
+
+PARAMETER_TYPE_LIST: PARAMETER_LIST {$$ = $1;}
+              //    | PARAMETER_LIST TP_comma T_dot T_dot T_dot {;}
+
+PARAMETER_LIST: PARAMETER_DECLARATION {$$ = $1;}
+              | PARAMETER_LIST TP_comma PARAMETER_DECLARATION {$$ = new ASTParameterList($1, $3);}
+
+
+PARAMETER_DECLARATION: DECLARATION_SPECIFIERS DECLARATION {$$ = $2;}
+
 /*
 POINTER: TO_asterix TYPE_QUALIFIER_LIST {;}
        | TO_asterix {;}
@@ -212,16 +224,7 @@ POINTER: TO_asterix TYPE_QUALIFIER_LIST {;}
        | TO_asterix POINTER {;}
 */
 
-/*
-PARAMETER_TYPE_LIST: PARAMETER_LIST {;}
-                   | PARAMETER_LIST TP_comma T_dot T_dot T_dot {;}
 
-PARAMETER_LIST: PARAMETER_DECLARATION {;}
-              | PARAMETER_LIST TP_comma PARAMETER_DECLARATION {;}
-
-
-PARAMETER_DECLARATION: DECLARATION_SPECIFIERS DECLARATION {;}
-*/
 /*
 IDENTIFIER_LIST: T_IDENTIFIER {;}
                | IDENTIFIER_LIST TP_comma T_IDENTIFIER {;}
@@ -262,21 +265,10 @@ PRIMARY_EXPRESSION: TC_integer {$$ = new ASTIntegerConst($1);;}
                   | T_IDENTIFIER {$$ = new ASTVariableExp(*$1);}
 
 /*
-EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
-          | POSTFIX_EXPRESSION {;}
-          | UNARY_EXPRESSION {;}
-          | MULTIPLICATIVE_EXPRESSION {;}
-          | ADDITIVE_EXPRESSION {;}
-          | SHIFT_EXPRESSION {;}
-          | RELATIONAL_EXPRESSION {;}
-          | EQUALITY_EXPRESSION {;}
-          | AND_EXPRESSION {;}
-          | EXCLUSIVE_OR_EXPRESSION {;}
-          | INCLUSIVE_OR_EXPRESSION {;}
+EXPRESSION: POSTFIX_EXPRESSION {;}
           | LOGICAL_AND_EXPRESSION {;}
           | LOGICAL_OR_EXPRESSION {;}
           | CONDITIONAL_EXPRESSION {;}
-          | ASSIGNMENT_EXPRESSION {;}
           | EXPRESSION TP_comma ASSIGNMENT_EXPRESSION {;}
 
 
@@ -286,6 +278,11 @@ PRIMARY_EXPRESSION: T_IDENTIFIER {;}
                   | T_LBRACKET EXPRESSION T_RBRACKET {} {;}
 */
 POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
+                  | T_IDENTIFIER T_LBRACKET ARGUMENT_EXPRESSION_LIST T_RBRACKET {$$ = new ASTFunctionCall(*$1, $3);}
+                  | T_IDENTIFIER T_LBRACKET T_RBRACKET {$$ = new ASTFunctionCall(*$1, NULL);}
+
+ARGUMENT_EXPRESSION_LIST: ASSIGNMENT_EXPRESSION {$$ = $1;}
+                        | ASSIGNMENT_EXPRESSION_LIST TP_comma ASSIGNMENT_EXPRESSION {;}
 /*
 
 POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {;}
@@ -297,8 +294,7 @@ POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {;}
                   | POSTFIX_EXPRESSION TO_increment {;}
                   | POSTFIX_EXPRESSION TO_decrement {;}
 
-ARGUMENT_EXPRESSION_LIST: ASSIGNMENT_EXPRESSION {;}
-                        | ASSIGNMENT_EXPRESSION_LIST TP_comma ASSIGNMENT_EXPRESSION {;}
+
 
 UNARY_EXPRESSION: POSTFIX_EXPRESSION {;}
                 | TO_increment UNARY_EXPRESSION {;}
