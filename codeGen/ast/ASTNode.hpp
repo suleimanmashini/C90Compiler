@@ -3,12 +3,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <list>
 
 extern int initialVSize;
 extern int NumberofVaraibles;
 extern int currentScope;
 extern std::vector<std::string> regList;
+extern int maxArgs;
 
 struct variable {
 public:

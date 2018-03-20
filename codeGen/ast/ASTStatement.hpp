@@ -14,7 +14,7 @@ void codeGen()  override {
 	if(returnExpression == NULL) {
   std::cout<< "\tnop \n";
 } else {
-	returnExpression->codeGen(regList);
+	returnExpression->codeGen();
 	std::cout<< "\tnop \n";
 }
 }
@@ -71,7 +71,7 @@ void codeGen()  override {
 	currentScope--;
   //TODO: INCLUDE DECLlIST HERE!!
 }
-void pushVariables()  {
+void pushVariables()  override {
 	currentScope++;
 	if (DeclList != NULL) {
 		DeclList->pushVariables();
@@ -92,7 +92,15 @@ struct ASTExpressionStatement: ASTStatement {
 	~ASTExpressionStatement() {}
 	ASTExpressionStatement( ASTExpression* _Exp): Exp(_Exp) {}
 	void codeGen()  {
+		if (Exp != NULL) {
 		Exp->codeGen();
+	} else {
+
+		std::cout<<"\tnop"<< std::endl;
+	}
+	}
+	void pushVariables() override {
+		Exp->pushVariables();
 	}
 private:
  ASTExpression* Exp;

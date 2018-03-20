@@ -8,14 +8,16 @@ public:
 	~ASTExpression() {}
 	ASTExpression() {}
 	ASTExpression( ASTExpression* _left,  ASTExpression* _right,  std::string _vleft): right(_right), left(_left), vleft(_vleft) {}
-	virtual int returnIndex () {}
-	void codeGen()  {
-		//unsure of the purpose of this now
-	}
 	virtual void codeGen(std::vector<std::string> regIn) {}
+	virtual int returnIndex () {}
+	virtual void codeGen()  {
+		this->codeGen(regList);
+	}
+	virtual int countArgs() {}
 	virtual int getregs() {}
 	virtual void updateRegisterNeeds() {}
-
+	virtual void pushVariables() {}
+	virtual void updateArgNumber(int index) {}
 private:
 	 ASTExpression* right;
 	 ASTExpression* left;
@@ -50,23 +52,36 @@ public:
 		return ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
 	}
 	void codeGen (std::vector<std::string> regIn) override {
-		if (returnIndex == -1) {
+		//ok this part is wrong cause i then need to check for all scope;
+		std::string r1 = head(regIn);
+		if (findVariableIndex(allVariables, variableName) == -1) {
 			//save $2 in the stack below
 			//this is me winging it it probably doesnt work but why not;
-			std::cout<<"\tsw	$2,-4(fp)" std::endl;
-			std::cout<<"\tlw	$2,%got("<<variableName<<")($28)" std::endl;
+			std::cout<<"\tsw $2,-4(fp)" << std::endl;
+			std::cout<<"\tlw $2,%got("<<variableName<<")($28)" << std::endl;
 			if(r1 == "$v0") {
-			std::cout<<"\lw	" << r1 << "0($2)" << std::endl;
+			std::cout<<"\tlw " << r1 << ",0($2)" << std::endl;
 		} else {
-			std::cout<<"\lw	" << r1 << "0($2)" << std::endl;
-			std::cout<<"\tlw	$2,-4(fp)" std::endl;
+			std::cout<<"\tlw " << r1 << ",0($2)" << std::endl;
+			std::cout<<"\tlw $2,-4(fp)" << std::endl;
 		}
 
 		} else {
-			std::string r1 = head(regIn);
 			int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
 			//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
-			std::cout<< "\tlw, " << r1 << ", " << index <<"($fp)" << std::endl;
+			if (index > NumberofVaraibles * 4) {
+				int Framesize;
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+			    Framesize = ((NumberofVaraibles + 9 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 9) * 4) % 8;
+			  } else {
+			    //used to be 8 now i changed it to fit the new registers
+			    Framesize = ((9 + maxArgs) * 4) + (((maxArgs + 9) * 4)%8);
+			  }
+					std::cout<< "\tlw " << r1 << ", " << index + Framesize - 8 <<"($fp)" << std::endl;
+			} else {
+			std::cout<< "\tlw " << r1 << ", " << index <<"($fp)" << std::endl;
+		}
 		}
 	}
 private:
@@ -564,7 +579,19 @@ public:
 				std::cout<<"\tor $v0,$t0,$v0"<<std::endl;
 				break;
 		}
-		std::cout<<"\tsw $v0," << variable->returnIndex() << "($fp)" << std::endl;
+		if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 9 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 9) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((9 + maxArgs) * 4) + (((maxArgs + 9) * 4)%8);
+			}
+				std::cout<< "\tsw $v0," << variable->returnIndex() + Framesize - 8 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tsw $v0," << variable->returnIndex() << "($fp)" << std::endl;
+	}
 	}
 private:
 	 ASTExpression* variable;
@@ -573,10 +600,78 @@ private:
 	//TODO: change the additive expression to the other thing
 };
 
+struct ASTArgumentList: public ASTExpression {
+public:
+  ASTArgumentList(ASTExpression* _Argument, ASTExpression* _NextArgument): Argument(_Argument), NextArgument(_NextArgument) {}
+	void codeGen() override {
+		 	//TODO: SAVE THE REGISTERS BEFORE YOU GO INTO AN EVALUATION
+			//I NEED TO SAVE ALL THE REGISTERS JUST INCASE THERE USED IN EVALUATION;
+			std::cout <<"\taddiu $sp, $sp, -" << 84 << std::endl;
+			std::cout <<"\tsw $30," << 78 << "($sp)" << std::endl;
+			std::cout <<"\tsw $23," << 74 << "($sp)" << std::endl;
+			std::cout <<"\tsw $22," << 72 << "($sp)" << std::endl;
+			std::cout <<"\tsw $21," << 68 << "($sp)" << std::endl;
+			std::cout <<"\tsw $20," << 64 << "($sp)" << std::endl;
+			std::cout <<"\tsw $19," << 60 << "($sp)" << std::endl;
+			std::cout <<"\tsw $18," << 56 << "($sp)" << std::endl;
+			std::cout <<"\tsw $17," << 52 << "($sp)" << std::endl;
+			std::cout <<"\tsw $16," << 48 << "($sp)" << std::endl;
+			std::cout <<"\tsw $25," << 44 << "($sp)" << std::endl;
+			std::cout <<"\tsw $24," << 40 << "($sp)" << std::endl;
+			std::cout <<"\tsw $15," << 36 << "($sp)" << std::endl;
+			std::cout <<"\tsw $14," << 32 << "($sp)" << std::endl;
+			std::cout <<"\tsw $13," << 28 << "($sp)" << std::endl;
+			std::cout <<"\tsw $12," << 24 << "($sp)" << std::endl;
+			std::cout <<"\tsw $11," << 20 << "($sp)" << std::endl;
+			std::cout <<"\tsw $10," << 16 << "($sp)" << std::endl;
+			std::cout <<"\tsw $9," << 12 << "($sp)" << std::endl;
+			std::cout <<"\tsw $8," << 8 << "($sp)" << std::endl;
+			std::cout <<"\tsw $v0," << 4 << "($sp)" << std::endl;
+			std::cout <<"\tsw $v1," << 0 << "($sp)" << std::endl;
+			Argument->codeGen();
+			//now the result will be in v0 so we need to move it to its appropriate registers
+			switch(argNumber){
+				case 0:
+				std::cout << "\tmove $a0, $v0" << std::endl;
+				break;
+				case 1:
+				std::cout << "\tmove $a1, $v0" << std::endl;
+				break;
+				case 2:
+				std::cout << "\tmove $a2, $v0" << std::endl;
+				break;
+				case 3:
+				std::cout << "\tmove $a3, $v0" << std::endl;
+				break;
+				default:
+				std::cout << "\tsw $v0,"<< argNumber * 4 <<"($fp)" << std::endl;
+			}
+			//OR we can pop it to the frame
+			//POPBACK THE REGISTERS AFTER EVALUATION
+	}
+	int countArgs() override{
+		if(NextArgument != NULL){
+			return NextArgument->countArgs() + 1;
+		} else {
+			return 1;
+		}
+	}
+	void updateArgNumber(int index) {
+		argNumber = index;
+		if (NextArgument != NULL){
+			NextArgument->updateArgNumber(index + 1);
+		}
+	}
+private:
+  ASTExpression* Argument;
+  ASTExpression* NextArgument;
+	int argNumber;
+};
+
 struct ASTFunctionCall: public ASTExpression {
 public:
-	ASTFunctionaCall(std::string FunctionName, ){
-		isPrototype = std::find(listOfFunctions.begin(), listOfFunctions.end(), FunctionName);
+	ASTFunctionCall(std::string _FunctionName, ASTExpression* _ArgsList): FunctionName(_FunctionName), ArgsList(_ArgsList) {
+		isPrototype = std::find(listOfFunctions.begin(), listOfFunctions.end(), FunctionName) == listOfFunctions.end();
 	}
 	void codeGen() override {
 		if (isPrototype) {
@@ -586,13 +681,52 @@ public:
 			std::cout<<"\t.cprestore	16"<<std::endl;
 			//TODO:load the arguments now
 			std::cout<<"\tlw	$2,%call16("<<FunctionName<<")($28)"<<std::endl;
-			std::cout<<"\tmove $25.$2"<<std::endl;
+			std::cout<<"\tmove $25,$2"<<std::endl;
 			std::cout<<"\t.reloc	1f,R_MIPS_JALR,"<<FunctionName<<std::endl;
-			std::cout<<"1.	jalr $25" << std::endl << "\tnop" << std::endl;
+			std::cout<<"1:	jalr $25" << std::endl << "\tnop" << std::endl;
+		} else {
+			//codeGen the arguments to v0 then place them to where they need to be;
+			ArgsList->updateArgNumber(0);
+			ArgsList->codeGen();
+			std::cout<<"\t.option	pic0"<<std::endl;
+			std::cout<<"\tjal	"<< FunctionName << std::endl;
+			std::cout<<"\tnop	\n" << std::endl;
+			std::cout<<"\t.option pic2" << std::endl << std::endl;
+			std::cout <<"\tlw $30," << 78 << "($sp)" << std::endl;
+			std::cout <<"\tlw $23," << 74 << "($sp)" << std::endl;
+			std::cout <<"\tlw $22," << 72 << "($sp)" << std::endl;
+			std::cout <<"\tlw $21," << 68 << "($sp)" << std::endl;
+			std::cout <<"\tlw $20," << 64 << "($sp)" << std::endl;
+			std::cout <<"\tlw $19," << 60 << "($sp)" << std::endl;
+			std::cout <<"\tlw $18," << 56 << "($sp)" << std::endl;
+			std::cout <<"\tlw $17," << 52 << "($sp)" << std::endl;
+			std::cout <<"\tlw $16," << 48 << "($sp)" << std::endl;
+			std::cout <<"\tlw $25," << 44 << "($sp)" << std::endl;
+			std::cout <<"\tlw $24," << 40 << "($sp)" << std::endl;
+			std::cout <<"\tlw $15," << 36 << "($sp)" << std::endl;
+			std::cout <<"\tlw $14," << 32 << "($sp)" << std::endl;
+			std::cout <<"\tlw $13," << 28 << "($sp)" << std::endl;
+			std::cout <<"\tlw $12," << 24 << "($sp)" << std::endl;
+			std::cout <<"\tlw $11," << 20 << "($sp)" << std::endl;
+			std::cout <<"\tlw $10," << 16 << "($sp)" << std::endl;
+			std::cout <<"\tlw $9," << 12 << "($sp)" << std::endl;
+			std::cout <<"\tlw $8," << 8 << "($sp)" << std::endl;
+			std::cout <<"\tlw $v0," << 4 << "($sp)" << std::endl;
+			std::cout <<"\tlw $v1," << 0 << "($sp)" << std::endl;
+			std::cout <<"\taddiu $sp, $sp, " << 84 << std::endl;
+		}
+	}
 
+	void pushVariables() override {
+		//we will use this function to update the global variable of MAXargs
+		if (ArgsList == NULL){
+			maxArgs = std::max(0, maxArgs);
+		} else {
+			maxArgs = std::max(ArgsList->countArgs(), maxArgs);
 		}
 	}
 private:
 	std::string FunctionName;
 	bool isPrototype;
+	ASTExpression* ArgsList;
 };

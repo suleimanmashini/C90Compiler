@@ -11,7 +11,7 @@ std::vector<std::string> listOfFunctions;
 int initialVSize;
 int NumberofVaraibles;
 int currentScope;
-
+int maxArgs;
 void fullCompiler() {
 
  	ASTTranslationUnit *ASTRoot = parseAST();
@@ -31,9 +31,15 @@ std::string head(std::vector<std::string> vIn) {
 	return vIn[0];
 }
 
+//THIS FUNCTION NOW FINDS SHADOWING FUNCTIONS
 int findVariableIndex (std::vector<variable> vIn, std::string variableName){
 	for (int i = vIn.size() - 1; i >= 0; i--) {
 		if (vIn[i].getName() == variableName && vIn[i].getScope() == currentScope) {
+			return i;
+		}
+	}
+	for (int i = vIn.size() - 1; i >= 0; i--) {
+		if (vIn[i].getName() == variableName) {
 			return i;
 		}
 	}

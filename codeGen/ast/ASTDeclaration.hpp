@@ -8,7 +8,7 @@ public:
     std::cout <<  this->getName();
   }
   std::string getName()  {return Identifier;}
-  virtual void pushVariables()  {}
+  void pushVariables()  override {}
   void pushArguments() override {
     if(Parameters != NULL ){
       Parameters->pushArguments();
@@ -85,11 +85,18 @@ private:
 struct ASTFunctionDefinition: public ASTNode {
 public:
 	ASTFunctionDefinition( int _functionType,  ASTDirectDeclarator* _Declarator,  ASTCompoundStatement* _Block): functionType(_functionType), Declarator(_Declarator), Block(_Block) {
-    listOfFunctions->push_back(Declarator->getName());
+    listOfFunctions.push_back(Declarator->getName());
   }
   int getReturnType()  {return functionType;}
   std::string getFunctionName()  {return Declarator->getName();}
   void codeGen()  override {
+    //reset maxArgs to find the needed stack space for all the arguments.
+    maxArgs = 0;
+
+    //push arguments if there are any, should not be counted in the size;
+    currentScope++;
+    Declarator->pushArguments();
+    currentScope--;
 		initialVSize = allVariables.size();
     if (initialVSize == -1) initialVSize = 0;
     std::cout<<"\t.text\n";
@@ -97,18 +104,17 @@ public:
     std::cout<<"\t.global "; Declarator->codeGen(); std::cout<<std::endl;
     std::cout<<"\t.ent  "; Declarator->codeGen(); std::cout << std::endl;
     std::cout<<"\t.type  "; Declarator->codeGen(); std::cout <<", @function" <<  std::endl;
-
-    Declarator->codeGen();
 		Block->pushVariables();
+    Declarator->codeGen();
     std::cout<< ":\n";;
     int newsize = allVariables.size();
     NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
     int Framesize;
     if (NumberofVaraibles != 0) {
-    Framesize = (((NumberofVaraibles + 9) * 4) + (((NumberofVaraibles + 9) * 4)%8));
+    Framesize = ((NumberofVaraibles + 9 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 9) * 4) % 8;
   } else {
     //used to be 8 now i changed it to fit the new registers
-    Framesize = (9 * 4) + 4;
+    Framesize = ((9 + maxArgs) * 4) + (((maxArgs + 9) * 4)%8);
   }
     std::cout << "\n\t.frame $fp," << Framesize <<",$31"<<std::endl;
     std::cout << "\t.mask 0x40000000,-4" << std::endl;
@@ -128,6 +134,28 @@ public:
     std::cout <<"\tsw $16," << Framesize - 36 << "($sp)" << std::endl;
     std::cout << "\tsw $fp," << Framesize - 40 << "($sp)" << std::endl;
     std::cout << "\tmove $fp, $sp" << std::endl;
+    // push the arguments in the registers to the stack
+    if (Declarator->countArgs() != 0){
+      switch (Declarator->countArgs()){
+          case 1:
+          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
+          break;
+          case 2:
+          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tlw $a1," << Framesize + 4 << "($sp)" << std::endl;
+          break;
+          case 3:
+          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tlw $a1," << Framesize + 4 << "($sp)" << std::endl;
+          std::cout <<"\tlw $a2," << Framesize + 8 << "($sp)" << std::endl;
+          break;
+          default:
+          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tlw $a1," << Framesize + 4 << "($sp)" << std::endl;
+          std::cout <<"\tlw $a2," << Framesize + 8 << "($sp)" << std::endl;
+          std::cout <<"\tlw $a3," << Framesize + 12 << "($sp)" << std::endl;
+      }
+    }
     Block->codeGen();
     std::cout << "\tnop\n";
     std::cout << "\tmove $sp, $fp" << std::endl;
@@ -147,7 +175,6 @@ public:
     std::cout << "\t.set  macro" << std::endl;
     std::cout << "\t.set  reorder";
     std::cout << "\n\t.end  ";
-
     Declarator->codeGen();
     std::cout<<"\n\t.size "; Declarator->codeGen();
     std::cout<<", .-"; Declarator->codeGen(); std::cout<<std::endl;
