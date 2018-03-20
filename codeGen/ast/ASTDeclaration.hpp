@@ -1,4 +1,6 @@
 #pragma once
+extern int isGlobal;
+extern int globalsFound;
 
 struct ASTParameterList;
 struct ASTDirectDeclarator: public ASTDeclaration {
@@ -36,7 +38,12 @@ struct ASTVariableDeclaration: public ASTDeclaration {
 public:
 	~ASTVariableDeclaration() {}
 	ASTVariableDeclaration( int _typeNumber,  ASTDeclaration* _Variable): typeNumber(_typeNumber), Variable(_Variable) {}
-	void codeGen() override {}
+	void codeGen() override {
+    if (isGlobal) {
+      globalsFound = 1;
+      std::cout << ".comm " << Variable->getName() << ",4,4\n"<<std::endl;
+    }
+  }
 	void pushVariables() override {
 		variable TEMP = variable(typeNumber, Variable->getName(), currentScope);
 		allVariables.push_back(TEMP);
@@ -90,6 +97,7 @@ public:
   int getReturnType()  {return functionType;}
   std::string getFunctionName()  {return Declarator->getName();}
   void codeGen()  override {
+    isGlobal = 0;
     //reset maxArgs to find the needed stack space for all the arguments.
     maxArgs = 0;
 
@@ -112,10 +120,10 @@ public:
     NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
     int Framesize;
     if (NumberofVaraibles != 0) {
-    Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+    Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4 + 4) + ((NumberofVaraibles + maxArgs + 20) * 4 + 4) % 8;
   } else {
     //used to be 8 now i changed it to fit the new registers
-    Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+    Framesize = ((20 + maxArgs) * 4 + 4 ) + (((maxArgs + 20) * 4 + 4)%8);
   }
     std::cout << "\n\t.frame $fp," << Framesize <<",$31"<<std::endl;
     std::cout << "\t.mask 0x40000000,-4" << std::endl;
@@ -145,6 +153,10 @@ public:
     std::cout <<"\tsw $8," << Framesize - 76 << "($sp)" << std::endl;
     std::cout << "\tsw $fp," << Framesize - 80 << "($sp)" << std::endl;
     std::cout << "\tmove $fp, $sp" << std::endl;
+    if (globalsFound) {
+      std::cout<<"\tlui	$28,%hi(__gnu_local_gp)" << std::endl;
+      std::cout<<"\taddiu	$28,$28,%lo(__gnu_local_gp)" << std::endl;
+    }
     // push the arguments in the registers to the stack
     if (Declarator->countArgs() != 0){
       switch (Declarator->countArgs()){
@@ -201,6 +213,7 @@ public:
     std::cout<<", .-"; Declarator->codeGen(); std::cout<<std::endl;
     std::cout << std::endl;
     //END OF A FUNCTION TIME TO POP THE VARIABLES
+    isGlobal = 1;
   }
 private:
 	 int functionType;

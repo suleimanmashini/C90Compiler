@@ -4,10 +4,10 @@
 	.abicalls
 	.text
 	.align  2
-	.global add
-	.ent  add
-	.type  add, @function
-add:
+	.global sub
+	.ent  sub
+	.type  sub, @function
+sub:
 
 	.frame $fp,104,$31
 	.mask 0x40000000,-4
@@ -40,7 +40,7 @@ add:
 	sw $a1,108($sp)
 	lw $t0, 104($fp)
 	lw $t1, 108($fp)
-	add $t0, $t0, $t1
+	sub $t0, $t0, $t1
 	move $v0, $t0
 	nop 
 	nop
@@ -70,8 +70,8 @@ add:
 	nop
 	.set  macro
 	.set  reorder
-	.end  add
-	.size add, .-add
+	.end  sub
+	.size sub, .-sub
 
 	.text
 	.align  2
@@ -116,7 +116,7 @@ driver:
 	lw $t0, 20($fp)
 	move $a1, $t0
 	.option	pic0
-	jal	add
+	jal	sub
 	nop	
 
 	.option pic2

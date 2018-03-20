@@ -65,14 +65,14 @@ public:
 				int Framesize;
 					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 					if (NumberofVaraibles != 0) {
-			    Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+			    Framesize = ((NumberofVaraibles + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + maxArgs + 20 + 1) * 4) % 8;
 			  } else {
 			    //used to be 8 now i changed it to fit the new registers
-			    Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+			    Framesize = ((20 + maxArgs + 1) * 4) + (((maxArgs + 20 + 1) * 4)%8);
 			  }
-					std::cout<< "\tlw " << r1 << ", " << index + Framesize - 4 <<"($fp)" << std::endl;
+					std::cout<< "\tlw " << r1 << ", " << index + Framesize  - 4 <<"($fp)" << std::endl;
 			} else {
-			std::cout<< "\tlw " << r1 << ", " << (index + (maxArgs * 4)) -4 <<"($fp)" << std::endl;
+			std::cout<< "\tlw " << r1 << ", " << (index + (maxArgs * 4))  <<"($fp)" << std::endl;
 		}
 		}
 	}
@@ -578,14 +578,14 @@ public:
 			int Framesize;
 				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
 			} else {
 				//used to be 8 now i changed it to fit the new registers
 				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
 			}
-				std::cout<< "\tsw $t0," << variable->returnIndex() + Framesize - 8 <<"($fp)" << std::endl;
+				std::cout<< "\tsw $t0," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
-			std::cout<<"\tsw $t0," << variable->returnIndex() + (maxArgs * 4) -4 << "($fp)" << std::endl;
+			std::cout<<"\tsw $t0," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
 	}
 	void codeGen(std::vector<std::string> regList) override {
@@ -620,7 +620,7 @@ public:
 				std::cout << "\tmove $a3, $t0" << std::endl;
 				break;
 				default:
-				std::cout << "\tsw $t0,"<< argNumber * 4 <<"($fp)" << std::endl;
+				std::cout << "\tsw $t0,"<< argNumber * 4 + 4 <<"($fp)" << std::endl;
 			}
 			//OR we can pop it to the frame
 			//POPBACK THE REGISTERS AFTER EVALUATION
@@ -654,11 +654,20 @@ public:
 	}
 	void codeGen() override {
 		if (isPrototype) {
+
 			//this is the part where we do that cool handle;
 			std::cout<<"\tlui	$28,%hi(__gnu_local_gp)"<<std::endl;
 			std::cout<<"\taddiu	$28,$28,%lo(__gnu_local_gp)"<<std::endl;
-			std::cout<<"\t.cprestore	16"<<std::endl;
+			if (ArgsList->countArgs() <= 4) {
+				std::cout<<"\t.cprestore	16" <<std::endl;
+
+			} else {
+			std::cout<<"\t.cprestore	"<< ArgsList->countArgs() <<std::endl;
+
+			}
 			//TODO:load the arguments now
+			ArgsList->updateArgNumber(0);
+			ArgsList->codeGen();
 			std::cout<<"\tlw	$2,%call16("<<FunctionName<<")($28)"<<std::endl;
 			std::cout<<"\tmove $25,$2"<<std::endl;
 			std::cout<<"\t.reloc	1f,R_MIPS_JALR,"<<FunctionName<<std::endl;

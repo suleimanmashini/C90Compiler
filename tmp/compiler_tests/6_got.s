@@ -2,12 +2,14 @@
 	.module fp=xx
 	.module nooddspreg
 	.abicalls
+.comm a,4,4
+
 	.text
 	.align  2
-	.global what
-	.ent  what
-	.type  what, @function
-what:
+	.global test
+	.ent  test
+	.type  test, @function
+test:
 
 	.frame $fp,104,$31
 	.mask 0x40000000,-4
@@ -36,7 +38,13 @@ what:
 	sw $8,28($sp)
 	sw $fp,24($sp)
 	move $fp, $sp
-	li $t0, 1
+	lui	$28,%hi(__gnu_local_gp)
+	addiu	$28,$28,%lo(__gnu_local_gp)
+	li $t0, 7
+	sw $t0,20($fp)
+	li $t0, 5
+	sw $t0,108($fp)
+	lw $t0,%got(a)($28)
 	move $v0, $t0
 	nop 
 	nop
@@ -66,6 +74,6 @@ what:
 	nop
 	.set  macro
 	.set  reorder
-	.end  what
-	.size what, .-what
+	.end  test
+	.size test, .-test
 

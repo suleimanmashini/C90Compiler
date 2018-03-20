@@ -11,6 +11,8 @@ std::vector<std::string> listOfFunctions;
 int initialVSize;
 int NumberofVaraibles;
 int currentScope;
+int isGlobal = 1;
+int globalsFound;
 int maxArgs;
 void fullCompiler() {
 
