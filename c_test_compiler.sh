@@ -18,14 +18,13 @@ working="tmp/compiler_tests"
 mkdir -p ${working}
 
 for i in ${input_dir}/*.c ; do
+  if [[ ${i: -9} != "_driver.c" ]] ; then
     base=$(echo $i | sed -E -e "s|${input_dir}/([^.]+)[.]c|\1|g");
-
     # Compile the driver
     mips-linux-gnu-gcc -S -static -std=c90 -march=mips32 ${input_dir}/${base}_driver.c -o ${working}/${base}_driver.s
 
     # Compiler using the Compiler
     if [[ ${have_compiler} -eq 0 ]] ; then
-
         # Create the DUT python version by invoking the compiler with translation flags
         $compiler -S ${input_dir}/${base}.c -o ${working}/${base}_got.s
     fi
@@ -46,4 +45,5 @@ for i in ${input_dir}/*.c ; do
     else
         echo "$base, Pass"
     fi
+  fi
 done

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <stdio.h>
 std::vector<variable> allVariables;
-std::vector<std::string> regList = {"$v0", "$v1", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5",
+std::vector<std::string> regList = {"$t0", "$t1", "$t2", "$t3", "$t4", "$t5",
 																		"$t6", "$t7", "$t8", "$t9", "$s0", "$s1", "$s2", "$s3",
 																		"$s4", "$s5", "$s6", "$s7"};
 std::vector<std::string> listOfFunctions;

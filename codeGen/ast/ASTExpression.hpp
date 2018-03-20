@@ -57,15 +57,7 @@ public:
 		if (findVariableIndex(allVariables, variableName) == -1) {
 			//save $2 in the stack below
 			//this is me winging it it probably doesnt work but why not;
-			std::cout<<"\tsw $2,-4(fp)" << std::endl;
-			std::cout<<"\tlw $2,%got("<<variableName<<")($28)" << std::endl;
-			if(r1 == "$v0") {
-			std::cout<<"\tlw " << r1 << ",0($2)" << std::endl;
-		} else {
-			std::cout<<"\tlw " << r1 << ",0($2)" << std::endl;
-			std::cout<<"\tlw $2,-4(fp)" << std::endl;
-		}
-
+			std::cout<<"\tlw " << r1 <<",%got("<<variableName<<")($28)" << std::endl;
 		} else {
 			int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
 			//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
@@ -73,16 +65,19 @@ public:
 				int Framesize;
 					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 					if (NumberofVaraibles != 0) {
-			    Framesize = ((NumberofVaraibles + 9 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 9) * 4) % 8;
+			    Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
 			  } else {
 			    //used to be 8 now i changed it to fit the new registers
-			    Framesize = ((9 + maxArgs) * 4) + (((maxArgs + 9) * 4)%8);
+			    Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
 			  }
-					std::cout<< "\tlw " << r1 << ", " << index + Framesize - 8 <<"($fp)" << std::endl;
+					std::cout<< "\tlw " << r1 << ", " << index + Framesize - 4 <<"($fp)" << std::endl;
 			} else {
-			std::cout<< "\tlw " << r1 << ", " << index <<"($fp)" << std::endl;
+			std::cout<< "\tlw " << r1 << ", " << (index + (maxArgs * 4)) -4 <<"($fp)" << std::endl;
 		}
 		}
+	}
+	void codeGen() override {
+		codeGen(regList);
 	}
 private:
 	 std::string variableName;
@@ -527,71 +522,74 @@ public:
 				break;
 			case 1:
 				//*=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tmul $t0,$v0"<<std::endl;
-				std::cout<<"\tmov $v0,$LO"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tmul $t9,$t0"<<std::endl;
+				std::cout<<"\tmov $t0,$LO"<<std::endl;
 				break;
 			case 2:
 				///=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tdiv $t0,$v0"<<std::endl;
-				std::cout<<"\tmov $v0,$LO"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tdiv $t9,$t0"<<std::endl;
+				std::cout<<"\tmov $t0,$LO"<<std::endl;
 				break;
 			case 3:
 				//%=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tdiv $t0,$v0"<<std::endl;
-				std::cout<<"\tmov $v0,$HI"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tdiv $t9,$t0"<<std::endl;
+				std::cout<<"\tmov $t0,$HI"<<std::endl;
 				break;
 			case 4:
 				//+=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tadd $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
 				break;
 			case 5:
 				//-=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tsub $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
 				break;
 			case 6:
 				//>>=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tsrlv $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
 				break;
 			case 7:
 				//<<=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tsllv $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
 				break;
 			case 8:
 				//&=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tand $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
 				break;
 			case 9:
 				//^=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\txor $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
 				break;
 			case 10:
 				//|=
-				std::cout<<"\tlw $t0," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tor $v0,$t0,$v0"<<std::endl;
+				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
+				std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
 				break;
 		}
 		if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
 				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 9 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 9) * 4) % 8;
+				Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
 			} else {
 				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((9 + maxArgs) * 4) + (((maxArgs + 9) * 4)%8);
+				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
 			}
-				std::cout<< "\tsw $v0," << variable->returnIndex() + Framesize - 8 <<"($fp)" << std::endl;
+				std::cout<< "\tsw $t0," << variable->returnIndex() + Framesize - 8 <<"($fp)" << std::endl;
 		} else {
-			std::cout<<"\tsw $v0," << variable->returnIndex() << "($fp)" << std::endl;
+			std::cout<<"\tsw $t0," << variable->returnIndex() + (maxArgs * 4) -4 << "($fp)" << std::endl;
+		}
 	}
+	void codeGen(std::vector<std::string> regList) override {
+		codeGen();
 	}
 private:
 	 ASTExpression* variable;
@@ -606,48 +604,29 @@ public:
 	void codeGen() override {
 		 	//TODO: SAVE THE REGISTERS BEFORE YOU GO INTO AN EVALUATION
 			//I NEED TO SAVE ALL THE REGISTERS JUST INCASE THERE USED IN EVALUATION;
-			std::cout <<"\taddiu $sp, $sp, -" << 84 << std::endl;
-			std::cout <<"\tsw $30," << 78 << "($sp)" << std::endl;
-			std::cout <<"\tsw $23," << 74 << "($sp)" << std::endl;
-			std::cout <<"\tsw $22," << 72 << "($sp)" << std::endl;
-			std::cout <<"\tsw $21," << 68 << "($sp)" << std::endl;
-			std::cout <<"\tsw $20," << 64 << "($sp)" << std::endl;
-			std::cout <<"\tsw $19," << 60 << "($sp)" << std::endl;
-			std::cout <<"\tsw $18," << 56 << "($sp)" << std::endl;
-			std::cout <<"\tsw $17," << 52 << "($sp)" << std::endl;
-			std::cout <<"\tsw $16," << 48 << "($sp)" << std::endl;
-			std::cout <<"\tsw $25," << 44 << "($sp)" << std::endl;
-			std::cout <<"\tsw $24," << 40 << "($sp)" << std::endl;
-			std::cout <<"\tsw $15," << 36 << "($sp)" << std::endl;
-			std::cout <<"\tsw $14," << 32 << "($sp)" << std::endl;
-			std::cout <<"\tsw $13," << 28 << "($sp)" << std::endl;
-			std::cout <<"\tsw $12," << 24 << "($sp)" << std::endl;
-			std::cout <<"\tsw $11," << 20 << "($sp)" << std::endl;
-			std::cout <<"\tsw $10," << 16 << "($sp)" << std::endl;
-			std::cout <<"\tsw $9," << 12 << "($sp)" << std::endl;
-			std::cout <<"\tsw $8," << 8 << "($sp)" << std::endl;
-			std::cout <<"\tsw $v0," << 4 << "($sp)" << std::endl;
-			std::cout <<"\tsw $v1," << 0 << "($sp)" << std::endl;
 			Argument->codeGen();
 			//now the result will be in v0 so we need to move it to its appropriate registers
 			switch(argNumber){
 				case 0:
-				std::cout << "\tmove $a0, $v0" << std::endl;
+				std::cout << "\tmove $a0, $t0" << std::endl;
 				break;
 				case 1:
-				std::cout << "\tmove $a1, $v0" << std::endl;
+				std::cout << "\tmove $a1, $t0" << std::endl;
 				break;
 				case 2:
-				std::cout << "\tmove $a2, $v0" << std::endl;
+				std::cout << "\tmove $a2, $t0" << std::endl;
 				break;
 				case 3:
-				std::cout << "\tmove $a3, $v0" << std::endl;
+				std::cout << "\tmove $a3, $t0" << std::endl;
 				break;
 				default:
-				std::cout << "\tsw $v0,"<< argNumber * 4 <<"($fp)" << std::endl;
+				std::cout << "\tsw $t0,"<< argNumber * 4 <<"($fp)" << std::endl;
 			}
 			//OR we can pop it to the frame
 			//POPBACK THE REGISTERS AFTER EVALUATION
+			if (NextArgument != NULL ) {
+				NextArgument->codeGen();
+			}
 	}
 	int countArgs() override{
 		if(NextArgument != NULL){
@@ -692,30 +671,18 @@ public:
 			std::cout<<"\tjal	"<< FunctionName << std::endl;
 			std::cout<<"\tnop	\n" << std::endl;
 			std::cout<<"\t.option pic2" << std::endl << std::endl;
-			std::cout <<"\tlw $30," << 78 << "($sp)" << std::endl;
-			std::cout <<"\tlw $23," << 74 << "($sp)" << std::endl;
-			std::cout <<"\tlw $22," << 72 << "($sp)" << std::endl;
-			std::cout <<"\tlw $21," << 68 << "($sp)" << std::endl;
-			std::cout <<"\tlw $20," << 64 << "($sp)" << std::endl;
-			std::cout <<"\tlw $19," << 60 << "($sp)" << std::endl;
-			std::cout <<"\tlw $18," << 56 << "($sp)" << std::endl;
-			std::cout <<"\tlw $17," << 52 << "($sp)" << std::endl;
-			std::cout <<"\tlw $16," << 48 << "($sp)" << std::endl;
-			std::cout <<"\tlw $25," << 44 << "($sp)" << std::endl;
-			std::cout <<"\tlw $24," << 40 << "($sp)" << std::endl;
-			std::cout <<"\tlw $15," << 36 << "($sp)" << std::endl;
-			std::cout <<"\tlw $14," << 32 << "($sp)" << std::endl;
-			std::cout <<"\tlw $13," << 28 << "($sp)" << std::endl;
-			std::cout <<"\tlw $12," << 24 << "($sp)" << std::endl;
-			std::cout <<"\tlw $11," << 20 << "($sp)" << std::endl;
-			std::cout <<"\tlw $10," << 16 << "($sp)" << std::endl;
-			std::cout <<"\tlw $9," << 12 << "($sp)" << std::endl;
-			std::cout <<"\tlw $8," << 8 << "($sp)" << std::endl;
-			std::cout <<"\tlw $v0," << 4 << "($sp)" << std::endl;
-			std::cout <<"\tlw $v1," << 0 << "($sp)" << std::endl;
-			std::cout <<"\taddiu $sp, $sp, " << 84 << std::endl;
+			//I HAVE NOTHING TO MOVE THE RESULT BACK TO WHERE IT NEEDS TO BE!!!!
 		}
 	}
+	void codeGen(std::vector<std::string> regIn) {
+		std::string r1 = head(regIn);
+		//i need to move the result to where it needs to be!
+		this->codeGen();
+		std::cout<<"\tnop"<< std::endl;
+		std::cout<<"\tmove " << r1 << ",$v0"<< std::endl;
+
+	}
+
 
 	void pushVariables() override {
 		//we will use this function to update the global variable of MAXargs

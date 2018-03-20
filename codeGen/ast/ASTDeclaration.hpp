@@ -106,15 +106,16 @@ public:
     std::cout<<"\t.type  "; Declarator->codeGen(); std::cout <<", @function" <<  std::endl;
 		Block->pushVariables();
     Declarator->codeGen();
-    std::cout<< ":\n";;
+    std::cout<< ":\n";
+    if (maxArgs <= 4) maxArgs = 4;
     int newsize = allVariables.size();
     NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
     int Framesize;
     if (NumberofVaraibles != 0) {
-    Framesize = ((NumberofVaraibles + 9 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 9) * 4) % 8;
+    Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
   } else {
     //used to be 8 now i changed it to fit the new registers
-    Framesize = ((9 + maxArgs) * 4) + (((maxArgs + 9) * 4)%8);
+    Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
   }
     std::cout << "\n\t.frame $fp," << Framesize <<",$31"<<std::endl;
     std::cout << "\t.mask 0x40000000,-4" << std::endl;
@@ -124,51 +125,71 @@ public:
     std::cout <<"\taddiu $sp, $sp, -" << Framesize << std::endl;
     //THIS PART IS NEW IM GONNA START SAVING REGISTERS
     std::cout <<"\tsw $31," << Framesize - 4 << "($sp)" << std::endl;
-    std::cout <<"\tsw $23," << Framesize - 8 << "($sp)" << std::endl;
-    std::cout <<"\tsw $22," << Framesize - 12 << "($sp)" << std::endl;
-    std::cout <<"\tsw $21," << Framesize - 16 << "($sp)" << std::endl;
-    std::cout <<"\tsw $20," << Framesize - 20 << "($sp)" << std::endl;
-    std::cout <<"\tsw $19," << Framesize - 24 << "($sp)" << std::endl;
-    std::cout <<"\tsw $18," << Framesize - 28 << "($sp)" << std::endl;
-    std::cout <<"\tsw $17," << Framesize - 32 << "($sp)" << std::endl;
-    std::cout <<"\tsw $16," << Framesize - 36 << "($sp)" << std::endl;
-    std::cout << "\tsw $fp," << Framesize - 40 << "($sp)" << std::endl;
+    std::cout <<"\tsw $25," << Framesize - 8 << "($sp)" << std::endl;
+    std::cout <<"\tsw $24," << Framesize - 12 << "($sp)" << std::endl;
+    std::cout <<"\tsw $23," << Framesize - 16 << "($sp)" << std::endl;
+    std::cout <<"\tsw $22," << Framesize - 20 << "($sp)" << std::endl;
+    std::cout <<"\tsw $21," << Framesize - 24 << "($sp)" << std::endl;
+    std::cout <<"\tsw $20," << Framesize - 28 << "($sp)" << std::endl;
+    std::cout <<"\tsw $19," << Framesize - 32 << "($sp)" << std::endl;
+    std::cout <<"\tsw $18," << Framesize - 36 << "($sp)" << std::endl;
+    std::cout <<"\tsw $17," << Framesize - 40 << "($sp)" << std::endl;
+    std::cout <<"\tsw $16," << Framesize - 44 << "($sp)" << std::endl;
+    std::cout <<"\tsw $15," << Framesize - 48 << "($sp)" << std::endl;
+    std::cout <<"\tsw $14," << Framesize - 52 << "($sp)" << std::endl;
+    std::cout <<"\tsw $13," << Framesize - 56 << "($sp)" << std::endl;
+    std::cout <<"\tsw $12," << Framesize - 60 << "($sp)" << std::endl;
+    std::cout <<"\tsw $11," << Framesize - 64 << "($sp)" << std::endl;
+    std::cout <<"\tsw $10," << Framesize - 66 << "($sp)" << std::endl;
+    std::cout <<"\tsw $9," << Framesize - 72 << "($sp)" << std::endl;
+    std::cout <<"\tsw $8," << Framesize - 76 << "($sp)" << std::endl;
+    std::cout << "\tsw $fp," << Framesize - 80 << "($sp)" << std::endl;
     std::cout << "\tmove $fp, $sp" << std::endl;
     // push the arguments in the registers to the stack
     if (Declarator->countArgs() != 0){
       switch (Declarator->countArgs()){
           case 1:
-          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tsw $a0," << Framesize << "($sp)" << std::endl;
           break;
           case 2:
-          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
-          std::cout <<"\tlw $a1," << Framesize + 4 << "($sp)" << std::endl;
+          std::cout <<"\tsw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tsw $a1," << Framesize + 4 << "($sp)" << std::endl;
           break;
           case 3:
-          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
-          std::cout <<"\tlw $a1," << Framesize + 4 << "($sp)" << std::endl;
-          std::cout <<"\tlw $a2," << Framesize + 8 << "($sp)" << std::endl;
+          std::cout <<"\tsw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tsw $a1," << Framesize + 4 << "($sp)" << std::endl;
+          std::cout <<"\tsw $a2," << Framesize + 8 << "($sp)" << std::endl;
           break;
           default:
-          std::cout <<"\tlw $a0," << Framesize << "($sp)" << std::endl;
-          std::cout <<"\tlw $a1," << Framesize + 4 << "($sp)" << std::endl;
-          std::cout <<"\tlw $a2," << Framesize + 8 << "($sp)" << std::endl;
-          std::cout <<"\tlw $a3," << Framesize + 12 << "($sp)" << std::endl;
+          std::cout <<"\tsw $a0," << Framesize << "($sp)" << std::endl;
+          std::cout <<"\tsw $a1," << Framesize + 4 << "($sp)" << std::endl;
+          std::cout <<"\tsw $a2," << Framesize + 8 << "($sp)" << std::endl;
+          std::cout <<"\tsw $a3," << Framesize + 12 << "($sp)" << std::endl;
       }
     }
     Block->codeGen();
     std::cout << "\tnop\n";
     std::cout << "\tmove $sp, $fp" << std::endl;
     std::cout <<"\tlw $31," << Framesize - 4 << "($sp)" << std::endl;
-    std::cout <<"\tlw $23," << Framesize - 8 << "($sp)" << std::endl;
-    std::cout <<"\tlw $22," << Framesize - 12 << "($sp)" << std::endl;
-    std::cout <<"\tlw $21," << Framesize - 16 << "($sp)" << std::endl;
-    std::cout <<"\tlw $20," << Framesize - 20 << "($sp)" << std::endl;
-    std::cout <<"\tlw $19," << Framesize - 24 << "($sp)" << std::endl;
-    std::cout <<"\tlw $18," << Framesize - 28 << "($sp)" << std::endl;
-    std::cout <<"\tlw $17," << Framesize - 32 << "($sp)" << std::endl;
-    std::cout <<"\tlw $16," << Framesize - 36 << "($sp)" << std::endl;
-    std::cout << "\tlw $fp," << Framesize - 40 << "($sp)" << std::endl;
+    std::cout <<"\tlw $25," << Framesize - 8 << "($sp)" << std::endl;
+    std::cout <<"\tlw $24," << Framesize - 12 << "($sp)" << std::endl;
+    std::cout <<"\tlw $23," << Framesize - 16 << "($sp)" << std::endl;
+    std::cout <<"\tlw $22," << Framesize - 20 << "($sp)" << std::endl;
+    std::cout <<"\tlw $21," << Framesize - 24 << "($sp)" << std::endl;
+    std::cout <<"\tlw $20," << Framesize - 28 << "($sp)" << std::endl;
+    std::cout <<"\tlw $19," << Framesize - 32 << "($sp)" << std::endl;
+    std::cout <<"\tlw $18," << Framesize - 36 << "($sp)" << std::endl;
+    std::cout <<"\tlw $17," << Framesize - 40 << "($sp)" << std::endl;
+    std::cout <<"\tlw $16," << Framesize - 44 << "($sp)" << std::endl;
+    std::cout <<"\tlw $15," << Framesize - 48 << "($sp)" << std::endl;
+    std::cout <<"\tlw $14," << Framesize - 52 << "($sp)" << std::endl;
+    std::cout <<"\tlw $13," << Framesize - 56 << "($sp)" << std::endl;
+    std::cout <<"\tlw $12," << Framesize - 60 << "($sp)" << std::endl;
+    std::cout <<"\tlw $11," << Framesize - 64 << "($sp)" << std::endl;
+    std::cout <<"\tlw $10," << Framesize - 66 << "($sp)" << std::endl;
+    std::cout <<"\tlw $9," << Framesize - 72 << "($sp)" << std::endl;
+    std::cout <<"\tlw $8," << Framesize - 76 << "($sp)" << std::endl;
+    std::cout << "\tlw $fp," << Framesize - 80 << "($sp)" << std::endl;
     std::cout << "\taddiu $sp, $sp," << Framesize << std::endl;
     std::cout << "\tjr $31" << std::endl;
     std::cout << "\tnop\n";

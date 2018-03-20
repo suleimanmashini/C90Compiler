@@ -14,9 +14,13 @@ void codeGen()  override {
 	if(returnExpression == NULL) {
   std::cout<< "\tnop \n";
 } else {
-	returnExpression->codeGen();
+	returnExpression->codeGen(regList);
+	std::cout<< "\tmove $v0, $t0"<< std::endl;
 	std::cout<< "\tnop \n";
 }
+}
+void pushVariables() {
+	returnExpression->pushVariables();
 }
 private:
    ASTExpression* returnExpression;
@@ -93,7 +97,7 @@ struct ASTExpressionStatement: ASTStatement {
 	ASTExpressionStatement( ASTExpression* _Exp): Exp(_Exp) {}
 	void codeGen()  {
 		if (Exp != NULL) {
-		Exp->codeGen();
+		Exp->codeGen(regList);
 	} else {
 
 		std::cout<<"\tnop"<< std::endl;
