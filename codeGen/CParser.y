@@ -31,7 +31,7 @@
 %token TO_OrEqual TO_exOrEqual TO_andEqual TO_rightEqual TO_leftEqual TO_minusEqual TO_plusEqual TO_divEqual TO_multEqual
 %token TO_OR TO_logicOr TO_exclussiveOr TO_questionMark TO_modEqual
 %type <word> T_StringLiteral T_IDENTIFIER TK_int
-%type <Number> DECLARATION_SPECIFIERS TYPE_SPECIFIER ASSIGNMENT_OPERATOR
+%type <Number> TYPE_NAME DECLARATION_SPECIFIERS TYPE_SPECIFIER ASSIGNMENT_OPERATOR
 %type <Function> FUNCTION_DEFINITION
 %type <DirectD> DECLARATOR DIRECT_DECLARATOR INIT_DECLARATION_LIST INIT_DECLARATOR
 %type <StateList> STATEMENT_LIST
@@ -39,7 +39,7 @@
 %type <Return> JUMP_STATEMENT
 %type <Expression> SHIFT_EXPRESSION EXPRESSION CONDITIONAL_EXPRESSION PRIMARY_EXPRESSION ASSIGNMENT_EXPRESSION POSTFIX_EXPRESSION AND_EXPRESSION
 %type <Expression> RELATIONAL_EXPRESSION EQUALITY_EXPRESSION UNARY_EXPRESSION CAST_EXPRESSION MULTIPLICATIVE_EXPRESSION ADDITIVE_EXPRESSION INCLUSIVE_OR_EXPRESSION EXCLUSIVE_OR_EXPRESSION
-%type <Expression> ARGUMENT_EXPRESSION_LIST LOGICAL_OR_EXPRESSION LOGICAL_AND_EXPRESSION
+%type <Expression> CONSTANT_EXPRESSION ARGUMENT_EXPRESSION_LIST LOGICAL_OR_EXPRESSION LOGICAL_AND_EXPRESSION
 %type <Integer> TC_integer
 %type <Statement> STATEMENT EXPRESSION_STATEMENT SELECTION_STATEMENT ITERATION_STATEMENT
 %type <DecList> DECLARATION_LIST
@@ -296,8 +296,8 @@ PRIMARY_EXPRESSION: T_IDENTIFIER {;}
 POSTFIX_EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
                   | T_IDENTIFIER T_LBRACKET ARGUMENT_EXPRESSION_LIST T_RBRACKET {$$ = new ASTFunctionCall(*$1, $3);}
                   | T_IDENTIFIER T_LBRACKET T_RBRACKET {$$ = new ASTFunctionCall(*$1, NULL);}
-                  | POSTFIX_EXPRESSION TO_increment {;}
-                  | POSTFIX_EXPRESSION TO_decrement {;}
+                  | POSTFIX_EXPRESSION TO_increment {$$ = new ASTPostfixIncrement($1, 0);}
+                  | POSTFIX_EXPRESSION TO_decrement {$$ = new ASTPostfixIncrement($1, 1);}
 
 ARGUMENT_EXPRESSION_LIST: ASSIGNMENT_EXPRESSION {$$ = new ASTArgumentList($1, NULL);}
                         | ASSIGNMENT_EXPRESSION TP_comma ARGUMENT_EXPRESSION_LIST {$$ = new ASTArgumentList($1, $3);}
@@ -328,6 +328,28 @@ UNARY_EXPRESSION: POSTFIX_EXPRESSION {$$ = $1;}
                 | TO_plus CAST_EXPRESSION {$$ = $2;}
                 | TO_increment UNARY_EXPRESSION {$$ = new ASTPrefixIncrement($2, 0);}
                 | TO_decrement UNARY_EXPRESSION {$$ = new ASTPrefixIncrement($2, 1);}
+                | TK_sizeof T_LBRACKET TYPE_NAME T_RBRACKET {$$ = new ASTSizeOfExpression(*$3);}
+
+
+TYPE_NAME: TK_char {$$ = new int(1);}
+         | TK_unsigned TK_char {$$ = new int(1);}
+         | TK_signed TK_char {$$ = new int(1);}
+         | TK_short {$$ = new int(2);}
+         | TK_signed TK_short {$$ = new int(2);}
+         | TK_unsigned TK_short {$$ = new int(2);}
+         | TK_int {$$ = new int(4);}
+         | TK_signed TK_int {$$ = new int(4);}
+         | TK_unsigned TK_int {$$ = new int(4);}
+         | TK_long {$$ = new int(4);}
+         | TK_signed TK_long {$$ = new int(4);}
+         | TK_unsigned TK_long {$$ = new int(4);}
+         | TK_enum {$$ = new int(4);}
+         | TYPE_NAME TO_asterix {$$ = new int(4);}
+         | TYPE_NAME T_LBRACKET TO_asterix T_RBRACKET T_LBRACKET T_RBRACKET {$$ = new int(4);}
+         | TK_float {$$ = new int(4);}
+         | TK_double {$$ = new int(8);}
+         | TK_long TK_double {$$ = new int(8);}
+
 
 /*
 UNARY_OPERATOR: TO_ampersand {;}
@@ -350,9 +372,9 @@ ADDITIVE_EXPRESSION: MULTIPLICATIVE_EXPRESSION {$$ = $1;}
                    | ADDITIVE_EXPRESSION TO_plus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 1);}
                    | ADDITIVE_EXPRESSION TO_minus MULTIPLICATIVE_EXPRESSION {$$ = new ASTAdditiveExpression($1, $3, 2);}
 
-/*
-CONSTANT_EXPRESSION: CONDITIONAL_EXPRESSION {;}
-*/
+
+CONSTANT_EXPRESSION: CONDITIONAL_EXPRESSION {$$ = $1;}
+
 
 SHIFT_EXPRESSION: ADDITIVE_EXPRESSION {$$ = $1;}
                 | SHIFT_EXPRESSION TO_bitwiseLeft ADDITIVE_EXPRESSION {$$ = new ASTShiftExpression($3, $1, 1);}
@@ -400,8 +422,6 @@ ASSIGNMENT_OPERATOR: TO_equal {$$ = new int(0);}
                    | TO_andEqual {$$ = new int(8);}
                    | TO_exOrEqual {$$ = new int(9);}
                    | TO_OrEqual {$$ = new int(10);}
-
-
 
 
 %%

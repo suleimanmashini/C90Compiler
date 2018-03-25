@@ -841,38 +841,91 @@ private:
 struct ASTPrefixIncrement: public ASTExpression {
 public:
 	~ASTPrefixIncrement() {}
-	ASTPrefixIncrement(ASTExpression* _exp, int flag) {
-		ASTIntegerConst* inttemp = new ASTIntegerConst(1);
+	ASTPrefixIncrement(ASTExpression* _exp, int _flag): variable(_exp), flag(_flag) {}
+	void codeGen(std::vector<std::string> regIn) override {
+		std::string r1 = head(regIn);
+		variable->codeGen(regIn);
 		if (flag == 0) {
-		assExp = new ASTAssignmentExpression(_exp, inttemp, 4);
+		std::cout<<"\taddiu " << r1 << "," << r1 << ", 1" << std::endl;
 	} else {
-		assExp = new ASTAssignmentExpression(_exp, inttemp, 5);
+		std::cout<<"\tsubiu " << r1 << "," << r1 << ", 1" << std::endl;
 	}
-}
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tsw $t0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+			}
+				std::cout<< "\tsw " << r1 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tsw " << r1 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+		}
+	}
 	void codeGen() override {
-		assExp->codeGen();
-	}
+		this->codeGen(regList);
 	}
 private:
-	ASTAssignmentExpression* assExp;
-}
+	ASTExpression* variable;
+	int flag;
+};
 
 struct ASTPostfixIncrement: public ASTExpression {
 public:
 	~ASTPostfixIncrement() {}
-	ASTPostfixIncrement(ASTExpression* _exp, int flag) {
-		ASTIntegerConst* inttemp = new ASTIntegerConst(1);
+	ASTPostfixIncrement(ASTExpression* _exp, int _flag): variable(_exp), flag(_flag) {}
+	void codeGen(std::vector<std::string> regIn) override {
+		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
+		variable->codeGen(regIn);
 		if (flag == 0) {
-		assExp = new ASTAssignmentExpression(_exp, inttemp, 4);
+		std::cout<<"\taddiu " << r2 << "," << r1 << ", 1" << std::endl;
 	} else {
-		assExp = new ASTAssignmentExpression(_exp, inttemp, 5);
+		std::cout<<"\tsubiu " << r2 << "," << r1 << ", 1" << std::endl;
 	}
-}
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tsw $t0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+			}
+				std::cout<< "\tsw " << r2 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tsw " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+		}
+	}
 	void codeGen() override {
-		assExp->codeGen();
-	}
+		this->codeGen(regList);
 	}
 private:
-	ASTAssignmentExpression* assExp;
-	ASTAssignmentExpression* add;
-}
+	ASTExpression* variable;
+	int flag;
+};
+
+struct ASTSizeOfExpression: public ASTExpression {
+public:
+	~ASTSizeOfExpression() {}
+	ASTSizeOfExpression(int size) {
+		sizeNumber = new ASTIntegerConst(size);
+	}
+	void codeGen(std::vector<std::string> regIn) override {
+		sizeNumber->codeGen(regIn);
+	}
+
+	void codeGen() override {
+		sizeNumber->codeGen(regList);
+	}
+private:
+	ASTIntegerConst* sizeNumber;
+};
