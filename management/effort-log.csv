@@ -20,3 +20,5 @@ Date,Effort,Developers,Milestones
 17/03/2018,9,sm3516,SavingRegistersABICompliency;ExpressionSupportCodeGen
 19/03/2018,6,sm3516,StartedworkingonGlobalVariables; AddedNewTests; FunctionPrototypeCallSupport; FullFunctionCallSupport
 20/03/2018,7,sm3516,StartedworkingonGlobalVariables;AddedNewTests;FunctionPrototypeCallSupport;FullFunctionCallSupport
+25/03/2018,5,sm3516,SupportforAllLoops;IncrementandDecrement
+25/03/2018,2,sm3516,sizeOfTypeSupport
