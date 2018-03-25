@@ -1,14 +1,24 @@
-MilestoneID,             Dependencies, EstimatedEffort, Lead,  Completed, Description,
-DefineInitialMilestones,             ,0,sm3516,           , Come up with initial milestones for getting started,
-StartProject,,1,sm3516,,Actually got around to starting,
-workingAST,StartProject,5,sm3516,,,
-ParserPass,workingAST,3,sm3516,,,
-CodeGenStart,,0,sm3516,,,
-RestrucutedAST,CodeGenStart,7,sm3516,,,
-BasicFunctionPassed,RestrucutedAST,11,sm3516,,,
-newASTExpression,RestrucutedAST,5,sm3516,,,
-fullExpressionSupport,,5,sm3516,,,
-StackSupport,,7,sm3516,,,
-Savedregisters,StackSupport,1,sm3516,,,
-ArgumentsSupportAST,StackSupport, Savedregisters,3,sm3516,this,Im not going to lie I forgot to update my progress on the system I will try to update it daily from now one
-FunctionCallingSupport,,,,,,
+MilestoneID,             Dependencies, EstimatedEffort, Lead,  Completed, Description
+DefineInitialMilestones,             ,0,sm3516,       e2de223a3e3bd0ccc9abc6dc53874b1b0fdcf3d1    , Come up with initial milestones for getting started
+StartProject,,1,sm3516,594122e76ce265438ac2c02fd6c50c64f7059077,Actually got around to starting
+getBasicLexer,StartProject,2,sm3516,5e502a7a39e35b61e5d0302b934ecc9a3a62926e,Set Up lexical Elements
+getBasicAST,StartProject,2,sm3516,42fdedafe5765ea7a202b2d1e07d9c42abcd905e,Set Up AST Elecments for tranlsator based on labs
+supportkeywords,getBasicLexer,1,sm3516,4592c74c2cdc5b158b25d5cacfb6eaccb5f31a18,Added support for C Keywords
+gotFullCLexer,getBasicLexer;supportkeywords,2,sm3516,1bd7052979c78e96769175371c06af32288cf161,Full C Lexer supports capable of lexing the entire language
+TranslatorpassedAFunction,gotFullCLexer;getBasicAST,6,sm3516,ddc71813f4d7e22eb265826ba2cd60639498b2fb,Translator Managed to Pass an entire function and translate it
+AddedMoreSupport,TranslatorpassedAFunction,2,sm3516,f6b2e1efb3cfeb7d0e51df3f3d8b080150beef39,Added support for Expressions
+StatementTranslations,TranslatorpassedAFunction,4,sm3516,dbc968a701f97b4e0260f3804e414a7f4890fd71,Added support for Statements
+ArgumentTranslations,TranslatorpassedAFunction,3,sm3516,dbc968a701f97b4e0260f3804e414a7f4890fd71,Added Support For Argument Passing in Calls
+GlobalVariablesTranslated,TranslatorpassedAFunction,1,sm3516,c59849cedeeb38ea9e8f11c52f3955074008951a,Translator can now work with global variables
+PassedAllParserTests,TranslatorpassedAFunction,3,sm3516,c59849cedeeb38ea9e8f11c52f3955074008951a,All tests for parsing are now passed
+StartedCodeGen,PassedAllParserTests,1,sm3516,0c779a9763c484b07d1d16e60596c8c0a85f601c,Started working on the codeGen Part of The project
+RestructedAST,StartedCodeGen,12,sm3516,43e1d17f85dfc34bea2fde2bf61f30f1b3a30e03,New Full AST Reconstructed using the exact definitions for ANSIC
+codeGenCreatesBasicFunction,RestructedAST;StartedCodeGen,12,sm3516,258c50510608d80367b860d35bb72f92ea6c0a51,codeGen can now create basic Functions
+ExpressionSupportCodeGen,codeGenCreatesBasicFunction,7,sm3516,258c50510608d80367b860d35bb72f92ea6c0a51,Expressions Supported for codeGen
+RegisterSupport,ExpressionSupportCodeGen,4,sm3516,334e3d74185c7ad7971690c00f413ae7990163ae,Register support added
+StatementSupport,ExpressionSupportCodeGen,5,sm3516,334e3d74185c7ad7971690c00f413ae7990163ae,Statement Support supported such as return statements and expression statements
+SavingRegistersABICompliency,StatementSupport,10,sm3516,8175276464c4f660b4aa106d7f280dacef2e5e21,Improved ABI compliency by fixing the alignments and stack pushing
+FullFunctionCallSupport,SavingRegistersABICompliency,3,sm3516,8ff0555957aea5aa08cfb6554bb73846d4ef6a7c,Supported Function Calls by fixing the frame and stack order
+FunctionPrototypeCallSupport,SavingRegistersABICompliency;FullFunctionCallSupport,7,sm3516,e9a4b355ce092140eadc998f8eb3bc0dd56bb523,Supported Calling functions which are prototypes
+AddedNewTests,FunctionPrototypeCallSupport;FullFunctionCallSupport;SavingRegistersABICompliency,1,sm3516,e9a4b355ce092140eadc998f8eb3bc0dd56bb523,Added new tests to test the capabilities of my codeGen
+StartedworkingonGlobalVariables,SavingRegistersABICompliency,1,sm3516,e9a4b355ce092140eadc998f8eb3bc0dd56bb523,Attempting to Make Global Variables Work

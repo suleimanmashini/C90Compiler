@@ -1,3 +1,22 @@
 Date,Effort,Developers,Milestones
-11/02/18,0,sm3516,Started Project
-20/03/18,4,sm3516,FunctionCallingSupport
+29/01/2018,0,sm3516,Started Project
+11/02/2018,4,sm3516,getBasicLexer
+12/02/2018,4,sm3516,getBasicLexer;getBasicAST
+13/02/2018,2,sm3516,supportkeywords;gotFullCLexer
+18/02/2018,5,sm3516,
+19/02/2018,3,sm3516,
+20/02/2018,4,sm3516,
+21/02/2018,5,sm3516,TranslatorpassedAFunction
+23/02/2018,3,sm3516,TranslatorpassedAFunction;AddedMoreSupport
+25/03/2018,6,sm3516,ArgumentTranslations;StatementTranslations
+26/02/2018,9,sm3516,PassedAllParserTests;GlobalVariablesTranslated
+27/02/2018,4,sm3516,PassedAllParserTests
+05/03/2018,1,sm3516,StartedCodeGen
+07/03/2018,8,sm3516,RestructedAST
+11/03/2018,7,sm3516,codeGenCreatesBasicFunction;RestructedAST
+14/03/2018,8,sm3516,PassedAllParserTests;SavingRegistersABICompliency;FunctionCallSupport
+15/03/2018,8,sm3516,ExpressionSupportCodeGen;StatementSupport;RegisterSupport
+16/03/2018,3,sm3516,ExpressionSupportCodeGen
+17/03/2018,9,sm3516,SavingRegistersABICompliency;ExpressionSupportCodeGen
+19/03/2018,6,sm3516,StartedworkingonGlobalVariables; AddedNewTests; FunctionPrototypeCallSupport; FullFunctionCallSupport
+20/03/2018,7,sm3516,StartedworkingonGlobalVariables;AddedNewTests;FunctionPrototypeCallSupport;FullFunctionCallSupport
