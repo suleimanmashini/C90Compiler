@@ -2,7 +2,7 @@
 	.module fp=xx
 	.module nooddspreg
 	.abicalls
-.comm a,4,4
+	.comm a,4,4
 
 	.text
 	.align  2
@@ -43,11 +43,15 @@ test:
 	li $t0, 7
 	sw $t0,20($fp)
 	li $t0, 5
-	sw $t0,108($fp)
+	lw $t1,%got(a)($28)
+	sw $t0,0($t1)
 	lw $t0,%got(a)($28)
+	lw $t0,                              0($t0)
 	move $v0, $t0
+	b $test
 	nop 
 	nop
+$test:
 	move $sp, $fp
 	lw $31,100($sp)
 	lw $25,96($sp)

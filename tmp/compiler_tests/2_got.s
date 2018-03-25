@@ -40,10 +40,12 @@ add:
 	sw $a1,108($sp)
 	lw $t0, 104($fp)
 	lw $t1, 108($fp)
-	add $t0, $t0, $t1
+	addu $t0, $t0, $t1
 	move $v0, $t0
+	b $add
 	nop 
 	nop
+$add:
 	move $sp, $fp
 	lw $31,100($sp)
 	lw $25,96($sp)
@@ -124,8 +126,10 @@ driver:
 	nop
 	move $t0,$v0
 	move $v0, $t0
+	b $driver
 	nop 
 	nop
+$driver:
 	move $sp, $fp
 	lw $31,108($sp)
 	lw $25,104($sp)

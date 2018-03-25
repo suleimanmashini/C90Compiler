@@ -4,10 +4,10 @@
 	.abicalls
 	.text
 	.align  2
-	.global what
-	.ent  what
-	.type  what, @function
-what:
+	.global test
+	.ent  test
+	.type  test, @function
+test:
 
 	.frame $fp,104,$31
 	.mask 0x40000000,-4
@@ -37,11 +37,31 @@ what:
 	sw $fp,24($sp)
 	move $fp, $sp
 	li $t0, 1
+	sw $t0,20($fp)
+	.option pic0
+	b $L2
+	nop
+
+	.option pic2
+$L3:
+	li $t0, 1
+	lw $t1, 20($fp)
+	addu $t0, $t0, $t1
+	sw $t0,20($fp)
+$L2:
+	lw $t0, 20($fp)
+	li $t1, 5
+	slt $t0, $t0, $t1
+	andi $t0, $t0, 0x00ff
+	bne $t0,$0,$L3
+	nop
+
+	lw $t0, 20($fp)
 	move $v0, $t0
-	b $what
+	b $test
 	nop 
 	nop
-$what:
+$test:
 	move $sp, $fp
 	lw $31,100($sp)
 	lw $25,96($sp)
@@ -68,6 +88,6 @@ $what:
 	nop
 	.set  macro
 	.set  reorder
-	.end  what
-	.size what, .-what
+	.end  test
+	.size test, .-test
 

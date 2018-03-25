@@ -7,13 +7,14 @@ std::vector<std::string> regList = {"$t0", "$t1", "$t2", "$t3", "$t4", "$t5",
 																		"$t6", "$t7", "$t8", "$t9", "$s0", "$s1", "$s2", "$s3",
 																		"$s4", "$s5", "$s6", "$s7"};
 std::vector<std::string> listOfFunctions;
-
+int uniqueID = 2;
 int initialVSize;
 int NumberofVaraibles;
 int currentScope;
 int isGlobal = 1;
 int globalsFound;
 int maxArgs;
+std::string currentFunction;
 void fullCompiler() {
 
  	ASTTranslationUnit *ASTRoot = parseAST();
@@ -41,9 +42,17 @@ int findVariableIndex (std::vector<variable> vIn, std::string variableName){
 		}
 	}
 	for (int i = vIn.size() - 1; i >= 0; i--) {
-		if (vIn[i].getName() == variableName) {
+		if (vIn[i].getName() == variableName && vIn[i].getScope() <= currentScope) {
 			return i;
 		}
 	}
 	return -1;
+}
+
+std::string uniqueIdGen() {
+
+	std::string temp = "$L" + std::to_string(uniqueID);
+	uniqueID++;
+	return temp;
+
 }

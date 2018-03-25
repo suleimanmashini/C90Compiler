@@ -46,14 +46,16 @@ add:
 	lw $t3, 116($fp)
 	lw $t4, 120($fp)
 	lw $t5, 124($fp)
-	add $t4, $t4, $t5
-	add $t3, $t3, $t4
-	add $t2, $t2, $t3
-	add $t1, $t1, $t2
-	add $t0, $t0, $t1
+	addu $t4, $t4, $t5
+	addu $t3, $t3, $t4
+	addu $t2, $t2, $t3
+	addu $t1, $t1, $t2
+	addu $t0, $t0, $t1
 	move $v0, $t0
+	b $add
 	nop 
 	nop
+$add:
 	move $sp, $fp
 	lw $31,100($sp)
 	lw $25,96($sp)
@@ -150,8 +152,10 @@ driver:
 	nop
 	move $t0,$v0
 	move $v0, $t0
+	b $driver
 	nop 
 	nop
+$driver:
 	move $sp, $fp
 	lw $31,132($sp)
 	lw $25,128($sp)

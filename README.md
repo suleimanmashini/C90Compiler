@@ -12,6 +12,9 @@ There are many things to do:
 - [ ] Support for register spilling
 - [ ] Codegen
 - [x] Integer
+- [x] Global variables
+- [x] Function Calls
+- [x] Prototype Function Calls
 - [ ] String
 - [x] Return
 - [ ] Arrays
@@ -21,4 +24,5 @@ There are many things to do:
 - [ ] if-Else
 - [ ] Switch
 - [ ] conditional statements
+- [ ] Conditional Expression Short Circuiting
 - [x] Support Excessive Brackets!!

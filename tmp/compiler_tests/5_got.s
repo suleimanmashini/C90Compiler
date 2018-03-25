@@ -2,7 +2,7 @@
 	.module fp=xx
 	.module nooddspreg
 	.abicalls
-.comm add,4,4
+	.comm add,4,4
 
 	.text
 	.align  2
@@ -52,7 +52,7 @@ driver:
 	sw $t0,32($fp)
 	li $t0, 1
 	sw $t0,28($fp)
-	lui	$28,%hi(__gnu_local_gp)
+	lui $28,%hi(__gnu_local_gp)
 	addiu	$28,$28,%lo(__gnu_local_gp)
 	.cprestore	6
 	lw $t0, 48($fp)
@@ -75,8 +75,10 @@ driver:
 	nop
 	move $t0,$v0
 	move $v0, $t0
+	b $driver
 	nop 
 	nop
+$driver:
 	move $sp, $fp
 	lw $31,132($sp)
 	lw $25,128($sp)

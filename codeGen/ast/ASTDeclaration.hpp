@@ -41,7 +41,7 @@ public:
 	void codeGen() override {
     if (isGlobal) {
       globalsFound = 1;
-      std::cout << ".comm " << Variable->getName() << ",4,4\n"<<std::endl;
+      std::cout << "\t.comm " << Variable->getName() << ",4,4\n"<<std::endl;
     }
   }
 	void pushVariables() override {
@@ -88,7 +88,6 @@ private:
   ASTDeclaration* NextParameter;
 };
 
-
 struct ASTFunctionDefinition: public ASTNode {
 public:
 	ASTFunctionDefinition( int _functionType,  ASTDirectDeclarator* _Declarator,  ASTCompoundStatement* _Block): functionType(_functionType), Declarator(_Declarator), Block(_Block) {
@@ -100,7 +99,7 @@ public:
     isGlobal = 0;
     //reset maxArgs to find the needed stack space for all the arguments.
     maxArgs = 0;
-
+    currentFunction = this->getFunctionName();
     //push arguments if there are any, should not be counted in the size;
     currentScope++;
     Declarator->pushArguments();
@@ -181,6 +180,7 @@ public:
     }
     Block->codeGen();
     std::cout << "\tnop\n";
+    std::cout << "$" << this->getFunctionName() << ":" << std::endl;
     std::cout << "\tmove $sp, $fp" << std::endl;
     std::cout <<"\tlw $31," << Framesize - 4 << "($sp)" << std::endl;
     std::cout <<"\tlw $25," << Framesize - 8 << "($sp)" << std::endl;

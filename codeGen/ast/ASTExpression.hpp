@@ -13,6 +13,7 @@ public:
 	virtual void codeGen()  {
 		this->codeGen(regList);
 	}
+	virtual std::string nameretrieval() {return "virutal";}
 	virtual int countArgs() {}
 	virtual int getregs() {}
 	virtual void updateRegisterNeeds() {}
@@ -44,11 +45,17 @@ private:
 struct ASTVariableExp: public ASTExpression {
 public:
 	~ASTVariableExp() {}
+	std::string nameretrieval() override {
+		return variableName;
+	}
 	ASTVariableExp( std::string _variableName): variableName(_variableName) {}
 	int getregs()  override {return registerNeeds;}
 	void updateRegisterNeeds() override {
 	}
 	int returnIndex () override{
+		if (findVariableIndex(allVariables, variableName) == -1) {
+			return -1;
+		}
 		return ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
 	}
 	void codeGen (std::vector<std::string> regIn) override {
@@ -58,6 +65,7 @@ public:
 			//save $2 in the stack below
 			//this is me winging it it probably doesnt work but why not;
 			std::cout<<"\tlw " << r1 <<",%got("<<variableName<<")($28)" << std::endl;
+			std::cout<<"\tlw " << r1 << ",                              0(" << r1 << ")" << std::endl;
 		} else {
 			int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
 			//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
@@ -218,17 +226,17 @@ public:
 				left->codeGen(regIn);
 				right->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\tadd " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\taddu " << r1 << ", " << r1 << ", " << r2 << std::endl;
 				} else {
-					std::cout << "\tsub " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsubu " << r1 << ", " << r1 << ", " << r2 << std::endl;
 				}
 			} else {
 				right->codeGen(regIn);
 				left->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\tadd " << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\taddu " << r1 << ", " << r2 << ", " << r1 << std::endl;
 				} else {
-					std::cout << "\tsub " << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tsubu " << r1 << ", " << r2 << ", " << r1 << std::endl;
 				}
 			}
 		}
@@ -267,9 +275,9 @@ public:
 				left->codeGen(regIn);
 				right->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tsltu" << r1 << ", " << r1 << ", " << "1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu " << r1 << ", " << r1 << ", " << "1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 
 				} else {
 					std::cout << "\txor" << r1 << ", " << r1 << ", " << r2 << std::endl;
@@ -280,14 +288,14 @@ public:
 				right->codeGen(regIn);
 				left->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tsltu" << r1 << ", " << r1 << ", " << "1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu " << r1 << ", " << r1 << ", " << "1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 
 				} else {
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tsltu" << r1 << ", " << r1 << ", " << "1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu " << r1 << ", " << r1 << ", " << "1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				}
 			}
 		}
@@ -327,46 +335,46 @@ public:
 				right->codeGen(tail(regIn));
 				if (operationFlag == 1){
 					//less than
-					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 
 				} else if(operationFlag == 2){
 					//more than
-					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " <<  r2<< ", " <<  r1<< std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				} else if (operationFlag == 3){
 					//less than or equal to
-					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				} else {
 					//more than or equal to
-					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				}
 			} else {
 				right->codeGen(regIn);
 				left->codeGen(tail(regIn));
 				if (operationFlag == 1){
 					//less than
-					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r2 << ", " <<  r1 << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 
 				} else if(operationFlag == 2){
 					//more than
-					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2<< std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				} else if (operationFlag == 3){
 					//less than or equal to
-					std::cout << "\tslt" << r1 << ", " << r2 << ", " << r1 << std::endl;
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				} else {
 					//more than or equal to
-					std::cout << "\tslt" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\txori" << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				}
 			}
 		}
@@ -574,7 +582,10 @@ public:
 				std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
 				break;
 		}
-		if (variable->returnIndex() > NumberofVaraibles * 4) {
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tsw $t0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
 				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 				if (NumberofVaraibles != 0) {
@@ -656,7 +667,7 @@ public:
 		if (isPrototype) {
 
 			//this is the part where we do that cool handle;
-			std::cout<<"\tlui	$28,%hi(__gnu_local_gp)"<<std::endl;
+			std::cout<<"\tlui $28,%hi(__gnu_local_gp)"<<std::endl;
 			std::cout<<"\taddiu	$28,$28,%lo(__gnu_local_gp)"<<std::endl;
 			if (ArgsList->countArgs() <= 4) {
 				std::cout<<"\t.cprestore	16" <<std::endl;
@@ -706,3 +717,162 @@ private:
 	bool isPrototype;
 	ASTExpression* ArgsList;
 };
+
+std::string uniqueIdGen();
+struct ASTLogicANDExpression: public ASTExpression {
+	~ASTLogicANDExpression() {}
+	ASTLogicANDExpression(ASTExpression* _left, ASTExpression* _right): left(_left), right(_right) {}
+	void codeGen(std::vector<std::string> regIn) {
+		left->codeGen(regIn);
+		std::string r1 = head(regIn);
+		std::string firstconditionAddress = uniqueIdGen();
+		std::string secondConditionAddress = uniqueIdGen();
+		std::cout<<"\t beq " << r1 << ",$0," << firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		right->codeGen(regIn);
+		std::cout<<"\tbeq " << r1 << ",$0," << firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<"\tli" << r1 << ",1" << std::endl;
+		std::cout<<"\t.option pic0" << std::endl;
+		std::cout << "\tb " << secondConditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout<< firstconditionAddress << ":" << std::endl;
+		std::cout << "\tmove " << r1 << ",$0" << std::endl;
+		std::cout << secondConditionAddress << ":" << std::endl;
+	}
+private:
+	ASTExpression* left;
+	ASTExpression* right;
+};
+
+struct ASTLogicORExpression: public ASTExpression {
+	~ASTLogicORExpression() {}
+	ASTLogicORExpression(ASTExpression* _left, ASTExpression* _right): left(_left), right(_right) {}
+	void codeGen(std::vector<std::string> regIn) {
+		right->codeGen(regIn);
+		std::string r1 = head(regIn);
+		std::string firstconditionAddress = uniqueIdGen();
+		std::string secondConditionAddress = uniqueIdGen();
+		std::string thirdConditionAddress = uniqueIdGen();
+		std::cout<<"\tbne " << r1 << ",$0," << firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		right->codeGen(regIn);
+		std::cout<<"\tbeq " << r1 << ",$0," << secondConditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout << firstconditionAddress << ":" << std::endl;
+		std::cout<<"\tli" << r1 << ",1" << std::endl;
+		std::cout<<"\t.option pic0" << std::endl;
+		std::cout << "\tb " << thirdConditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout<< secondConditionAddress << ":" << std::endl;
+		std::cout << "\tmove " << r1 << ",$0" << std::endl;
+		std::cout << thirdConditionAddress << ":" << std::endl;
+	}
+private:
+	ASTExpression* left;
+	ASTExpression* right;
+};
+
+struct ASTLogicNotExpression: public ASTExpression {
+~ASTLogicNotExpression() {}
+ASTLogicNotExpression(ASTExpression* _exp): exp(_exp) {}
+void codeGen(std::vector<std::string> regIn) {
+	std::string r1 = head(regIn);
+	exp->codeGen(regIn);
+	std::cout<<"\tsltu " << r1 << "," << r1 << ",1"<<std::endl;
+	std::cout<<"\tandi " << r1 << "," << r1 << ",0x00ff" << std::endl;
+}
+private:
+	ASTExpression* exp;
+};
+
+struct ASTbitwiseNotExpression: public ASTExpression {
+~ASTbitwiseNotExpression() {}
+ASTbitwiseNotExpression(ASTExpression* _exp): exp(_exp) {}
+void codeGen(std::vector<std::string> regIn) {
+	std::string r1 = head(regIn);
+	exp->codeGen(regIn);
+	std::cout<<"\tnor " << r1 << "," << r1 << ",$0" << std::endl;
+}
+private:
+	ASTExpression* exp;
+};
+
+struct ASTNegativeOperator: public ASTExpression {
+~ASTNegativeOperator() {}
+ASTNegativeOperator(ASTExpression* _exp): exp(_exp) {}
+void codeGen(std::vector<std::string> regIn) {
+	std::string r1 = head(regIn);
+	exp->codeGen(regIn);
+	std::cout<<"\tsubu " << r1 << ",$0," << r1  << std::endl;
+}
+private:
+	ASTExpression* exp;
+};
+
+
+struct ASTConditionalExpression: public ASTExpression {
+public:
+~ASTConditionalExpression() {}
+ASTConditionalExpression(ASTExpression* _condition, ASTExpression* _left, ASTExpression* _right): condition(_condition), left(_left), right(_right) {}
+std::string firstconditionAddress = uniqueIdGen();
+std::string secondConditionAddress = uniqueIdGen();
+void codeGen(std::vector<std::string> regIn) {
+	std::string r1 = head(regIn);
+	condition->codeGen(regIn);
+	std::cout<<"\tbeq " << r1 << ",$0," << firstconditionAddress << std::endl;
+	std::cout<<"\tnop\n" << std::endl;
+	left->codeGen(regIn);
+	std::cout << "\tb " << secondConditionAddress << std::endl;
+	std::cout << "\tnop\n" << std::endl;
+	std::cout<<"\t.option pic2" << std::endl;
+	std::cout << firstconditionAddress << ":" << std::endl;
+	right->codeGen(regIn);
+	std::cout << secondConditionAddress << ":" << std::endl;
+}
+private:
+	ASTExpression* condition;
+	ASTExpression* left;
+	ASTExpression* right;
+};
+
+struct ASTPrefixIncrement: public ASTExpression {
+public:
+	~ASTPrefixIncrement() {}
+	ASTPrefixIncrement(ASTExpression* _exp, int flag) {
+		ASTIntegerConst* inttemp = new ASTIntegerConst(1);
+		if (flag == 0) {
+		assExp = new ASTAssignmentExpression(_exp, inttemp, 4);
+	} else {
+		assExp = new ASTAssignmentExpression(_exp, inttemp, 5);
+	}
+}
+	void codeGen() override {
+		assExp->codeGen();
+	}
+	}
+private:
+	ASTAssignmentExpression* assExp;
+}
+
+struct ASTPostfixIncrement: public ASTExpression {
+public:
+	~ASTPostfixIncrement() {}
+	ASTPostfixIncrement(ASTExpression* _exp, int flag) {
+		ASTIntegerConst* inttemp = new ASTIntegerConst(1);
+		if (flag == 0) {
+		assExp = new ASTAssignmentExpression(_exp, inttemp, 4);
+	} else {
+		assExp = new ASTAssignmentExpression(_exp, inttemp, 5);
+	}
+}
+	void codeGen() override {
+		assExp->codeGen();
+	}
+	}
+private:
+	ASTAssignmentExpression* assExp;
+	ASTAssignmentExpression* add;
+}

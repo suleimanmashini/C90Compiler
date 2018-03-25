@@ -1,5 +1,5 @@
 #pragma once
-
+//TODO:ADD SUPPORT FOR VOID EXPRESSIONS
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,6 +11,8 @@ extern int NumberofVaraibles;
 extern int currentScope;
 extern std::vector<std::string> regList;
 extern int maxArgs;
+extern std::string currentFunction;
+
 
 struct variable {
 public:
@@ -81,6 +83,7 @@ private:
    ASTDeclarationList* Child;
    ASTDeclaration* Declaration;
 };
+
 
 enum {
 	RZERO, //HARD WIRES TO 0
