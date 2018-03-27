@@ -106,10 +106,10 @@ LGS						 [Ll]
 ":"						 {return TP_colon;}
 ";"						 {return TP_semiColon;}
 
-[0-9][0-9]*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer; /*to be changes later */}
-
-[0][xX]{HEX}+(({USS}?{LGS}?)|({LGS}?{USS}?))				   {return TC_integer;}
-(DIGIT)*"."(DIGIT)+([eE]("+"|"-")?DIGIT+)?[flFL]?  {return TC_float;}
+[1-9][0-9]*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=strtod(yytext, 0); return TC_integer; /*to be changes later */}
+[0-9][0-9]*(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=std::stoi( yytext, 0, 8  ); return TC_integer; /*to be changes later */}
+[0][xX]{HEX}+(({USS}?{LGS}?)|({LGS}?{USS}?))				   {yylval.Integer=std::stoi( yytext, 0, 8  ); return TC_integer;}
+({DIGIT})*"."({DIGIT})+([eE]("+"|"-")?{DIGIT}+)?[flFL]?  {yylval.Float = strtof(yytext, NULL); return TC_float;}
 
 "true"					 {return TC_true;}
 "false"					 {return TC_false;}

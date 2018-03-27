@@ -12,21 +12,32 @@ extern int currentScope;
 extern std::vector<std::string> regList;
 extern int maxArgs;
 extern std::string currentFunction;
-
+void setAccessible(int indexStart, int numofSets);
+void unsetAccessible(int indexStart, int numofSets);
 
 struct variable {
 public:
-variable(int _type, std::string _name, int _foundInScope): type(_type), name(_name), foundInScope(_foundInScope) {}
+variable(int _type, std::string _name, int _foundInScope, int _isAccess): type(_type), name(_name), foundInScope(_foundInScope), isAccess(_isAccess) {}
 std::string getName() {
 	return name;
 }
 int getScope() {
 	return foundInScope;
 }
+int getisAccess() {
+	return isAccess;
+}
+void setAccess() {
+	isAccess = 1;
+}
+void unsetAccess() {
+	isAccess = 0;
+}
 private:
 int type;
 int foundInScope;
 std::string name;
+int isAccess;
 };
 
 extern std::vector<variable> allVariables;
@@ -83,6 +94,9 @@ private:
    ASTDeclarationList* Child;
    ASTDeclaration* Declaration;
 };
+
+
+
 
 
 enum {

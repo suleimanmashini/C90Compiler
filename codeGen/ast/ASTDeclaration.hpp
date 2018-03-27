@@ -1,6 +1,7 @@
 #pragma once
 extern int isGlobal;
 extern int globalsFound;
+extern int isAccessible;
 
 struct ASTParameterList;
 struct ASTDirectDeclarator: public ASTDeclaration {
@@ -45,7 +46,7 @@ public:
     }
   }
 	void pushVariables() override {
-		variable TEMP = variable(typeNumber, Variable->getName(), currentScope);
+		variable TEMP = variable(typeNumber, Variable->getName(), currentScope, isAccessible);
 		allVariables.push_back(TEMP);
 	}
   void popVariables() override{

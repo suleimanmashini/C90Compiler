@@ -19,10 +19,10 @@ There are many things to do:
 - [x] Return
 - [ ] Arrays
 - [ ] Pointers
-- [ ] Types of Constants
+- [x] Types of Constants
 - [ ] Argc Argv
-- [ ] if-Else
+- [x] if-Else
 - [ ] Switch
-- [ ] conditional statements
-- [ ] Conditional Expression Short Circuiting
+- [x] conditional statements
+- [x] Conditional Expression Short Circuiting
 - [x] Support Excessive Brackets!!

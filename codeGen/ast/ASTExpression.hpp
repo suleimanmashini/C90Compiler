@@ -25,10 +25,10 @@ private:
 	 std::string vleft;
 };
 
-struct ASTIntegerConst: public ASTExpression {
+struct ASTNumConst: public ASTExpression {
 public:
-	~ASTIntegerConst() {}
-	ASTIntegerConst( int _numValue): numValue(_numValue) {}
+	~ASTNumConst() {}
+	ASTNumConst( int _numValue): numValue(_numValue) {}
 	void updateRegisterNeeds() override {
 	}
 	void codeGen (std::vector<std::string> regIn)   override{
@@ -38,9 +38,10 @@ public:
 	int getregs()  override {return registerNeeds;}
 	int getValue()  {return numValue;}
 private:
-	 int numValue;
+	 float numValue;
 	int registerNeeds = 1;
 };
+
 
 struct ASTVariableExp: public ASTExpression {
 public:
@@ -917,7 +918,7 @@ struct ASTSizeOfExpression: public ASTExpression {
 public:
 	~ASTSizeOfExpression() {}
 	ASTSizeOfExpression(int size) {
-		sizeNumber = new ASTIntegerConst(size);
+		sizeNumber = new ASTNumConst(size);
 	}
 	void codeGen(std::vector<std::string> regIn) override {
 		sizeNumber->codeGen(regIn);
@@ -927,5 +928,5 @@ public:
 		sizeNumber->codeGen(regList);
 	}
 private:
-	ASTIntegerConst* sizeNumber;
+	ASTNumConst* sizeNumber;
 };

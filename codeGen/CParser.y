@@ -45,6 +45,7 @@
 %type <DecList> DECLARATION_LIST
 %type <ActualDeclaration> DECLARATION PARAMETER_DECLARATION PARAMETER_TYPE_LIST PARAMETER_LIST
 %type <Translation> TRANSLATION_UNIT START
+%type <Float> TC_float
 
 
 %union {
@@ -73,8 +74,9 @@
  ASTAssignmentExpression* AssExpression;
  int* Number;
  ASTTranslationUnit* Translation;
- ASTIntegerConst* IntegerP;
+ ASTNumConst* IntegerP;
 int Integer;
+float Float;
 }
 
 %start START
@@ -146,16 +148,11 @@ ITERATION_STATEMENT: TK_while T_LBRACKET EXPRESSION T_RBRACKET STATEMENT {$$ = n
 
 
 /*
-
-
 SELECTION_STATEMENT: TK_if T_LBRACKET EXPRESSION T_RBRACKET STATEMENT {;}
                    | TK_if T_LBRACKET EXPRESSION T_RBRACKET STATEMENT TK_else STATEMENT {;}
                    | TK_switch T_LBRACKET EXPRESSION T_RBRACKET STATEMENT {;}
-
-ITERATION_STATEMENT: TK_while T_LBRACKET EXPRESSION T_RBRACKET STATEMENT {;}
-                   | TK_do STATEMENT TK_while T_LBRACKET EXPRESSION T_RBRACKET TP_semiColon {;}
-                   | TK_for T_LBRACKET EXPRESSION TP_semiColon EXPRESSION TP_semiColon EXPRESSION T_LBRACKET STATEMENT {;}
 */
+
 /*
 JUMP_STATEMENT: TK_goto T_IDENTIFIER TP_semiColon {;}
               | TK_continue TP_semiColon {;}
@@ -172,7 +169,9 @@ JUMP_STATEMENT: TK_return TP_semiColon {$$ = new ASTReturnStatement(NULL);}
 DECLARATION: DECLARATION_SPECIFIERS TP_semiColon{;}
              | DECLARATION_SPECIFIERS `INIT_DECLARATION_LIST` TP_semiColon {;}
 */
+
 DECLARATION: DECLARATION_SPECIFIERS INIT_DECLARATION_LIST TP_semiColon {$$ = new ASTVariableDeclaration(*$1, $2);}
+
 /*
 DECLARATION_SPECIFIERS: STORAGE_CLASS_SPECIFIER DELCARATION DECLARATION_SPECIFIERS {;}
                        | TYPE_SPECIFIER DECLARATION_SPECIFIERS {;}
@@ -248,14 +247,14 @@ IDENTIFIER_LIST: T_IDENTIFIER {;}
 */
 
 TYPE_SPECIFIER: TK_void {$$ = new int(0);}
-              | TK_char {;}
-              | TK_short {;}
+              | TK_char {$$ = new int(2);}
+              | TK_short {$$ = new int(3);}
               | TK_int {$$ = new int(1);}
-              | TK_long {;}
-              | TK_float {;}
-              | TK_double {;}
-              | TK_signed {;}
-              | TK_unsigned {;}
+              | TK_long {$$ = new int(4);}
+              | TK_float {$$ = new int(5);}
+              | TK_double {$$ = new int(6);}
+              | TK_signed {$$ = new int(7);}
+              | TK_unsigned {$$ = new int(8);}
 
 
 TYPE_QUALIFIER: TK_const {;}
@@ -274,9 +273,14 @@ EXPRESSION: PRIMARY_EXPRESSION {$$ = $1;}
           | POSTFIX_EXPRESSION {$$ = $1;}
           | UNARY_EXPRESSION {$$ = $1;}
           | CAST_EXPRESSION {$$ = $1;}
+          | LOGICAL_AND_EXPRESSION {$$ = $1;}
+          | LOGICAL_OR_EXPRESSION {$$ = $1;}
+          | CONDITIONAL_EXPRESSION {$$ = $1;}
 
 
-PRIMARY_EXPRESSION: TC_integer {$$ = new ASTIntegerConst($1);;}
+
+PRIMARY_EXPRESSION: TC_integer {$$ = new ASTNumConst($1);}
+                  | TC_float {$$ = new ASTNumConst($1);}
                   | T_LBRACKET EXPRESSION T_RBRACKET {$$ = $2;}
                   | T_IDENTIFIER {$$ = new ASTVariableExp(*$1);}
 
@@ -286,6 +290,8 @@ EXPRESSION: POSTFIX_EXPRESSION {;}
           | LOGICAL_OR_EXPRESSION {;}
           | CONDITIONAL_EXPRESSION {;}
           | EXPRESSION TP_comma ASSIGNMENT_EXPRESSION {;}
+
+
 
 
 PRIMARY_EXPRESSION: T_IDENTIFIER {;}

@@ -62,6 +62,7 @@ public:
 ~ASTCompoundStatement() {}
 ASTCompoundStatement( ASTStatementList* _StateList,  ASTDeclarationList* _DeclList): StatList(_StateList), DeclList(_DeclList) {}
 void codeGen()  override {
+	setAccessible(startIndex, numberofVinScope);
 	currentScope++;
 	if (StatList == NULL && DeclList == NULL) {
 		std::cout <<"\tnop\n";
@@ -74,14 +75,17 @@ void codeGen()  override {
   StatList->codeGen();
 }
 	currentScope--;
-  //TODO: INCLUDE DECLlIST HERE!!
+	setAccessible(startIndex, numberofVinScope);
 }
 void pushVariables()  override {
 	currentScope++;
+	startIndex = allVariables.size();
 	if (DeclList != NULL) {
 		DeclList->pushVariables();
 		//TODO: ADD SUPPORT TO OTHER STATEMENTS THAT HAVE BLOCKS
 	}
+	int temp = allVariables.size();
+	numberofVinScope = temp - startIndex;
 	if (StatList != NULL) {
 		StatList->pushVariables();
 	}
@@ -90,6 +94,8 @@ void pushVariables()  override {
 private:
    ASTStatementList* StatList;
    ASTDeclarationList* DeclList;
+	 int numberofVinScope;
+	 int startIndex;
 };
 
 struct ASTExpression;
@@ -118,7 +124,9 @@ public:
 	ASTIfStatement(ASTExpression* _Condition, ASTStatement* _then, ASTStatement* _ifelse): Condition(_Condition), then(_then), ifelse(_ifelse) {}
 	void pushVariables() override {
 		then->pushVariables();
+		if (ifelse != NULL) {
 		ifelse->pushVariables();
+	}
 	}
 	void codeGen() {
 		Condition->codeGen();
@@ -133,7 +141,9 @@ public:
 		std::cout<<"\tb " << exitaddress << std::endl;
 		std::cout<<"\tnop" << std::endl;
 		std::cout<< elseaddress << ":" << std::endl;
+		if (ifelse != NULL) {
 		ifelse->codeGen();
+	}
 		std::cout<< exitaddress << ":" << std::endl;
 	}
 private:
@@ -211,7 +221,7 @@ public:
 	~ASTForLoopStatement() {}
 	ASTForLoopStatement(ASTExpression* _exp1, ASTExpression* _exp2, ASTExpression* _exp3, ASTStatement* _block): exp1(_exp1), exp3(_exp3) {
 		if (exp1 == NULL && exp3 == NULL) {
-			ASTIntegerConst* temp = new ASTIntegerConst(1);
+			ASTNumConst* temp = new ASTNumConst(1);
 			blockWhile = new ASTWhileStatement(temp, _block);
 		} else {
 		blockWhile = new ASTWhileStatement(_exp2, _block);
