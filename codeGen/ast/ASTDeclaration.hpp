@@ -105,6 +105,7 @@ public:
     currentScope++;
     Declarator->pushArguments();
     currentScope--;
+    isAccessible = 0;
 		initialVSize = allVariables.size();
     if (initialVSize == -1) initialVSize = 0;
     std::cout<<"\t.text\n";
