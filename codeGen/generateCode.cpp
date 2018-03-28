@@ -3,18 +3,7 @@
 #include <fstream>
 #include <stdio.h>
 
-//this UNION WAS TAKEN FROM:
-//*****************************************
-// https://gist.github.com/khajavi/5667960
-//*****************************************
-union FloatingPointIEEE754 {
-	struct {
-		unsigned int mantissa : 23;
-		unsigned int exponent : 8;
-		unsigned int sign : 1;
-	} raw;
-	float f;
-} Fnum;
+
 
 std::vector<int> floatValues;
 std::vector<variable> allVariables;
@@ -30,7 +19,7 @@ std::vector<std::string> listOfFunctions;
 int uniqueID = 2;
 int uniqueIDFloat = 0;
 int initialVSize;
-int workingWithFloat = 0;
+int isFloat = 0;
 int NumberofVaraibles;
 int isAccessible = 1;
 int currentScope;
@@ -38,6 +27,7 @@ int isGlobal = 1;
 int globalsFound;
 int maxArgs;
 std::string currentFunction;
+std::string uniqueIdGenFloat();
 void fullCompiler() {
 
  	ASTTranslationUnit *ASTRoot = parseAST();
@@ -46,6 +36,12 @@ void fullCompiler() {
 	std::cout<<"\t.module nooddspreg\n";
 	std::cout<<"\t.abicalls\n";
 	ASTRoot->codeGen();
+	uniqueIDFloat = 0;
+	for (int i = 0; i < floatValues.size(); i++) {
+		std::cout<<uniqueIdGenFloat() << ":" << std::endl;
+		std::cout<<"\t.word " << floatValues[i] << std::endl;
+		std::cout<<"\t.align 2" << std::endl;
+	}
 }
 
 std::vector<std::string> tail(std::vector<std::string> vIn){

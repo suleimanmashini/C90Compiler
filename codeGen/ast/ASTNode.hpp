@@ -5,12 +5,18 @@
 #include <vector>
 #include <algorithm>
 #include <list>
+#include <stdio.h>
+#include <string.h>
 
 extern int initialVSize;
 extern int NumberofVaraibles;
 extern int currentScope;
 extern std::vector<std::string> regList;
+extern std::vector<std::string> regListFloat;
 extern int maxArgs;
+extern int isFloat;
+extern std::vector<int> floatValues;
+std::string uniqueIdGenFloat();
 extern std::string currentFunction;
 void setAccessible(int indexStart, int numofSets);
 void unsetAccessible(int indexStart, int numofSets);

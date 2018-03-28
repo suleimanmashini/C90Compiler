@@ -31,6 +31,7 @@ clean :
 	-rm codeGen/*.tab.cpp
 	-rm codeGen/*.tab.hpp
 	-rm codeGen/Lexer/*.yy.cpp
+	-rm tmp/compiler_tests/*
 
 run:
 	./bin/c_compiler

@@ -33,6 +33,14 @@ public:
 	}
 	void codeGen (std::vector<std::string> regIn)   override{
 		std::string r1 = head(regIn);
+		if (isFloat == 1) {
+			unsigned int ui;
+			memcpy(&ui, &numValue, sizeof(ui));
+			floatValues.push_back(ui);
+			std::string newAddress = uniqueIdGenFloat();
+			std::cout<<"\tlui " << "$t0,%hi(" << newAddress << ")" << std::endl;
+			std::cout<<"\tlwc1 " << r1 << ",%lo(" << newAddress << ")($t0)" << std::endl;
+		}
 		std::cout<< "\tli " << r1 << ", " << numValue << std::endl;
 	}
 	int getregs()  override {return registerNeeds;}
@@ -62,6 +70,7 @@ public:
 	void codeGen (std::vector<std::string> regIn) override {
 		//ok this part is wrong cause i then need to check for all scope;
 		std::string r1 = head(regIn);
+		if (isFloat != 1) {
 		if (findVariableIndex(allVariables, variableName) == -1) {
 			//save $2 in the stack below
 			//this is me winging it it probably doesnt work but why not;
@@ -84,6 +93,30 @@ public:
 			std::cout<< "\tlw " << r1 << ", " << (index + (maxArgs * 4))  <<"($fp)" << std::endl;
 		}
 		}
+	} else {
+		if (findVariableIndex(allVariables, variableName) == -1) {
+			//save $2 in the stack below
+			//this is me winging it it probably doesnt work but why not;
+			std::cout<<"\tlwc1 " << r1 <<",%got("<<variableName<<")($28)" << std::endl;
+			std::cout<<"\tlwc1 " << r1 << ",                              0(" << r1 << ")" << std::endl;
+		} else {
+			int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
+			//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
+			if (index > NumberofVaraibles * 4) {
+				int Framesize;
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + maxArgs + 20 + 1) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs + 1) * 4) + (((maxArgs + 20 + 1) * 4)%8);
+				}
+					std::cout<< "\tlwc1 " << r1 << ", " << index + Framesize  - 4 <<"($fp)" << std::endl;
+			} else {
+			std::cout<< "\tlwc1 " << r1 << ", " << (index + (maxArgs * 4))  <<"($fp)" << std::endl;
+		}
+		}
+	}
 	}
 	void codeGen() override {
 		codeGen(regList);
