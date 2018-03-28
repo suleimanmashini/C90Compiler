@@ -766,7 +766,7 @@ struct ASTLogicANDExpression: public ASTExpression {
 		right->codeGen(regIn);
 		std::cout<<"\tbeq " << r1 << ",$0," << firstconditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;
-		std::cout<<"\tli" << r1 << ",1" << std::endl;
+		std::cout<<"\tli " << r1 << ",1" << std::endl;
 		std::cout<<"\t.option pic0" << std::endl;
 		std::cout << "\tb " << secondConditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;
@@ -795,7 +795,7 @@ struct ASTLogicORExpression: public ASTExpression {
 		std::cout<<"\tbeq " << r1 << ",$0," << secondConditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;
 		std::cout << firstconditionAddress << ":" << std::endl;
-		std::cout<<"\tli" << r1 << ",1" << std::endl;
+		std::cout<<"\tli " << r1 << ",1" << std::endl;
 		std::cout<<"\t.option pic0" << std::endl;
 		std::cout << "\tb " << thirdConditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;

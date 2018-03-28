@@ -30,6 +30,7 @@ clean :
 	-rm codeGen/Lexer/*.o
 	-rm codeGen/*.tab.cpp
 	-rm codeGen/*.tab.hpp
+	-rm codeGen/*.o
 	-rm codeGen/Lexer/*.yy.cpp
 	-rm tmp/compiler_tests/*
 
