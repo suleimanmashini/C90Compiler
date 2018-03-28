@@ -15,6 +15,7 @@ extern std::vector<std::string> regList;
 extern std::vector<std::string> regListFloat;
 extern int maxArgs;
 extern int isFloat;
+extern int isTheFunctionFloat;
 extern std::vector<int> floatValues;
 std::string uniqueIdGenFloat();
 extern std::string currentFunction;

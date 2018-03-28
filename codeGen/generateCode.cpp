@@ -20,6 +20,7 @@ int uniqueID = 2;
 int uniqueIDFloat = 0;
 int initialVSize;
 int isFloat = 0;
+int isTheFunctionFloat = 0;
 int NumberofVaraibles;
 int isAccessible = 1;
 int currentScope;

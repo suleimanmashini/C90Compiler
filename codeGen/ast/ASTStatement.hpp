@@ -11,6 +11,7 @@ public:
 struct ASTReturnStatement: public ASTStatement {
 ASTReturnStatement( ASTExpression* _returnExpression) : returnExpression(_returnExpression) {}
 void codeGen()  override {
+	if (isTheFunctionFloat == 0) {
 	if(returnExpression == NULL) {
   std::cout<< "\tnop \n";
 } else {
@@ -18,6 +19,18 @@ void codeGen()  override {
 	std::cout<< "\tmove $v0, $t0"<< std::endl;
 	std::cout<< "\tb $" << currentFunction << std::endl;
 	std::cout<< "\tnop \n";
+}
+} else {
+	if(returnExpression == NULL) {
+  std::cout<< "\tnop \n";
+} else {
+	isFloat = 1;
+	returnExpression->codeGen(regListFloat);
+	std::cout<< "\tmov.s $f0, $f4"<< std::endl;
+	std::cout<< "\tb $" << currentFunction << std::endl;
+	std::cout<< "\tnop \n";
+	isFloat = 0;
+}
 }
 }
 void pushVariables() {

@@ -109,6 +109,8 @@ CONDITION: EXPRESSION TO_equalTo EXPRESSION {$$ = new TSTEquality($1, $3); }
          | EXPRESSION TO_moreThan EXPRESSION {$$ = new TSTMoreThan($1, $3); }
          | EXPRESSION TO_moreThanOrEqual EXPRESSION {$$ = new TSTMoreThanOrEqual($1, $3);}
          | EXPRESSION TO_lessThanOrEqual EXPRESSION {$$ = new TSTLessThanOrEqual($1, $3);}
+         | EXPRESSION TO_logicAnd EXPRESSION {$$ = new TSTLogicAnd($1, $3);}
+         | EXPRESSION TO_logicOr EXPRESSION {$$ = new TSTLogicOr($1, $3);}
          | EXPRESSION {$$ = $1;}
 
 

@@ -40,6 +40,7 @@ public:
 			std::string newAddress = uniqueIdGenFloat();
 			std::cout<<"\tlui " << "$t0,%hi(" << newAddress << ")" << std::endl;
 			std::cout<<"\tlwc1 " << r1 << ",%lo(" << newAddress << ")($t0)" << std::endl;
+			return;
 		}
 		std::cout<< "\tli " << r1 << ", " << numValue << std::endl;
 	}

@@ -97,6 +97,7 @@ public:
   int getReturnType()  {return functionType;}
   std::string getFunctionName()  {return Declarator->getName();}
   void codeGen()  override {
+    if(functionType == 5) isTheFunctionFloat = 1;
     isGlobal = 0;
     //reset maxArgs to find the needed stack space for all the arguments.
     maxArgs = 0;
@@ -127,7 +128,12 @@ public:
     Framesize = ((20 + maxArgs) * 4 + 4 ) + (((maxArgs + 20) * 4 + 4)%8);
   }
     std::cout << "\n\t.frame $fp," << Framesize <<",$31"<<std::endl;
+    if (isTheFunctionFloat == 0 ){
     std::cout << "\t.mask 0x40000000,-4" << std::endl;
+  } else {
+    std::cout << "\t.mask 0xc0000000,-4" << std::endl;
+
+  }
     std::cout << "\t.fmask	0x00000000,0" << std::endl;
     std::cout << "\t.set	noreorder" << std::endl;
     std::cout << "\t.set nomacro" << std::endl;
@@ -158,6 +164,7 @@ public:
       std::cout<<"\tlui	$28,%hi(__gnu_local_gp)" << std::endl;
       std::cout<<"\taddiu	$28,$28,%lo(__gnu_local_gp)" << std::endl;
     }
+
     // push the arguments in the registers to the stack
     if (Declarator->countArgs() != 0){
       switch (Declarator->countArgs()){
@@ -213,9 +220,13 @@ public:
     Declarator->codeGen();
     std::cout<<"\n\t.size "; Declarator->codeGen();
     std::cout<<", .-"; Declarator->codeGen(); std::cout<<std::endl;
+    if (isTheFunctionFloat == 1){
+      std::cout<<"\t.rdata"<< std::endl;
+    }
     std::cout << std::endl;
     //END OF A FUNCTION TIME TO POP THE VARIABLES
     isGlobal = 1;
+    isTheFunctionFloat = 0;
   }
 private:
 	 int functionType;

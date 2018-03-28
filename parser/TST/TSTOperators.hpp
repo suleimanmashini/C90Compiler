@@ -100,6 +100,34 @@ private:
   const TSTExpression* right;
 };
 
+struct TSTLogicOr : public TSTExpression {
+public:
+  ~TSTLogicOr(){}
+  void print() const override {
+    left->print();
+    std::cout<< " or ";
+    right->print();
+  }
+  TSTLogicOr(const TSTExpression* leftIn, const TSTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const TSTExpression* left;
+  const TSTExpression* right;
+};
+
+struct TSTLogicAnd : public TSTExpression {
+public:
+  ~TSTLogicAnd(){}
+  void print() const override {
+    left->print();
+    std::cout<< " and ";
+    right->print();
+  }
+  TSTLogicAnd(const TSTExpression* leftIn, const TSTExpression* rightIn): left(leftIn), right(rightIn){ }
+private:
+  const TSTExpression* left;
+  const TSTExpression* right;
+};
+
 
 struct TSTMoreThanOrEqual : public TSTExpression {
 public:
