@@ -1474,6 +1474,22 @@ ASTConditionalExpression(ASTExpression* _condition, ASTExpression* _left, ASTExp
 std::string firstconditionAddress = uniqueIdGen();
 std::string secondConditionAddress = uniqueIdGen();
 void codeGen(std::vector<std::string> regIn) {
+	if(isFloat == 1) {
+		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
+		condition->codeGen(regIn);
+		std::cout<<"\tmtc1 $0," << r2 << std::endl;
+		std::cout<<"\tc.eq.s $fcc0," << r1 << "," << r2 << std::endl;
+	 	std::cout<< "\tbc1t $fcc0,"<< firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		left->codeGen(regIn);
+		std::cout << "\tb " << secondConditionAddress << std::endl;
+		std::cout << "\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout << firstconditionAddress << ":" << std::endl;
+		right->codeGen(regIn);
+		std::cout << secondConditionAddress << ":" << std::endl;
+	} else {
 	std::string r1 = head(regIn);
 	condition->codeGen(regIn);
 	std::cout<<"\tbeq " << r1 << ",$0," << firstconditionAddress << std::endl;
@@ -1485,6 +1501,7 @@ void codeGen(std::vector<std::string> regIn) {
 	std::cout << firstconditionAddress << ":" << std::endl;
 	right->codeGen(regIn);
 	std::cout << secondConditionAddress << ":" << std::endl;
+}
 }
 private:
 	ASTExpression* condition;
@@ -1499,6 +1516,7 @@ public:
 	void codeGen(std::vector<std::string> regIn) override {
 		std::string r1 = head(regIn);
 		variable->codeGen(regIn);
+		if (isFloat == 0) {
 		if (flag == 0) {
 		std::cout<<"\taddiu " << r1 << "," << r1 << ", 1" << std::endl;
 	} else {
@@ -1520,6 +1538,36 @@ public:
 		} else {
 			std::cout<<"\tsw " << r1 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
+	} else {
+		std::string tempFloat = uniqueIdGenFloat();
+		floatValues.push_back(1);
+		std::string r2 = head(tail(regIn));
+		if (flag == 0) {
+			std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+			std::cout<<"\tlwc1 "<< r2 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+		std::cout<<"\tadd.s " << r1 << "," << r1 << "," << r2  << std::endl;
+	} else {
+		std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+		std::cout<<"\tlwc1 "<< r2 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+		std::cout<<"\tsub.s " << r1 << "," << r1 << "," << r2  << std::endl;
+		}
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tlwc1 $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tswc1 $t0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+			}
+				std::cout<< "\tswc1 " << r1 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tswc1 " << r1 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+		}
+	}
 	}
 	void codeGen() override {
 		this->codeGen(regList);
@@ -1536,7 +1584,36 @@ public:
 	void codeGen(std::vector<std::string> regIn) override {
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
+		std::string r3 = head(tail(tail(regIn)));
 		variable->codeGen(regIn);
+		if (isFloat == 1){
+			std::string tempFloat = uniqueIdGenFloat();
+			floatValues.push_back(1);
+		if (flag == 0) {
+			std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+			std::cout<<"\tlwc1 "<< r3 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+			std::cout<<"\tadd.s " << r2 << "," << r1 << "," << r3 << std::endl;
+	} else {
+		std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+		std::cout<<"\tlwc1 "<< r3 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+		std::cout<<"\tsub.s " << r2 << "," << r1 << "," << r3 << std::endl;	}
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tlwc1 $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tswc1 $t0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+			}
+				std::cout<< "\tswc1 " << r2 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tswc1 " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+		}
+	} else {
 		if (flag == 0) {
 		std::cout<<"\taddiu " << r2 << "," << r1 << ", 1" << std::endl;
 	} else {
@@ -1558,6 +1635,7 @@ public:
 		} else {
 			std::cout<<"\tsw " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
+	}
 	}
 	void codeGen() override {
 		this->codeGen(regList);
