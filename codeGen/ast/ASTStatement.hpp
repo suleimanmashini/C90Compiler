@@ -23,13 +23,20 @@ void codeGen()  override {
 } else {
 	if(returnExpression == NULL) {
   std::cout<< "\tnop \n";
-} else {
+} else if (isTheFunctionFloat == 1){
 	isFloat = 1;
 	returnExpression->codeGen(regListFloat);
 	std::cout<< "\tmov.s $f0, $f4"<< std::endl;
 	std::cout<< "\tb $" << currentFunction << std::endl;
 	std::cout<< "\tnop \n";
 	isFloat = 0;
+} else {
+	isDouble = 1;
+	returnExpression->codeGen(regListFloat);
+	std::cout<< "\tmov.d $f0, $f4"<< std::endl;
+	std::cout<< "\tb $" << currentFunction << std::endl;
+	std::cout<< "\tnop \n";
+	isDouble = 0;
 }
 }
 }

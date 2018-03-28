@@ -98,6 +98,7 @@ public:
   std::string getFunctionName()  {return Declarator->getName();}
   void codeGen()  override {
     if(functionType == 5) isTheFunctionFloat = 1;
+    if(functionType == 6) isTheFunctionDouble = 1;
     isGlobal = 0;
     //reset maxArgs to find the needed stack space for all the arguments.
     maxArgs = 0;
@@ -251,6 +252,7 @@ public:
     std::cout << std::endl;
     //END OF A FUNCTION TIME TO POP THE VARIABLES
     isGlobal = 1;
+    isTheFunctionDouble = 0;
     isTheFunctionFloat = 0;
   }
 private:

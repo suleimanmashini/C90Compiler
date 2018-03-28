@@ -11,7 +11,7 @@ public:
 	virtual void codeGen(std::vector<std::string> regIn) {}
 	virtual int returnIndex () {}
 	virtual void codeGen()  {
-		if(isFloat == 1) {
+		if(isFloat == 1 || isDouble == 1) {
 			this->codeGen(regListFloat);
 			return;
 		}
@@ -45,6 +45,14 @@ public:
 			std::cout<<"\tlui " << "$t0,%hi(" << newAddress << ")" << std::endl;
 			std::cout<<"\tlwc1 " << r1 << ",%lo(" << newAddress << ")($t0)" << std::endl;
 			return;
+		} else if (isDouble == 1){
+			unsigned int ui;
+			memcpy(&ui, &numValue, sizeof(ui));
+			floatValues.push_back(ui);
+			std::string newAddress = uniqueIdGenFloat();
+			std::cout<<"\tlui " << "$t0,%hi(" << newAddress << ")" << std::endl;
+			std::cout<<"\tldc1 " << r1 << ",%lo(" << newAddress << ")($t0)" << std::endl;
+			return;
 		}
 		std::cout<< "\tli " << r1 << ", " << numValue << std::endl;
 	}
@@ -75,7 +83,7 @@ public:
 	void codeGen (std::vector<std::string> regIn) override {
 		//ok this part is wrong cause i then need to check for all scope;
 		std::string r1 = head(regIn);
-		if (isFloat != 1) {
+		if (isFloat == 0 && isDouble == 0) {
 		if (findVariableIndex(allVariables, variableName) == -1) {
 			//save $2 in the stack below
 			//this is me winging it it probably doesnt work but why not;
@@ -98,7 +106,7 @@ public:
 			std::cout<< "\tlw " << r1 << ", " << (index + (maxArgs * 4))  <<"($fp)" << std::endl;
 		}
 		}
-	} else {
+	} else if (isFloat == 1) {
 		if (findVariableIndex(allVariables, variableName) == -1) {
 			//save $2 in the stack below
 			//this is me winging it it probably doesnt work but why not;
@@ -119,6 +127,29 @@ public:
 					std::cout<< "\tlwc1 " << r1 << ", " << index + Framesize  - 4 <<"($fp)" << std::endl;
 			} else {
 			std::cout<< "\tlwc1 " << r1 << ", " << (index + (maxArgs * 4))  <<"($fp)" << std::endl;
+		}
+		}
+	} else {
+		if (findVariableIndex(allVariables, variableName) == -1) {
+			//save $2 in the stack below
+			//this is me winging it it probably doesnt work but why not;
+			std::cout<<"\tldc1 " << r1 <<",%got("<<variableName<<")($28)" << std::endl;
+			std::cout<<"\tldc1 " << r1 << ",                              0(" << r1 << ")" << std::endl;
+		} else {
+			int index = ((NumberofVaraibles)-(findVariableIndex(allVariables, variableName)-initialVSize)) * 4;
+			//TODO:MAKENSURE THAT THIS EQUATION WORKS PROPERLY
+			if (index > NumberofVaraibles * 4) {
+				int Framesize;
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 12 + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + 12 + maxArgs + 20 + 1) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + 12 + maxArgs + 1) * 4) + (((maxArgs + 12 + 20 + 1) * 4)%8);
+				}
+					std::cout<< "\tldc1 " << r1 << ", " << index + Framesize  - 4 <<"($fp)" << std::endl;
+			} else {
+			std::cout<< "\tldc1 " << r1 << ", " << (index + (maxArgs * 4))  <<"($fp)" << std::endl;
 		}
 		}
 	}
@@ -149,7 +180,7 @@ public:
 
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
-		if (isFloat == 0) {
+		if (isFloat == 0 && isDouble == 0) {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -180,6 +211,32 @@ public:
 					//MOD
 					std::cout << "\tdiv " << r1 << ", " << r2 << std::endl;
 					std::cout << "\tmfhi "<< r2 << std::endl;
+				}
+			}
+		}
+	} else if (isFloat == 1){
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tmul.s " << r1 << ", " << r2 << std::endl;
+				} else if (operationFlag == 2){
+					std::cout << "\tdiv.s " << r1 << ", " << r2 << std::endl;
+				} else {
+
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tmul.s " << r2 << ", " << r1 << std::endl;
+				} else if (operationFlag == 2){
+					std::cout << "\tdiv.s " << r2 << ", " << r1 << std::endl;
+				} else {
+
 				}
 			}
 		}
@@ -285,7 +342,7 @@ public:
 	void codeGen(std::vector<std::string> regIn) override  {
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
-		if (isFloat != 1) {
+		if (isFloat == 0 && isDouble == 0 && isDouble != 1) {
 
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
@@ -311,6 +368,24 @@ public:
 	} else {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else if (isDouble == 1) {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tadd.d " << r1 << ", " << r1 << ", " << r2 << std::endl;
+				} else {
+					std::cout << "\tsub.d " << r1 << ", " << r1 << ", " << r2 << std::endl;
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tadd.d " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				} else {
+					std::cout << "\tsub.d " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				}
+			}
 		} else {
 			if(left->getregs() >= right->getregs()){
 				left->codeGen(regIn);
@@ -359,7 +434,7 @@ public:
 
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
-		if (isFloat == 0) {
+		if (isFloat == 0 && isDouble == 0) {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -492,7 +567,7 @@ public:
 
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
-		if (isFloat == 0) {
+		if (isFloat == 0 && isDouble == 0) {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -544,7 +619,7 @@ public:
 				}
 			}
 		}
-	} else {
+	} else if (isFloat == 1){
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -666,6 +741,138 @@ public:
 					std::cout<<"\tnop\n"<<std::endl;
 					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
 					std::cout<<"\tlwc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				}
+			}
+		}
+	} else {
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				std::string firstconditionAddress = uniqueIdGen();
+				std::string secondConditionAddress = uniqueIdGen();
+				std::string floattemp = uniqueIdGenFloat();
+				floatValues.push_back(1);
+				if (operationFlag == 1){
+					//less than
+					std::cout<<"\tc.lt.s $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r1 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if(operationFlag == 2){
+					//more than
+						std::cout<<"\tc.lt.s $fcc0," << r2 << "," << r1 << std::endl;
+						std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+						std::cout<<"\tnop\n"<<std::endl;
+						std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+						std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+						std::cout << "\t.option pic0" << std::endl;
+						std::cout << "\tb " <<  firstconditionAddress << std::endl;
+						std::cout<<"\tnop\n" << std::endl;
+						std::cout << "\t.option pic2" << std::endl;
+						std::cout<<secondConditionAddress<<":"<<std::endl;
+						std::cout<<"\tmtc1 $0," << r1 << std::endl;
+						std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if (operationFlag == 3){
+					//less than or equal to
+					std::cout<<"\tc.le.s $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r1 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else {
+					//more than or equal to
+					std::cout<<"\tc.le.s $fcc0," << r2 << "," << r1 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r1 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				}
+			} else {
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				std::string firstconditionAddress = uniqueIdGen();
+				std::string secondConditionAddress = uniqueIdGen();
+				std::string floattemp = uniqueIdGenFloat();
+				if (operationFlag == 1){
+					//less than
+					std::cout<<"\tc.lt.d $fcc0," << r2 << "," << r1 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tldc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if(operationFlag == 2){
+					//more than
+					std::cout<<"\tc.lt.d $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tldc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if (operationFlag == 3){
+					//less than or equal to
+					std::cout<<"\tc.le.d $fcc0," << r2 << "," << r1 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tldc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+				} else {
+					//more than or equal to
+					std::cout<<"\tc.le.d $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tldc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
 					std::cout << "\t.option pic0" << std::endl;
 					std::cout << "\tb " <<  firstconditionAddress << std::endl;
 					std::cout<<"\tnop\n" << std::endl;
@@ -826,11 +1033,14 @@ public:
 			isFloat = 1;
 			EquivalentExp->codeGen(regListFloat);
 
+		} else if (allVariables[findVariableIndex(allVariables, variable->nameretrieval())].getType() == 6) {
+			isDouble = 1;
+			EquivalentExp->codeGen(regListFloat);
 		} else {
 		EquivalentExp->codeGen(regList);
 	}
 		//now youll store v0 to the variable;
-		if (isFloat == 0) {
+		if (isFloat == 0 && isDouble == 0) {
 		switch(assignmentOp){
 			case 0:
 				break;
@@ -1146,7 +1356,7 @@ public:
 				break;
 			}
 	}
-		if (isFloat != 1) {
+		if (isFloat == 0 && isDouble == 0) {
 		if (variable->returnIndex() == -1) {
 			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
 			std::cout<<"\tsw $t0,0($t1)" << std::endl;
@@ -1181,6 +1391,8 @@ public:
 			std::cout<<"\tswc1 $f4," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
 	}
+	isFloat = 0;
+	isDouble = 0;
 }
 
 	void codeGen(std::vector<std::string> regList) override {
@@ -1362,7 +1574,7 @@ struct ASTLogicORExpression: public ASTExpression {
 		std::string firstconditionAddress = uniqueIdGen();
 		std::string secondConditionAddress = uniqueIdGen();
 		std::string thirdConditionAddress = uniqueIdGen();
-		if (isFloat == 0) {
+		if (isFloat == 0 && isDouble == 0) {
 		left->codeGen(regIn);
 		std::cout<<"\tbne " << r1 << ",$0," << firstconditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;
@@ -1432,7 +1644,26 @@ void codeGen(std::vector<std::string> regIn) {
 		std::cout<<temp <<":" << std::endl;
 		std::cout<<"\tmtc1 $0," << r1 << std::endl;
 		std::cout<<temp1<<":" << std::endl;
-	} else {
+	} else if (isDouble == 1){
+		std::string temp = uniqueIdGen();
+		std::string temp1 = uniqueIdGen();
+		std::string tempFloat = uniqueIdGenFloat();
+		floatValues.push_back(1);
+		exp->codeGen(regIn);
+		std::cout<<"\tmtc1 $0,$f2" << std::endl;
+		std::cout<<"\tc.eq.d $fcc0," << r1 << ",$f2" << std::endl;
+		std::cout<<"\tbc1f $fcc0, " << temp << std::endl;
+		std::cout<< "\tnop\n" << std::endl;
+		std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+		std::cout<<"\tldc1 " << r1 << ",%lo(" << tempFloat <<")($2)" << std::endl;
+		std::cout<<"\t.option pic0" << std::endl;
+		std::cout<<"\tb " << temp1 << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout<<temp <<":" << std::endl;
+		std::cout<<"\tmtc1 $0," << r1 << std::endl;
+		std::cout<<temp1<<":" << std::endl;
+} else {
 	exp->codeGen(regIn);
 	std::cout<<"\tsltu " << r1 << "," << r1 << ",1"<<std::endl;
 	std::cout<<"\tandi " << r1 << "," << r1 << ",0x00ff" << std::endl;
@@ -1489,7 +1720,24 @@ void codeGen(std::vector<std::string> regIn) {
 		std::cout << firstconditionAddress << ":" << std::endl;
 		right->codeGen(regIn);
 		std::cout << secondConditionAddress << ":" << std::endl;
-	} else {
+	} else if (isDouble == 1){
+
+		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
+		condition->codeGen(regIn);
+		std::cout<<"\tmtc1 $0," << r2 << std::endl;
+		std::cout<<"\tc.eq.d $fcc0," << r1 << "," << r2 << std::endl;
+		std::cout<< "\tbc1t $fcc0,"<< firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		left->codeGen(regIn);
+		std::cout << "\tb " << secondConditionAddress << std::endl;
+		std::cout << "\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout << firstconditionAddress << ":" << std::endl;
+		right->codeGen(regIn);
+		std::cout << secondConditionAddress << ":" << std::endl;
+
+} else {
 	std::string r1 = head(regIn);
 	condition->codeGen(regIn);
 	std::cout<<"\tbeq " << r1 << ",$0," << firstconditionAddress << std::endl;
@@ -1516,7 +1764,7 @@ public:
 	void codeGen(std::vector<std::string> regIn) override {
 		std::string r1 = head(regIn);
 		variable->codeGen(regIn);
-		if (isFloat == 0) {
+		if (isFloat == 0 && isDouble == 0) {
 		if (flag == 0) {
 		std::cout<<"\taddiu " << r1 << "," << r1 << ", 1" << std::endl;
 	} else {
@@ -1537,6 +1785,36 @@ public:
 				std::cout<< "\tsw " << r1 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
 			std::cout<<"\tsw " << r1 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+		}
+	} else if(isDouble == 1) {
+		std::string tempFloat = uniqueIdGenFloat();
+		floatValues.push_back(1);
+		std::string r2 = head(tail(regIn));
+		if (flag == 0) {
+			std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+			std::cout<<"\tldc1 "<< r2 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+		std::cout<<"\tadd.s " << r1 << "," << r1 << "," << r2  << std::endl;
+	} else {
+		std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+		std::cout<<"\tldc1 "<< r2 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+		std::cout<<"\tsub.s " << r1 << "," << r1 << "," << r2  << std::endl;
+		}
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tldc1 $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tsdc1 $t0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+			}
+				std::cout<< "\tsdc1 " << r1 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tsdc1 " << r1 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
 	} else {
 		std::string tempFloat = uniqueIdGenFloat();
@@ -1614,6 +1892,33 @@ public:
 		} else {
 			std::cout<<"\tswc1 " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
+	} else if (isDouble == 1) {
+		std::string tempFloat = uniqueIdGenFloat();
+		floatValues.push_back(1);
+	if (flag == 0) {
+		std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+		std::cout<<"\tldc1 "<< r3 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+		std::cout<<"\tadd.d " << r2 << "," << r1 << "," << r3 << std::endl;
+} else {
+	std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+	std::cout<<"\tldc1 "<< r3 << ",%lo("<<tempFloat<<")($2)"<<std::endl;
+	std::cout<<"\tsub.d " << r2 << "," << r1 << "," << r3 << std::endl;	}
+	if (variable->returnIndex() == -1) {
+		std::cout<<"\tldc1 $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+		std::cout<<"\tsdc1 $t0,0($t1)" << std::endl;
+	} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+		int Framesize;
+		NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+		if (NumberofVaraibles != 0) {
+		Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+	} else {
+		//used to be 8 now i changed it to fit the new registers
+		Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+	}
+			std::cout<< "\tsdc1 " << r2 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+	} else {
+		std::cout<<"\tsdc1 " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+	}
 	} else {
 		if (flag == 0) {
 		std::cout<<"\taddiu " << r2 << "," << r1 << ", 1" << std::endl;

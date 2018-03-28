@@ -10,7 +10,7 @@ There are many things to do:
 - [x] Lexer
 - [x] AST
 - [ ] Support for register spilling
-- [ ] Codegen
+- [x] Codegen
 - [x] Integer
 - [x] Global variables
 - [x] Function Calls
@@ -26,3 +26,6 @@ There are many things to do:
 - [x] conditional statements
 - [x] Conditional Expression Short Circuiting
 - [x] Support Excessive Brackets!!
+
+No complete double interpretation but it can do most operations!
+Currently supports ints, float and (double kindof?)
