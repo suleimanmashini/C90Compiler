@@ -122,10 +122,10 @@ public:
     NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
     int Framesize;
     if (NumberofVaraibles != 0) {
-    Framesize = ((NumberofVaraibles + 20 + maxArgs) * 4 + 4) + ((NumberofVaraibles + maxArgs + 20) * 4 + 4) % 8;
+    Framesize = ((NumberofVaraibles + 20 + 12+ maxArgs) * 4 + 4) + ((NumberofVaraibles + maxArgs + 20+ 12) * 4 + 4) % 8;
   } else {
     //used to be 8 now i changed it to fit the new registers
-    Framesize = ((20 + maxArgs) * 4 + 4 ) + (((maxArgs + 20) * 4 + 4)%8);
+    Framesize = ((20 + 12 + maxArgs) * 4 + 4 ) + (((maxArgs + 20) * 4 + 4)%8);
   }
     std::cout << "\n\t.frame $fp," << Framesize <<",$31"<<std::endl;
     if (isTheFunctionFloat == 0 ){
@@ -159,6 +159,19 @@ public:
     std::cout <<"\tsw $9," << Framesize - 72 << "($sp)" << std::endl;
     std::cout <<"\tsw $8," << Framesize - 76 << "($sp)" << std::endl;
     std::cout << "\tsw $fp," << Framesize - 80 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f30," << Framesize - 84 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f28," << Framesize - 88 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f26," << Framesize - 92 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f24," << Framesize - 96 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f22," << Framesize - 100 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f20," << Framesize - 104 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f18," << Framesize - 108 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f16," << Framesize - 112 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f10," << Framesize - 116 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f8," << Framesize - 120 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f6," << Framesize - 124 << "($sp)" << std::endl;
+    std::cout<<"\tswc1 $f4," << Framesize - 128 << "($sp)" << std::endl;
+
     std::cout << "\tmove $fp, $sp" << std::endl;
     if (globalsFound) {
       std::cout<<"\tlui	$28,%hi(__gnu_local_gp)" << std::endl;
@@ -211,6 +224,18 @@ public:
     std::cout <<"\tlw $9," << Framesize - 72 << "($sp)" << std::endl;
     std::cout <<"\tlw $8," << Framesize - 76 << "($sp)" << std::endl;
     std::cout << "\tlw $fp," << Framesize - 80 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f30," << Framesize - 84 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f28," << Framesize - 88 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f26," << Framesize - 92 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f24," << Framesize - 96 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f22," << Framesize - 100 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f20," << Framesize - 104 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f18," << Framesize - 108 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f16," << Framesize - 112 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f10," << Framesize - 116 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f8," << Framesize - 120 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f6," << Framesize - 124 << "($sp)" << std::endl;
+    std::cout<<"\tlwc1 $f4," << Framesize - 128 << "($sp)" << std::endl;
     std::cout << "\taddiu $sp, $sp," << Framesize << std::endl;
     std::cout << "\tjr $31" << std::endl;
     std::cout << "\tnop\n";

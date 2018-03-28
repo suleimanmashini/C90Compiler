@@ -247,14 +247,14 @@ IDENTIFIER_LIST: T_IDENTIFIER {;}
 */
 
 TYPE_SPECIFIER: TK_void {$$ = new int(0);}
-              | TK_char {$$ = new int(2);}
-              | TK_short {$$ = new int(3);}
+              | TK_char {$$ = new int(1);}
+              | TK_short {$$ = new int(1);}
               | TK_int {$$ = new int(1);}
-              | TK_long {$$ = new int(4);}
+              | TK_long {$$ = new int(1);}
               | TK_float {$$ = new int(5);}
               | TK_double {$$ = new int(6);}
-              | TK_signed {$$ = new int(7);}
-              | TK_unsigned {$$ = new int(8);}
+              | TK_signed {$$ = new int(1);}
+              | TK_unsigned {$$ = new int(1);}
 
 
 TYPE_QUALIFIER: TK_const {;}

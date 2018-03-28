@@ -88,10 +88,10 @@ public:
 				int Framesize;
 					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 					if (NumberofVaraibles != 0) {
-			    Framesize = ((NumberofVaraibles + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + maxArgs + 20 + 1) * 4) % 8;
+			    Framesize = ((NumberofVaraibles + 12 + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + maxArgs + 12 + 20 + 1) * 4) % 8;
 			  } else {
 			    //used to be 8 now i changed it to fit the new registers
-			    Framesize = ((20 + maxArgs + 1) * 4) + (((maxArgs + 20 + 1) * 4)%8);
+			    Framesize = ((20 + 12 +  maxArgs + 1) * 4) + (((maxArgs + 12 + 20 + 1) * 4)%8);
 			  }
 					std::cout<< "\tlw " << r1 << ", " << index + Framesize  - 4 <<"($fp)" << std::endl;
 			} else {
@@ -111,10 +111,10 @@ public:
 				int Framesize;
 					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 					if (NumberofVaraibles != 0) {
-					Framesize = ((NumberofVaraibles + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + maxArgs + 20 + 1) * 4) % 8;
+					Framesize = ((NumberofVaraibles + 12 + 20 + maxArgs + 1) * 4) + ((NumberofVaraibles + 12 + maxArgs + 20 + 1) * 4) % 8;
 				} else {
 					//used to be 8 now i changed it to fit the new registers
-					Framesize = ((20 + maxArgs + 1) * 4) + (((maxArgs + 20 + 1) * 4)%8);
+					Framesize = ((20 + 12 + maxArgs + 1) * 4) + (((maxArgs + 12 + 20 + 1) * 4)%8);
 				}
 					std::cout<< "\tlwc1 " << r1 << ", " << index + Framesize  - 4 <<"($fp)" << std::endl;
 			} else {
@@ -844,10 +844,10 @@ public:
 					int Framesize;
 						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+						Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
 					} else {
 						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+						Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
 					}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tmul $t9,$t0"<<std::endl;
@@ -867,13 +867,13 @@ public:
 					std::cout<<"\tmov $t0,$LO"<<std::endl;
 					} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tdiv $t9,$t0"<<std::endl;
 					std::cout<<"\tmov $t0,$LO"<<std::endl;
@@ -892,13 +892,13 @@ public:
 					std::cout<<"\tmov $t0,$HI"<<std::endl;
 					} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tdiv $t9,$t0"<<std::endl;
 					std::cout<<"\tmov $t0,$HI"<<std::endl;
@@ -915,13 +915,13 @@ public:
 					std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -936,13 +936,13 @@ public:
 					std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -957,13 +957,13 @@ public:
 					std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -978,13 +978,13 @@ public:
 					std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -999,13 +999,13 @@ public:
 					std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -1020,13 +1020,13 @@ public:
 					std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -1041,13 +1041,13 @@ public:
 					std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
 					std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
 				} else {
@@ -1067,13 +1067,13 @@ public:
 					std::cout<<"\tmul.s $f4,$f4,$f18"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
 					std::cout<<"\tmul.s $f4,$f4,$f18"<<std::endl;
 				} else {
@@ -1088,13 +1088,13 @@ public:
 					std::cout<<"\tdiv.s $f4,$f4,$f18"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
 					std::cout<<"\tdiv.s $f4,$f4,$f18"<<std::endl;
 				} else {
@@ -1109,13 +1109,13 @@ public:
 					std::cout<<"\tadd.s $f4,$f4,$f18"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
 					std::cout<<"\tadd.s $f4,$f4,$f18"<<std::endl;
 				} else {
@@ -1130,13 +1130,13 @@ public:
 					std::cout<<"\tsub.s $f4,$f4,$f18"<<std::endl;
 				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 					int Framesize;
-						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-						if (NumberofVaraibles != 0) {
-						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-					} else {
-						//used to be 8 now i changed it to fit the new registers
-						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-					}
+					NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+					if (NumberofVaraibles != 0) {
+					Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+				} else {
+					//used to be 8 now i changed it to fit the new registers
+					Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+				}
 					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
 					std::cout<<"\tsub.s $f4,$f4,$f18"<<std::endl;
 				} else {
@@ -1152,13 +1152,13 @@ public:
 			std::cout<<"\tsw $t0,0($t1)" << std::endl;
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
-				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-			} else {
-				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-			}
+			NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+			if (NumberofVaraibles != 0) {
+			Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+		} else {
+			//used to be 8 now i changed it to fit the new registers
+			Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+		}
 				std::cout<< "\tsw $t0," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
 			std::cout<<"\tsw $t0," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
@@ -1169,13 +1169,13 @@ public:
 			std::cout<<"\tswc1 $f4,0($t1)" << std::endl;
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
-				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-			} else {
-				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-			}
+			NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+			if (NumberofVaraibles != 0) {
+			Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+		} else {
+			//used to be 8 now i changed it to fit the new registers
+			Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+		}
 				std::cout<< "\tswc1 $f4," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
 			std::cout<<"\tswc1 $f4," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
@@ -1215,7 +1215,7 @@ public:
 				std::cout << "\tmove $a3, $t0" << std::endl;
 				break;
 				default:
-				std::cout << "\tsw $t0,"<< argNumber * 4 + 4 <<"($fp)" << std::endl;
+				std::cout << "\tsw $t0,"<< argNumber * 4 <<"($fp)" << std::endl;
 			}
 			//OR we can pop it to the frame
 			//POPBACK THE REGISTERS AFTER EVALUATION
@@ -1527,13 +1527,13 @@ public:
 			std::cout<<"\tsw $t0,0($t1)" << std::endl;
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
-				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-			} else {
-				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-			}
+			NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+			if (NumberofVaraibles != 0) {
+			Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+		} else {
+			//used to be 8 now i changed it to fit the new registers
+			Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+		}
 				std::cout<< "\tsw " << r1 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
 			std::cout<<"\tsw " << r1 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
@@ -1557,11 +1557,12 @@ public:
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
 				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
 				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+				Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
 			} else {
 				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+				Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
 			}
 				std::cout<< "\tswc1 " << r1 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
@@ -1602,13 +1603,13 @@ public:
 			std::cout<<"\tswc1 $t0,0($t1)" << std::endl;
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
-				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-			} else {
-				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-			}
+			NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+			if (NumberofVaraibles != 0) {
+			Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+		} else {
+			//used to be 8 now i changed it to fit the new registers
+			Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+		}
 				std::cout<< "\tswc1 " << r2 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
 			std::cout<<"\tswc1 " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
@@ -1624,13 +1625,13 @@ public:
 			std::cout<<"\tsw $t0,0($t1)" << std::endl;
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
-				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
-				if (NumberofVaraibles != 0) {
-				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
-			} else {
-				//used to be 8 now i changed it to fit the new registers
-				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
-			}
+			NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+			if (NumberofVaraibles != 0) {
+			Framesize = ((NumberofVaraibles + 20 + 12 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20  + 12) * 4) % 8;
+		} else {
+			//used to be 8 now i changed it to fit the new registers
+			Framesize = ((20 + maxArgs  + 12) * 4) + (((maxArgs + 20  + 12) * 4)%8);
+		}
 				std::cout<< "\tsw " << r2 << "," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
 			std::cout<<"\tsw " << r2 << "," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
