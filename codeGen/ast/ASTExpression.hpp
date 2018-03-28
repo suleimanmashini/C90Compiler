@@ -149,6 +149,7 @@ public:
 
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
+		if (isFloat == 0) {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -156,32 +157,59 @@ public:
 				left->codeGen(regIn);
 				right->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\tmul " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tmov "<< r1 << ", $LO" << std::endl;
+					std::cout << "\tmul " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tmflo "<< r1 << std::endl;
 				} else if (operationFlag == 2){
-					std::cout << "\tdiv, " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tmov "<< r1 << ", $LO" << std::endl;
+					std::cout << "\tdiv " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tmflo "<< r1 << std::endl;
 				} else {
 					//MOD
-					std::cout << "\tdiv, " << r1 << ", " << r2 << std::endl;
-					std::cout << "mov "<< r1 << ", $HI" << std::endl;
+					std::cout << "\tdiv " << r2 << ", " << r1 << std::endl;
+					std::cout << "\tmfhi "<< r1 << std::endl;
 				}
 			} else {
 				right->codeGen(regIn);
 				left->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\tmul " << r2 << ", " << r1 << std::endl;
-					std::cout << "\tmov "<< r2 << ", $LO" << std::endl;
+					std::cout << "\tmul " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tmflo "<< r2 << std::endl;
 				} else if (operationFlag == 2){
-					std::cout << "\tdiv, " << r2 << ", " << r1 << std::endl;
-					std::cout << "\tmov "<< r2 << ", $LO" << std::endl;
+					std::cout << "\tdiv " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tmflo "<< r2 << std::endl;
 				} else {
 					//MOD
-					std::cout << "\tdiv, " << r2 << ", " << r1 << std::endl;
-					std::cout << "\tmov "<< r2 << ", $HI" << std::endl;
+					std::cout << "\tdiv " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tmfhi "<< r2 << std::endl;
 				}
 			}
 		}
+	} else {
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tmul.s " << r1 << ", " << r2 << std::endl;
+				} else if (operationFlag == 2){
+					std::cout << "\tdiv.s " << r1 << ", " << r2 << std::endl;
+				} else {
+
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tmul.s " << r2 << ", " << r1 << std::endl;
+				} else if (operationFlag == 2){
+					std::cout << "\tdiv.s " << r2 << ", " << r1 << std::endl;
+				} else {
+
+				}
+			}
+		}
+	}
 	}
 private:
 	 ASTExpression* right;
@@ -255,9 +283,10 @@ public:
 		}
 	}
 	void codeGen(std::vector<std::string> regIn) override  {
-
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
+		if (isFloat != 1) {
+
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -279,6 +308,29 @@ public:
 				}
 			}
 		}
+	} else {
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tadd.s " << r1 << ", " << r1 << ", " << r2 << std::endl;
+				} else {
+					std::cout << "\tsub.s " << r1 << ", " << r1 << ", " << r2 << std::endl;
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tadd.s " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				} else {
+					std::cout << "\tsub.s " << r1 << ", " << r2 << ", " << r1 << std::endl;
+				}
+			}
+		}
+	}
 	}
 
 private:
@@ -314,25 +366,25 @@ public:
 				left->codeGen(regIn);
 				right->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txor " << r1 << ", " << r1 << ", " << r2 << std::endl;
 					std::cout << "\tsltu " << r1 << ", " << r1 << ", " << "1" << std::endl;
 					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 
 				} else {
-					std::cout << "\txor" << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\tsltu" << r1 << ", " << "0" << ", " << r1 << std::endl;
-					std::cout << "\tandi" << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout << "\txor " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\tsltu " << r1 << ", " << "$0" << ", " << r1 << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				}
 			} else {
 				right->codeGen(regIn);
 				left->codeGen(tail(regIn));
 				if (operationFlag == 1){
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txor " << r1 << ", " << r1 << ", " << r2 << std::endl;
 					std::cout << "\tsltu " << r1 << ", " << r1 << ", " << "1" << std::endl;
 					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 
 				} else {
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txor " << r1 << ", " << r1 << ", " << r2 << std::endl;
 					std::cout << "\tsltu " << r1 << ", " << r1 << ", " << "1" << std::endl;
 					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
 				}
@@ -647,7 +699,7 @@ public:
 	} else {
 		if (variable->returnIndex() == -1) {
 			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
-			std::cout<<"\tswc1 $f0,0($t1)" << std::endl;
+			std::cout<<"\tswc1 $f4,0($t1)" << std::endl;
 		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
 			int Framesize;
 				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
@@ -657,9 +709,9 @@ public:
 				//used to be 8 now i changed it to fit the new registers
 				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
 			}
-				std::cout<< "\tswc1 $f0," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+				std::cout<< "\tswc1 $f4," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
 		} else {
-			std::cout<<"\tswc1 $f0," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+			std::cout<<"\tswc1 $f4," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
 	}
 }
@@ -845,9 +897,30 @@ struct ASTLogicNotExpression: public ASTExpression {
 ASTLogicNotExpression(ASTExpression* _exp): exp(_exp) {}
 void codeGen(std::vector<std::string> regIn) {
 	std::string r1 = head(regIn);
+	if (isFloat == 1) {
+		std::string temp = uniqueIdGen();
+		std::string temp1 = uniqueIdGen();
+		std::string tempFloat = uniqueIdGenFloat();
+		floatValues.push_back(1);
+		exp->codeGen(regIn);
+		std::cout<<"\tmtc1 $0,$f2" << std::endl;
+		std::cout<<"\tc.eq.s $fcc0," << r1 << ",$f2" << std::endl;
+		std::cout<<"\tbc1f $fcc0, " << temp << std::endl;
+		std::cout<< "\tnop\n" << std::endl;
+		std::cout<<"\tlui $2,%hi(" << tempFloat << ")" << std::endl;
+		std::cout<<"\tlwc1 " << r1 << ",%lo(" << tempFloat <<")($2)" << std::endl;
+		std::cout<<"\t.option pic0" << std::endl;
+		std::cout<<"\tb " << temp1 << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout<<temp <<":" << std::endl;
+		std::cout<<"\tmtc1 $0," << r1 << std::endl;
+		std::cout<<temp1<<":" << std::endl;
+	} else {
 	exp->codeGen(regIn);
 	std::cout<<"\tsltu " << r1 << "," << r1 << ",1"<<std::endl;
 	std::cout<<"\tandi " << r1 << "," << r1 << ",0x00ff" << std::endl;
+}
 }
 private:
 	ASTExpression* exp;
