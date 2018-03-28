@@ -585,14 +585,32 @@ public:
 						std::cout<<firstconditionAddress<<":"<<std::endl;
 				} else if (operationFlag == 3){
 					//less than or equal to
-					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout<<"\tc.le.s $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r1 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
 				} else {
 					//more than or equal to
-					std::cout << "\tslt " << r1 << ", " << r2 << ", " << r1 << std::endl;
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout<<"\tc.le.s $fcc0," << r2 << "," << r1 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r1 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
 				}
 			} else {
 				left->codeGen(regIn);
@@ -630,14 +648,31 @@ public:
 					std::cout<<firstconditionAddress<<":"<<std::endl;
 				} else if (operationFlag == 3){
 					//less than or equal to
-					std::cout << "\tslt " << r1 << ", " << r2 << ", " << r1 << std::endl;
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout<<"\tc.le.s $fcc0," << r2 << "," << r1 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
 				} else {
 					//more than or equal to
-					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
-					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
-					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+					std::cout<<"\tc.le.s $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
 				}
 			}
 		}
@@ -795,63 +830,322 @@ public:
 		EquivalentExp->codeGen(regList);
 	}
 		//now youll store v0 to the variable;
+		if (isFloat == 0) {
 		switch(assignmentOp){
 			case 0:
 				break;
 			case 1:
 				//*=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tmul $t9,$t0"<<std::endl;
-				std::cout<<"\tmov $t0,$LO"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tmul $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$LO"<<std::endl;
+					} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tmul $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$LO"<<std::endl;
+					} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tmul $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$LO"<<std::endl;
+				}
+
 				break;
 			case 2:
 				///=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tdiv $t9,$t0"<<std::endl;
-				std::cout<<"\tmov $t0,$LO"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tdiv $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$LO"<<std::endl;
+					} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tdiv $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$LO"<<std::endl;
+					} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tdiv $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$LO"<<std::endl;
+				}
+
 				break;
 			case 3:
 				//%=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tdiv $t9,$t0"<<std::endl;
-				std::cout<<"\tmov $t0,$HI"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tdiv $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$HI"<<std::endl;
+					} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tdiv $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$HI"<<std::endl;
+					} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tdiv $t9,$t0"<<std::endl;
+					std::cout<<"\tmov $t0,$HI"<<std::endl;
+				}
 				break;
 			case 4:
 				//+=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tadd $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 			case 5:
 				//-=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tsub $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 			case 6:
 				//>>=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tsrlv $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 			case 7:
 				//<<=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tsllv $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 			case 8:
 				//&=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tand $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 			case 9:
 				//^=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\txor $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 			case 10:
 				//|=
-				std::cout<<"\tlw $t9," << variable->returnIndex() << "($fp)" << std::endl;
-				std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $t9,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlw $t9," << variable->returnIndex() + Framesize - 4  << "($fp)" << std::endl;
+					std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
+				} else {
+					std::cout<<"\tlw $t9," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
+				}
 				break;
 		}
+	} else {
+		switch(assignmentOp){
+			case 0:
+				break;
+			case 1:
+				//*=
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $f18,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tmul.s $f4,$f4,$f18"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
+					std::cout<<"\tmul.s $f4,$f4,$f18"<<std::endl;
+				} else {
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tmul.s $f4,$f4,$f18"<<std::endl;
+				}
+				break;
+			case 2:
+				///=
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $f18,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tdiv.s $f4,$f4,$f18"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
+					std::cout<<"\tdiv.s $f4,$f4,$f18"<<std::endl;
+				} else {
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tdiv.s $f4,$f4,$f18"<<std::endl;
+				}
+				break;
+			case 4:
+				//+=
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $f18,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tadd.s $f4,$f4,$f18"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
+					std::cout<<"\tadd.s $f4,$f4,$f18"<<std::endl;
+				} else {
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tadd.s $f4,$f4,$f18"<<std::endl;
+				}
+				break;
+			case 5:
+				//-=
+				if (variable->returnIndex() == -1) {
+					std::cout<<"\tlw $f18,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+					std::cout<<"\tsub.s $f4,$f4,$f18"<<std::endl;
+				} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+					int Framesize;
+						NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+						if (NumberofVaraibles != 0) {
+						Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+					} else {
+						//used to be 8 now i changed it to fit the new registers
+						Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+					}
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + Framesize - 4 << "($fp)" << std::endl;
+					std::cout<<"\tsub.s $f4,$f4,$f18"<<std::endl;
+				} else {
+					std::cout<<"\tlwc1 $f18," << variable->returnIndex() + (maxArgs * 4) << "($fp)" << std::endl;
+					std::cout<<"\tsub.s $f4,$f4,$f18"<<std::endl;
+				}
+				break;
+			}
+	}
 		if (isFloat != 1) {
 		if (variable->returnIndex() == -1) {
 			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
