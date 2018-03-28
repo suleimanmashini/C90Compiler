@@ -359,6 +359,7 @@ public:
 
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
+		if (isFloat == 0) {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -390,6 +391,79 @@ public:
 				}
 			}
 		}
+	} else {
+		std::string firstconditionAddress = uniqueIdGen();
+		std::string secondConditionAddress = uniqueIdGen();
+		std::string tempfloat= uniqueIdGenFloat();
+		floatValues.push_back(1);
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+
+				if (operationFlag == 1){
+					std::cout << "\tc.eq.s $fcc0," << r1 << ", " << r2 << std::endl;
+					std::cout << "\tbc1f $fcc0," << firstconditionAddress << std::endl;
+					std::cout <<"\tnop\n" << std::endl;
+					std::cout << "\tlui $2,%hi(" << tempfloat << ")" << std::endl;
+					std::cout << "\tlwc1 " << r1 << ",%lo(" << tempfloat << ")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " << secondConditionAddress << std::endl;
+					std::cout << "\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout << firstconditionAddress << ":" << std::endl;
+					std::cout << "\tmtc1 $0," << r1 << std::endl;
+					std::cout << secondConditionAddress << ":" << std::endl;
+				} else {
+					std::cout << "\tc.eq.s $fcc0," << r1 << ", " << r2 << std::endl;
+					std::cout << "\tbc1t $fcc0," << firstconditionAddress << std::endl;
+					std::cout <<"\tnop\n" << std::endl;
+					std::cout << "\tlui $2,%hi(" << tempfloat << ")" << std::endl;
+					std::cout << "\tlwc1 " << r1 << ",%lo(" << tempfloat << ")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " << secondConditionAddress << std::endl;
+					std::cout << "\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout << firstconditionAddress << ":" << std::endl;
+					std::cout << "\tmtc1 $0," << r1 << std::endl;
+					std::cout << secondConditionAddress << ":" << std::endl;
+				}
+			} else {
+				right->codeGen(regIn);
+				left->codeGen(tail(regIn));
+				if (operationFlag == 1){
+					std::cout << "\tc.eq.s $fcc0," << r1 << ", " << r2 << std::endl;
+					std::cout << "\tbc1f $fcc0," << firstconditionAddress << std::endl;
+					std::cout <<"\tnop\n" << std::endl;
+					std::cout << "\tlui $2,%hi(" << tempfloat << ")" << std::endl;
+					std::cout << "\tlwc1 " << r2 << ",%lo(" << tempfloat << ")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " << secondConditionAddress << std::endl;
+					std::cout << "\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout << firstconditionAddress << ":" << std::endl;
+					std::cout << "\tmtc1 $0," << r2 << std::endl;
+					std::cout << secondConditionAddress << ":" << std::endl;
+
+				} else {
+					std::cout << "\tc.eq.s $fcc0," << r1 << ", " << r2 << std::endl;
+					std::cout << "\tbc1t $fcc0," << firstconditionAddress << std::endl;
+					std::cout <<"\tnop\n" << std::endl;
+					std::cout << "\tlui $2,%hi(" << tempfloat << ")" << std::endl;
+					std::cout << "\tlwc1 " << r2 << ",%lo(" << tempfloat << ")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " << secondConditionAddress << std::endl;
+					std::cout << "\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout << firstconditionAddress << ":" << std::endl;
+					std::cout << "\tmtc1 $0," << r2 << std::endl;
+					std::cout << secondConditionAddress << ":" << std::endl;
+				}
+			}
+		}
+	}
 	}
 
 private:
@@ -418,6 +492,7 @@ public:
 
 		std::string r1 = head(regIn);
 		std::string r2 = head(tail(regIn));
+		if (isFloat == 0) {
 		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
 			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
 		} else {
@@ -469,6 +544,104 @@ public:
 				}
 			}
 		}
+	} else {
+		if(left->getregs() >= regIn.size() && right->getregs() >= regIn.size()){
+			//THIS PART HANDLES REGISTER SPILLIGBUT ILL DO IT LATER
+		} else {
+			if(left->getregs() >= right->getregs()){
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				std::string firstconditionAddress = uniqueIdGen();
+				std::string secondConditionAddress = uniqueIdGen();
+				std::string floattemp = uniqueIdGenFloat();
+				floatValues.push_back(1);
+				if (operationFlag == 1){
+					//less than
+					std::cout<<"\tc.lt.s $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r1 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if(operationFlag == 2){
+					//more than
+						std::cout<<"\tc.lt.s $fcc0," << r2 << "," << r1 << std::endl;
+						std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+						std::cout<<"\tnop\n"<<std::endl;
+						std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+						std::cout<<"\tlwc1 " <<  r1 <<",%lo("<<floattemp<<")($2)" << std::endl;
+						std::cout << "\t.option pic0" << std::endl;
+						std::cout << "\tb " <<  firstconditionAddress << std::endl;
+						std::cout<<"\tnop\n" << std::endl;
+						std::cout << "\t.option pic2" << std::endl;
+						std::cout<<secondConditionAddress<<":"<<std::endl;
+						std::cout<<"\tmtc1 $0," << r1 << std::endl;
+						std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if (operationFlag == 3){
+					//less than or equal to
+					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				} else {
+					//more than or equal to
+					std::cout << "\tslt " << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				}
+			} else {
+				left->codeGen(regIn);
+				right->codeGen(tail(regIn));
+				std::string firstconditionAddress = uniqueIdGen();
+				std::string secondConditionAddress = uniqueIdGen();
+				std::string floattemp = uniqueIdGenFloat();
+				if (operationFlag == 1){
+					//less than
+					std::cout<<"\tc.lt.s $fcc0," << r2 << "," << r1 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if(operationFlag == 2){
+					//more than
+					std::cout<<"\tc.lt.s $fcc0," << r1 << "," << r2 << std::endl;
+					std::cout<<"\tbc1f $fcc0," << secondConditionAddress << std::endl;
+					std::cout<<"\tnop\n"<<std::endl;
+					std::cout<<"\tlui $2,%hi("<<floattemp<<")"<<std::endl;
+					std::cout<<"\tlwc1 " <<  r2 <<",%lo("<<floattemp<<")($2)" << std::endl;
+					std::cout << "\t.option pic0" << std::endl;
+					std::cout << "\tb " <<  firstconditionAddress << std::endl;
+					std::cout<<"\tnop\n" << std::endl;
+					std::cout << "\t.option pic2" << std::endl;
+					std::cout<<secondConditionAddress<<":"<<std::endl;
+					std::cout<<"\tmtc1 $0," << r2 << std::endl;
+					std::cout<<firstconditionAddress<<":"<<std::endl;
+				} else if (operationFlag == 3){
+					//less than or equal to
+					std::cout << "\tslt " << r1 << ", " << r2 << ", " << r1 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				} else {
+					//more than or equal to
+					std::cout << "\tslt " << r1 << ", " << r1 << ", " << r2 << std::endl;
+					std::cout << "\txori " << r1 << ", " << r1 << ", " << "0x1" << std::endl;
+					std::cout << "\tandi " << r1 << ", " << r1 << ", " << "0x00ff" << std::endl;
+				}
+			}
+		}
+	}
 	}
 
 private:
@@ -844,6 +1017,27 @@ struct ASTLogicANDExpression: public ASTExpression {
 		std::string r1 = head(regIn);
 		std::string firstconditionAddress = uniqueIdGen();
 		std::string secondConditionAddress = uniqueIdGen();
+		if(isFloat == 1) {
+		std::cout<<"\tmtc1 $0,$f2"<<std::endl;
+		std::cout<<"\tc.eq.s	$fcc0," << r1<<",$f2"<<std::endl;
+		std::cout<<"\tbc1t $fcc0," << firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n"<<std::endl;
+		right->codeGen(regIn);
+		std::cout<<"\tmtc1 $0,$f2"<<std::endl;
+		std::cout<<"\tc.eq.s	$fcc0," << r1<<",$f2"<<std::endl;
+		std::cout<<"\tbc1t $fcc0," << firstconditionAddress << std::endl;
+		std::cout<<"\tli	$2,1"<<std::endl;
+		std::cout<<"\t.option	pic0"<<std::endl;
+		std::cout<<"\tb "<< secondConditionAddress <<std::endl;
+		std::cout<<"\tnop\n"<<std::endl;
+		std::cout<<"\t.option	pic2"<<std::endl;
+		std::cout<<firstconditionAddress<<":"<<std::endl;
+		std::cout<<"\tmove $2,$0" << std::endl;
+		std::cout<<secondConditionAddress<<":"<<std::endl;
+		std::cout<<"\tmtc1 $2,"<< r1 << std::endl;
+		std::cout<<"\tcvt.s.w "<< r1 << ","<< r1 << std::endl;
+		} else {
+
 		std::cout<<"\t beq " << r1 << ",$0," << firstconditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;
 		right->codeGen(regIn);
@@ -858,6 +1052,7 @@ struct ASTLogicANDExpression: public ASTExpression {
 		std::cout << "\tmove " << r1 << ",$0" << std::endl;
 		std::cout << secondConditionAddress << ":" << std::endl;
 	}
+	}
 private:
 	ASTExpression* left;
 	ASTExpression* right;
@@ -867,11 +1062,14 @@ struct ASTLogicORExpression: public ASTExpression {
 	~ASTLogicORExpression() {}
 	ASTLogicORExpression(ASTExpression* _left, ASTExpression* _right): left(_left), right(_right) {}
 	void codeGen(std::vector<std::string> regIn) {
-		right->codeGen(regIn);
+
 		std::string r1 = head(regIn);
+		std::string r2 = head(tail(regIn));
 		std::string firstconditionAddress = uniqueIdGen();
 		std::string secondConditionAddress = uniqueIdGen();
 		std::string thirdConditionAddress = uniqueIdGen();
+		if (isFloat == 0) {
+		left->codeGen(regIn);
 		std::cout<<"\tbne " << r1 << ",$0," << firstconditionAddress << std::endl;
 		std::cout<<"\tnop\n" << std::endl;
 		right->codeGen(regIn);
@@ -886,6 +1084,30 @@ struct ASTLogicORExpression: public ASTExpression {
 		std::cout<< secondConditionAddress << ":" << std::endl;
 		std::cout << "\tmove " << r1 << ",$0" << std::endl;
 		std::cout << thirdConditionAddress << ":" << std::endl;
+	} else {
+		left->codeGen(regIn);
+		std::cout<<"mtc1 $0," << r2 << std::endl;
+		std::cout<<"\tc.eq.s $fcc0," << r1 << "," << r2 << std::endl;
+		std::cout<<"\tbc1f $fcc0," << firstconditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		right->codeGen(regIn);
+		std::cout<<"mtc1 $0," << r2 << std::endl;
+		std::cout<<"\tc.eq.s $fcc0," << r1 << "," << r2 << std::endl;
+		std::cout<<"\tbc1t $fcc0," << secondConditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<firstconditionAddress<<":"<<std::endl;
+		std::cout<<"\tli $2,1" << std::endl;
+		std::cout<<"\t.option pic0" << std::endl;
+		std::cout<<"\tb " << thirdConditionAddress << std::endl;
+		std::cout<<"\tnop\n" << std::endl;
+		std::cout<<"\t.option pic2" << std::endl;
+		std::cout<<"mtc1 $0," << r1 << std::endl;
+		std::cout<<secondConditionAddress<<":"<<std::endl;
+		std::cout<<"\tmove $2,$0" << std::endl;
+		std::cout<<thirdConditionAddress <<":"<<std::endl;
+		std::cout<<"\tmtc1 $2,"<<r1<<std::endl;
+		std::cout<<"\tcvt.s.w "<<r1<<","<<r1<<std::endl;
+			}
 	}
 private:
 	ASTExpression* left;

@@ -18,6 +18,7 @@ extern int isFloat;
 extern int isTheFunctionFloat;
 extern std::vector<int> floatValues;
 std::string uniqueIdGenFloat();
+std::string uniqueIdGen();
 extern std::string currentFunction;
 void setAccessible(int indexStart, int numofSets);
 void unsetAccessible(int indexStart, int numofSets);
