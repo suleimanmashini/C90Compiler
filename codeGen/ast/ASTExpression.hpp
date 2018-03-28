@@ -11,6 +11,10 @@ public:
 	virtual void codeGen(std::vector<std::string> regIn) {}
 	virtual int returnIndex () {}
 	virtual void codeGen()  {
+		if(isFloat == 1) {
+			this->codeGen(regListFloat);
+			return;
+		}
 		this->codeGen(regList);
 	}
 	virtual std::string nameretrieval() {return "virutal";}
@@ -558,7 +562,13 @@ public:
 	ASTAssignmentExpression( ASTExpression* _variable,  ASTExpression* _EquivalentExp,  int _assignmentOp): variable(_variable), EquivalentExp(_EquivalentExp), assignmentOp(_assignmentOp) {}
 	void codeGen()  {
 		EquivalentExp->updateRegisterNeeds();
+		if (allVariables[findVariableIndex(allVariables, variable->nameretrieval())].getType() == 5) {
+			isFloat = 1;
+			EquivalentExp->codeGen(regListFloat);
+
+		} else {
 		EquivalentExp->codeGen(regList);
+	}
 		//now youll store v0 to the variable;
 		switch(assignmentOp){
 			case 0:
@@ -617,6 +627,7 @@ public:
 				std::cout<<"\tor $t0,$t9,$t0"<<std::endl;
 				break;
 		}
+		if (isFloat != 1) {
 		if (variable->returnIndex() == -1) {
 			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
 			std::cout<<"\tsw $t0,0($t1)" << std::endl;
@@ -633,7 +644,26 @@ public:
 		} else {
 			std::cout<<"\tsw $t0," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
 		}
+	} else {
+		if (variable->returnIndex() == -1) {
+			std::cout<<"\tlw $t1,%got("<<variable->nameretrieval()<<")($28)" << std::endl;
+			std::cout<<"\tswc1 $f0,0($t1)" << std::endl;
+		} else if (variable->returnIndex() > NumberofVaraibles * 4) {
+			int Framesize;
+				NumberofVaraibles = (((allVariables.size() + 1) ? allVariables.size() : 0) - initialVSize);
+				if (NumberofVaraibles != 0) {
+				Framesize = ((NumberofVaraibles + 20 + maxArgs ) * 4) + ((NumberofVaraibles + maxArgs + 20) * 4) % 8;
+			} else {
+				//used to be 8 now i changed it to fit the new registers
+				Framesize = ((20 + maxArgs) * 4) + (((maxArgs + 20) * 4)%8);
+			}
+				std::cout<< "\tswc1 $f0," << variable->returnIndex() + Framesize - 4 <<"($fp)" << std::endl;
+		} else {
+			std::cout<<"\tswc1 $f0," << variable->returnIndex() + (maxArgs * 4)  << "($fp)" << std::endl;
+		}
 	}
+}
+
 	void codeGen(std::vector<std::string> regList) override {
 		codeGen();
 	}

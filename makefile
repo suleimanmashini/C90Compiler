@@ -1,4 +1,4 @@
-CPPFLAGS += -std=c++11 -W -Wall -g -ggdb -O0 -Wno-unused-parameter
+CPPFLAGS += -std=c++11 -O2
 CPPFLAGS += -I include
 
 compiler: bin/c_compiler

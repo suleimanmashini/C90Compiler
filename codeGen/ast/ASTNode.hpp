@@ -40,6 +40,9 @@ void setAccess() {
 void unsetAccess() {
 	isAccess = 0;
 }
+int getType() {
+	return type;
+}
 private:
 int type;
 int foundInScope;
