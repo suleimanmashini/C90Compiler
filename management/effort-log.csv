@@ -22,5 +22,8 @@ Date,Effort,Developers,Milestones,,,
 20/03/2018,7,sm3516,StartedworkingonGlobalVariables,AddedNewTests,FunctionPrototypeCallSupport,FullFunctionCallSupport
 25/03/2018,5,sm3516,SupportforAllLoops,IncrementandDecrement,,
 25/03/2018,2,sm3516,sizeOfTypeSupport,,,
-28/03/18,4,sm3516,FullFloatSupport,,,
-28/03/18,1,sm3516,assignmentExpressions,,,
+28/03/2018,4,sm3516,FullFloatSupport,,,
+28/03/2018,1,sm3516,assignmentExpressions,,,
+28/03/2018,6,sm3516,"fullFloatSupport; MinorDoubleSupport
+
+",,,

@@ -31,4 +31,5 @@ SupportforAllLoops,ExpressionSupportCodeGen,4,sm3516,this,All Loops Now Works,
 IncrementandDecrement,"SupportforAllLoops;ExpressionSupportCodeGen
 ",2,sm3516,this,Supported the Increment and Decrement Operators,
 sizeOfTypeSupport,,2,sm3516,this,Added the sizeof Operation,
-fullFloatSupport,,,,,,
+fullFloatSupport,,5,sm3516,this,SupportedFloatInstructionsandFrame,
+MinorDoubleSupport,,3,sm3516,this,SupportedDoubleInstructionsToSomeExtent,
